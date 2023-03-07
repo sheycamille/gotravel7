@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Illuminate\Support\Facades\Auth;
+
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -19,7 +22,42 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+       $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+        public function toResponse($request)
+        {
+          $type = Auth::user()->type;
+
+            switch ($type) {
+            case 'administrator':
+              return redirect('/admin/home');
+                break;
+            case 'passenger':
+                return redirect()->route('my-profile');
+
+                break;
+            case 'driver':
+                return redirect()->route('my-profile');
+                break;
+
+            default:
+                //return redirect()->route('welcome');
+
+            break;
+            }  
+          
+        }
+    });
+    }
+
+    /**
+     * Register the response bindings.
+     *
+     * @return void
+     */
+    protected function registerResponseBindings()
+    {
+        //$this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        
     }
 
     /**

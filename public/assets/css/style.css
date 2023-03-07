@@ -1,0 +1,37 @@
+@font-face {
+    font-family: "Proxima Nova";
+    src: url("../fonts/3113C5_1_0-bb5d602927c396730517a5a6519f536c3552db84e5d3717fda901c7f7f88a0d0.eot");
+    src: url("../fonts/3113C5_1_0-bb5d602927c396730517a5a6519f536c3552db84e5d3717fda901c7f7f88a0d0.eot?#iefix") format("embedded-opentype"), 
+    url("../fonts/3113C5_1_0-38c6261099f473a85fd46bea33c9a39684e52582fc170d5e284fb15da403608b.woff2") 
+    format("woff2"), url("../fonts/3113C5_1_0-1258b21d797dbdcf093630165113d8e7616e49d400bb6af70e561981c62e440b.woff") format("woff"), 
+    url("../fonts/3113C5_1_0-a72287442b5f8218b6ab741159e23d7dca8bef1b041e86717eee2988b836a9d0.ttf") 
+    format("truetype"), url("../fonts/3113C5_1_0-ffa8582e928ed743827e2e45f4630b2010b288e15f995637026fa4a310fa9f53.svg#wf") format("svg");
+    font-style: normal;
+    font-weight: 400
+}
+
+@font-face {
+    font-family: "Proxima Nova";
+    src: url("../fonts/3113C5_2_0-6f8ff2861945505d4f6282bce4155016acc5eafcd054304277f63a83c9674fc7.eot");
+    src: url("../fonts/3113C5_2_0-6f8ff2861945505d4f6282bce4155016acc5eafcd054304277f63a83c9674fc7.eot?#iefix") format("embedded-opentype"), url("../fonts/3113C5_2_0-29675430696c046545fa7ce2cbf7a18d74fc706727e47988bddbf7f81ef65d2a.woff2") format("woff2"), url("../fonts/3113C5_2_0-6fd0a52d83b8eb6cc1fcbdccc26da1d7608470aed16770ada25510d575ffe00a.woff") format("woff"), url("../fonts/3113C5_2_0-048706ba82e60a7161d0292073621bfd016549caeb9b1e1f866b0b5e1095cda1.ttf") format("truetype"), url("../fonts/3113C5_2_0-1188a757d82c3d22783dd58971c764d7b3b7983c68ef633ade0532e899c9b4a1.svg#wf") format("svg");
+    font-style: normal;
+    font-weight: 600
+}
+
+@font-face {
+    font-family: "Proxima Nova";
+    src: url("../fonts/3113C5_0_0-e4f8bc83b7c3d4787d6196b2abb5c9f5b3f63961444e5757948e3bfcb7ba9394.eot");
+    src: url("../fonts/3113C5_0_0-e4f8bc83b7c3d4787d6196b2abb5c9f5b3f63961444e5757948e3bfcb7ba9394.eot?#iefix") format("embedded-opentype"), url("../fonts/3113C5_0_0-553cf9eba1a0b3f963a100d5b7b76b4755c8a56a1368de17c93381112c7a1a42.woff2") format("woff2"), url("../fonts/3113C5_0_0-7f3e56cf7723c2be7767755d939dfcbc65a06e4d05c18346ce964c4db7e15dc7.woff") format("woff"), url("../fonts/3113C5_0_0-e1e5ad14af6f8644f90f271cbcb56ae52ac8dcee7c77ab6f70ea1deb71a45b1e.ttf") format("truetype"), url("../fonts/3113C5_0_0-aff47805abdda421a6e77d5c1a8f08de16cd421e41ac584aba6d7684443b3b7c.svg#wf") format("svg");
+    font-style: normal;
+    font-weight: 700
+}
+
+@font-face {
+    font-family: 'HYPER DRIVE';
+    src: url("../fonts/HYPERDRIVE-3e969f6bac3fdaaa87d4c7c1774f0c9369b958cd7ae4a32c6f4f478de6b7e3e4.eot");
+    src: url("../fonts/HYPERDRIVE-3e969f6bac3fdaaa87d4c7c1774f0c9369b958cd7ae4a32c6f4f478de6b7e3e4.eot?#iefix") format("embedded-opentype"), url("../fonts/HYPERDRIVE-6084714ed8e617f294be76c6e799ab04c38a3ec39958d4c2d09c06452485f564.woff2") format("woff2"), url("../fonts/HYPERDRIVE-ef0fb6e43a963df725f89e3b8665c2d4caaea86fce91e549bfa36649b9e7756a.woff") format("woff"), url("../fonts/HYPERDRIVE-3be3834815f69a28b0b53c3eaa20ce232f82ff1e57dfba3a2ec38ffe6323a1b7.ttf") format("truetype"), url("../fonts/HYPERDRIVE-14be2e6870824bc8bd958f40f18b28af50553c7a53936f3eff061971269ff6b1.svg#HYPERDRIVE") format("svg");
+    font-weight: normal;
+    font-style: normal
+}
+
+

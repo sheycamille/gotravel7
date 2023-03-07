@@ -1,0 +1,75 @@
+/*!
+ * Slider for Bootstrap
+ *
+ * Copyright 2012 Stefan Petre
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+
+.slider {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative
+}
+
+.slider.slider-horizontal {
+    width: 100% !important;
+    height: 22px;
+    margin-bottom: 10px
+}
+
+.slider.slider-horizontal .slider-track {
+    height: 10px;
+    width: 100%;
+    margin-top: -0px;
+    top: 50%;
+    left: 0
+}
+
+.slider.slider-horizontal .slider-selection {
+    height: 100%;
+    top: 0;
+    bottom: 0
+}
+
+.slider.slider-horizontal .slider-handle {
+    margin-left: -11px;
+    margin-top: -6px
+}
+
+.slider input {
+    display: none
+}
+
+.slider .tooltip {
+    cursor: col-resize;
+    opacity: 0.9
+}
+
+.slider .tooltip-inner {
+    font-size: 14px;
+    white-space: nowrap
+}
+
+.slider-track {
+    background: url(../images/rangeslider_track-0bd5c05c7d27b25e91fff37e286f3031eb9951a4d6abb8476941f777ac30496d.png) repeat-x left center;
+    border-radius: 5px;
+    height: 10px;
+    position: absolute
+}
+
+.slider-selection {
+    background: url(../images/rangeslider_bar-28ed37b46c049ca9af848c422e478a00ac2d9fc952f7c03e6952fd43ac7a92e7.png) repeat-x left center;
+    border-radius: 5px;
+    position: absolute
+}
+
+.slider-handle {
+    cursor: col-resize;
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: url(../images/rangeslider_handle-1df6bf8e8a583067d204907f82eb44052583b82fd4989f9ca6f547e22f173ba1.png) no-repeat center center
+}
+

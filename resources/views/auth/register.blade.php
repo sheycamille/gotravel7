@@ -1,60 +1,216 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+@extends('layouts.app')
 
-        <x-validation-errors class="mb-4" />
+@section('title', 'Sign up')
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+@section( 'active')
 
-            <div>
-                <x-label for="name" value="{{ __('Name') }}" />
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            </div>
+@section('head')
+    <style type="text/css">
+        .form-control:focus {
+            border-color: #4cc417;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
 
-            <div class="mt-4">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            </div>
+        .navbar .primary .active::after {
+            display: none;
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
+        }
+    </style>
+@endsection
 
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
+@section('content')
 
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-label for="terms">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
+    @include('parts.small_header')
 
-                            <div class="ml-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Privacy Policy').'</a>',
-                                ]) !!}
-                            </div>
+    <div class="main">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-10 col-md-offset-2">
+                    <h1>Sign up</h1>
+
+                    <hr class="hidden-xs">
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <form class="form simple" id="new_user" action="{{ route('register') }}" accept-charset="UTF-8"
+                                method="post">
+
+                                {{ csrf_field() }}
+
+
+                                <div class="form-group">
+                                    <label for="name"> Firstname</label>
+                                    <div class="controls">
+                                        <input class="form-control" id="firstname" tabindex="1" type="text"
+                                            name="firstname" placeholder="firstname..."
+                                            class="@error('firstname') is-invalid @enderror">
+
+                                        @error('firstname')
+                                            <span class="alert alert-danger">{{ $message }}</span>
+                                        @enderror
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="name"> Lastname</label>
+                                    <div class="controls">
+                                        <input class="form-control" id="lastname" tabindex="1" type="text"
+                                            name="lastname" placeholder="lastname..."
+                                            class="@error('lastname') is-invalid @enderror">
+                                        @error('lastname')
+                                            <span class="alert alert-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <div class="controls">
+                                        <input class="form-control" id="username" tabindex="1" type="text"
+                                            name="username" placeholder="choose a unique nickname..."
+                                            class="@error('username') is-invalid @enderror">
+                                        @error('username')
+                                            <span class="alert alert-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="user_email">Email</label>
+                                        <div class="controls">
+                                            <input class="form-control" id="email" tabindex="2" type="email"
+                                                value="" name="email" class="@error('email') is-invalid @enderror"
+                                                placeholder="your email address..">
+                                            @error('email')
+                                                <span class="alert alert-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label for="phone_number">Phone number</label>
+                                            <div class="controls">
+                                                <input class="form-control" id="phone_number" tabindex="3" type="text"
+                                                    name="phone_number" placeholder="enter your main phone number..."
+                                                    class="@error('phone_number') is-invalid @enderror">
+                                                @error('phone_number')
+                                                    <span class="alert alert-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="type">You are looking...</label>
+                                                <div class="controls">
+                                                    <select class="form-control" id="type" tabindex="4"
+                                                        type="type" value="" name="type">
+
+                                                        <option selected value="passenger">for a ride</option>
+                                                        <option value="driver">to offer a ride</option>
+                                                    </select>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="password">Choose password</label>
+                                                    <div class="controls">
+                                                        <input class="form-control" id="password" tabindex="5"
+                                                            type="password" name="password" aria-autocomplete="list"
+                                                            class="@error('password') is-invalid @enderror">
+                                                        @error('password')
+                                                            <span class="alert alert-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div
+                                                        class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
+                                                        <label class="control-label">
+                                                            <label for="password_confirmation">Confirm password</label>
+                                                        </label>
+                                                        <div class="controls">
+                                                            <input class="form-control" id="password-confirmation"
+                                                                tabindex="6" type="password" name="password_confirmation"
+                                                                class="@error('password_confirmation') is-invalid @enderror">
+                                                            @error('password_confirmation')
+                                                                <span class="alert alert-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+
+                                                        <p class="small">By clicking on 'Sign up' you accept our
+                                                            <a class="black underline:hover" href="/terms">terms of
+                                                                service</a>.
+                                                        </p>
+
+                                                        <div class="form-group">
+                                                            <div class="controls">
+                                                                <input type="submit" name="commit" value="Sign up"
+                                                                    class="btn btn-brand" id="signup-btn" tabindex="6">
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <p class="small">Already a member? <a
+                                                                href="{{ route('login') }}">Log in</a></p>
+                            </form>
                         </div>
-                    </x-label>
+
+                        <!-- <div class="col-md-1 tcenter">
+                                <span class="text-muted or">OR</span>
+                            </div>
+
+                                        <p class="small">By clicking on 'Sign up' you accept our
+                                            <a class="black underline:hover" href="/terms">terms of service</a>.
+                                        </p>
+
+                                        <div class="form-group">
+                                            <div class="controls">
+                                                <input type="submit" name="commit" value="Sign up" class="btn btn-brand"
+                                                    style="background-color:#4ecb66; " id="signup-btn" tabindex="6">
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <p class="small">Already a member? <a style="color: #4cc417;"
+                                                href="{{ route('login') }}">Log in</a></p>
+                                    </form>
+                                </div>
+                            </div>-->
+
+
+                        <!-- <div class="col-md-1 tcenter">
+                                    <span class="text-muted or">OR</span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="well">
+                                        <h1>Social Sign up</h1>
+                                        <p>Register with one click:</p>
+                                        <p>
+                                            <a class="x-fb-login btn btn-lg btn-block btn-facebook" href="">
+                                                <i class="fa fa-facebook-square"></i> Sign in with Facebook
+                                            </a>
+                                            <a class="x-tw-login btn btn-lg btn-block btn-twitter" href="">
+                                                <i class="fa fa-twitter-square"></i> Sign in with Twitter
+                                            </a>
+                                            <a class="x-google-login btn btn-lg btn-block btn-google" href="">
+                                                <i class="fa fa-google-plus-square"></i> Sign in with Google
+                                            </a>
+                                        </p>
+                                        <br>
+                                        <small>
+                                            <ul class="list-unstyled">
+                                                <li><i class="fa fa-check"></i> Social login makes your profile more trustworthy</li>
+                                                <li><i class="fa fa-check"></i> We will never post to any of your social profiles without your explicit permission</li>
+                                                <li><i class="fa fa-check"></i> We respect your existing social privacy settings</li>
+                                            </ul>
+                                        </small>
+                                        <div class="fb-facepile" data-href="https://www.facebook.com/" data-max-rows="1" data-colorscheme="light" data-size="medium" data-show-count="true"></div>
+                                    </div>
+                                </div>-->
+
+                    </div>
                 </div>
-            @endif
-
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-button class="ml-4">
-                    {{ __('Register') }}
-                </x-button>
             </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+        </div>
+    </div>
+
+@endsection

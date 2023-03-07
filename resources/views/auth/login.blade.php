@@ -1,48 +1,122 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+@extends('layouts.app')
 
-        <x-validation-errors class="mb-4" />
+@section('title', 'Login')
 
-        @if (session('status'))
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ session('status') }}
+@section('active')
+
+@section('head')
+    <style type="text/css">
+        .form-control:focus {
+            border-color: #4cc417;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+
+        .navbar .primary .active::after {
+            display: none;
+
+        }
+    </style>
+
+
+@endsection
+
+@section('content')
+
+    @include('parts.small_header')
+
+    <div class="main">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-10 col-md-offset-2">
+                    @if ($message = Session::get('error'))
+                        <div class="alert alert-danger alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
+                    <h1>Log in</h1>
+                    <hr class="hidden-xs">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form class="form simple" id="new_user" action="{{ route('login') }}" accept-charset="UTF-8"
+                                method="post">
+                                {{ csrf_field() }}
+
+                                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                                    <label for="email">Email</label>
+                                    <div class="controls">
+                                        <input class="form-control" id="email" type="text"
+                                            value="{{ old('email') }}" name="email">
+                                        @if ($errors->has('email'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('email') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="{{ $errors->has('password') ? ' has-error' : '' }}">
+                                    <label for="user_password">Password</label>
+                                    <div class="controls">
+                                        <input class="form-control" id="password" type="password" name="password">
+                                        @if ($errors->has('password'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('password') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="remember" id="user_remember_me"
+                                            {{ old('remember') ? 'checked' : '' }}> Remember me
+                                    </label>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="controls">
+                                        <input type="submit" name="commit" value="Log in" class="btn btn-brand sign-in">
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <p class="small">
+                                    No profile?
+                                    <a href="{{ route('register') }}">Sign up</a><br>
+                                    Forgot your password?
+                                    {{-- <a href="{{ route('password.request') }}">Reset</a> --}}
+                                </p>
+                            </form>
+
+                            <!-- <div class="col-md-1 hidden-iphone tcenter">
+                                    <span class="text-muted or">OR</span>
+                                </div>
+
+                               <div class="col-md-4">
+                                    <div class="well">
+                                        <h1>Social Login</h1>
+                                        <p>One-click access:</p>
+                                        <p>
+                                            <a class="x-fb-login btn btn-lg btn-block btn-facebook" href="">
+                                                <i class="fa fa-facebook-square"></i> Sign in with Facebook
+                                            </a>
+                                            <a class="x-tw-login btn btn-lg btn-block btn-twitter" href="">
+                                                <i class="fa fa-twitter-square"></i> Sign in with Twitter
+                                            </a>
+                                            <a class="x-google-login btn btn-lg btn-block btn-google" href="">
+                                                <i class="fa fa-google-plus-square"></i> Sign in with Google
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>-->
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            </div>
-
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-button class="ml-4">
-                    {{ __('Log in') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+        </div>
+    @endsection
