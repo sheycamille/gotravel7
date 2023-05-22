@@ -2,7 +2,7 @@
 
 @section('title', 'How to earn and use Gokamz Points')
 
-@section($menu, 'active')
+{{-- @section($menu, 'active') --}}
 
 @section('content')
 

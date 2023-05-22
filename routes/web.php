@@ -82,7 +82,7 @@ Route::group(['prefix' => 'profile'], function (){
 
 //everything about rides management starts here
 Route::group(['prefix' => 'rides'], function () {
-    Route::get('/', 'RideController@store')->name('store-ride');
+    Route::get('/', 'RideController@store')->name('store-rides');
     //Route::get('/', 'RideController::class,'search')->name('rides');
     Route::get('/create/{type?}', 'RideController@create')->name('create-ride');
     Route::post('/store', 'RideController@store')->name('store-ride');
@@ -109,9 +109,3 @@ Route::group(['prefix' => 'how'], function () {
     Route::get('/offer_lift/guidelines', 'FrontController@offer_lift_guidelines')->name('offer-lift-guidelines');
     Route::get('/offer_lift/regulation', 'FrontController@offer_lift_regulation')->name('offer-lift-regulation');
 });
-
-
-
-
-
-

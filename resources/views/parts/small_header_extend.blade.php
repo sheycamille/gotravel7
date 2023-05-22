@@ -1,6 +1,6 @@
 <style type="text/css">
     .navbar .primary .active::after{
-    display: none;    
+    display: none;
     content: '';
     position: absolute;
     left: 40%;
@@ -13,7 +13,7 @@
 }
   </style>
 
-<div class="">
+<header class="header">
     <nav class="navbar navbar-default" >
         <div class="container">
             <div class="navbar-header">
@@ -80,7 +80,7 @@
                     @if(App::isLocale('en'))
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'en') }}"><img src="{{ URL::to('assets/images') }}/en.png" /></a></li>
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'fr') }}"><img src="{{ URL::to('assets/images') }}/fr.png" /></a></li>
-                    @else 
+                    @else
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'fr') }}"><img src="{{ URL::to('assets/images') }}/fr.png" /></a></li>
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'en') }}"><img src="{{ URL::to('assets/images') }}/en.png" /></a></li>
                     @endif
@@ -101,4 +101,4 @@
             </ul>
         </div>
     </div>
-</div>
+</header>

@@ -92,31 +92,10 @@
                                 </p>
                             </form>
 
-                            <!-- <div class="col-md-1 hidden-iphone tcenter">
-                                    <span class="text-muted or">OR</span>
-                                </div>
-
-                               <div class="col-md-4">
-                                    <div class="well">
-                                        <h1>Social Login</h1>
-                                        <p>One-click access:</p>
-                                        <p>
-                                            <a class="x-fb-login btn btn-lg btn-block btn-facebook" href="">
-                                                <i class="fa fa-facebook-square"></i> Sign in with Facebook
-                                            </a>
-                                            <a class="x-tw-login btn btn-lg btn-block btn-twitter" href="">
-                                                <i class="fa fa-twitter-square"></i> Sign in with Twitter
-                                            </a>
-                                            <a class="x-google-login btn btn-lg btn-block btn-google" href="">
-                                                <i class="fa fa-google-plus-square"></i> Sign in with Google
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>-->
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-    @endsection
+    </div>
+@endsection

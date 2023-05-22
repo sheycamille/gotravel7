@@ -1,5 +1,5 @@
 
-<div class="">
+<header class="header">
     <nav class="navbar navbar-default navbar-transparent ">
         <div class="container">
             <div class="navbar-header">
@@ -35,7 +35,7 @@
                         <a href=""> @lang('page.pick_up')</a>
                     </li>
                     <li class="nav-separator"></li>
-                    
+
                     @if(Auth::check())
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
@@ -58,7 +58,7 @@
                                 <a href="{{ route('my-vehicles') }}">My vehicles</a>
                             </li>
                             @endif
-                            
+
                             <li>
                                 <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">@lang('page.header.logout')</a>
 
@@ -74,7 +74,7 @@
                     @if(App::isLocale('en'))
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'en') }}"><img src="{{ URL::to('assets/images') }}/en.png" /></a></li>
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'fr') }}"><img src="{{ URL::to('assets/images') }}/fr.png" /></a></li>
-                    @else 
+                    @else
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'fr') }}"><img src="{{ URL::to('assets/images') }}/fr.png" /></a></li>
                     <li><a style="display: inline;font-size:10px !important;" href="{{ route('switch-language', 'en') }}"><img src="{{ URL::to('assets/images') }}/en.png" /></a></li>
                     @endif
@@ -83,4 +83,4 @@
             </div>
         </div>
     </nav>
-</div>
+</header>

@@ -23229,7 +23229,6 @@ body.disabled {
     background: #fff;
     padding-top: 30px;
     padding-bottom: 20px;
-    min-height: 635px
 }
 
 @media (min-width: 768px) {
