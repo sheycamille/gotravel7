@@ -73,7 +73,7 @@
         </div>
 
 
-        <footer class="footer text-center"> Copyright © 2018 GoKamz
+        <footer class="footer text-center"> {{--<p> Copyright © {{ $carbon::now()->format('Y') }} GoKamz</p>--}}
         </footer>
 
     </div>

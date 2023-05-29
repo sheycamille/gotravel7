@@ -1,5 +1,8 @@
+@inject('carbon', 'Carbon\Carbon')
+
 <!DOCTYPE html>
 <html lang="en" class="svg inlinesvg svgasimg flexbox flexboxlegacy">
+
 <head>
 
     <!-- CSRF Token -->
@@ -8,12 +11,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title> @yield('title') | GoKamz</title>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="GoKamz is Cameroon&#39;s largest portal for ridesharing and peer-to-peer goods transportation. Find or offer a lift or rent cars from peope near you.">
-    <meta name="keywords" content="ridesharing carpooling ride cheap transport peer-to-peer car rental rent car hire cameroon africa transport goods persons">
+    <meta name="description"
+        content="GoKamz is Cameroon&#39;s largest portal for ridesharing and peer-to-peer goods transportation. Find or offer a lift or rent cars from peope near you.">
+    <meta name="keywords"
+        content="ridesharing carpooling ride cheap transport peer-to-peer car rental rent car hire cameroon africa transport goods persons">
     <meta property="og:site_name" content="GoKamz">
     <meta property="og:title" content="Ridesharing and peer-to-peer goods transportation | GoKamz">
     <meta property="og:type" content="website">
-    <meta property="og:description" content="GoKamz is Cameroon&#39;s largest portal for ridesharing and peer-to-peer goods transportation. Find or offer a ride from peope near you.">
+    <meta property="og:description"
+        content="GoKamz is Cameroon&#39;s largest portal for ridesharing and peer-to-peer goods transportation. Find or offer a ride from peope near you.">
     <meta property="og:url" content="/">
     <meta property="og:image" content="">
     <meta property="og:locale" content="en_US">
@@ -90,16 +96,16 @@
                     <h5>Contact Us</h5>
                     <ul class="list-unstyled">
                         <li><a target="_blank" href="#" title="Call Us">
-                            <i class="fa fa-phone fa-1-4x"></i> +237 653762417</a>
+                                <i class="fa fa-phone fa-1-4x"></i> +237 653762417</a>
                         </li>
                         <li><a target="_blank" href="https://api.whatsapp.com/send?phone=6717122221">
-                            <i class="fa fa-whatsapp fa-1-4x"></i> +237 6717122221</a>
+                                <i class="fa fa-whatsapp fa-1-4x"></i> +237 6717122221</a>
                         </li>
                         <li><a target="_blank" href="https://www.facebook.com/gokamz237">
-                            <i class="fa fa-facebook fa-1-4x"></i> Meet Us</a>
+                                <i class="fa fa-facebook fa-1-4x"></i> Meet Us</a>
                         </li>
                         <li><a target="_blank" href="https://twitter.com/gokamz">
-                            <i class="fa fa-twitter fa-1-4x"></i> Follow US</a>
+                                <i class="fa fa-twitter fa-1-4x"></i> Follow US</a>
                         </li>
                     </ul>
                 </div>
@@ -112,7 +118,7 @@
                         <div class="inline pull-left mr4">
                         </div>
                         <div class="hidden-xs">
-                            Copyright © 2018 GoKamz
+                            <p> Copyright © {{ $carbon::now()->format('Y') }} GoKamz</p>
                         </div>
                     </div>
                     <div class="col-xs-4 col-sm-2 pull-right text-right">
@@ -137,4 +143,5 @@
     @yield('foot')
 
 </body>
+
 </html>

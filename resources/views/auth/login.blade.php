@@ -36,6 +36,13 @@
                             <strong>{{ $message }}</strong>
                         </div>
                     @endif
+
+                    @if ($message = Session::get('message'))
+                        <div class="alert alert-info alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
                     <h1>Log in</h1>
                     <hr class="hidden-xs">
                     <div class="row">
@@ -88,7 +95,7 @@
                                     No profile?
                                     <a href="{{ route('register') }}">Sign up</a><br>
                                     Forgot your password?
-                                    {{-- <a href="{{ route('password.request') }}">Reset</a> --}}
+                                    <a href="{{ route('forget.password') }}">Reset here</a>
                                 </p>
                             </form>
 

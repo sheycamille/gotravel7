@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ride;
 use App\Models\RidePassenger;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -107,10 +108,14 @@ class RideController extends Controller
 
     public function details(Request $request, $id)
     {
+        
         $ride = Ride::find($id);
+
+        $vehicle = new Vehicle();
+
         if (!$ride) return redirect()->back()->with('message', 'Ride not found');
 
-        return view('rides.details', compact('ride'));
+        return view('rides.details', compact('ride', 'vehicle'));
     }
 
     public function edit(Request $request, $id)
@@ -220,7 +225,7 @@ class RideController extends Controller
         $destination = '';
         $start_day = '';
         $start_time = '';
-        $where = array(['type', '=', $type], ['status', '<>', 'ended']);
+        $where = array(['type', '=', $type], ['status', '<>', 'in_process']);
 
         if ($request->pickup) {
             $pickup = strtolower($request->pickup);
@@ -253,7 +258,7 @@ class RideController extends Controller
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination'));
     }
 
-    public function getAllRides()
+    /*public function getAllRides()
     {
         $pickup = '';
         $destination = '';
@@ -266,5 +271,5 @@ class RideController extends Controller
             ->paginate(20);
 
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination', 'start_day', 'start_time'));
-    }
+    }*/
 }

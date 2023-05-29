@@ -43,6 +43,14 @@ Route::get('/switch/language/{lang}', 'FrontController@switch_language')->name('
 
 Route::get('/switch/transport/{type}', 'FrontController@switch_transport_type')->name('switch-transport-type');
 
+Route::get('/forget-password', 'ForgotPasswordController@ForgetPasswordForm')->name('forget.password');
+
+Route::post('/forget-password', 'ForgotPasswordController@submitForgetPasswordForm')->name('forget.password.post');
+
+Route::get('/reset-password/{token}', 'ForgotPasswordController@showResetPasswordForm')->name('reset.password.get');
+
+Route::post('/reset-password', 'ForgotPasswordController@submitResetPasswordForm')->name('reset.password.post');
+
 
 //management routes starts here
 Route::group(['prefix' => 'admin'],function(){
@@ -69,8 +77,9 @@ Route::group(['prefix' => 'admin'],function(){
 });
 
 //users routes starts here
-Route::group(['prefix' => 'profile'], function (){
+Route::group(['prefix' => 'user'], function (){
     Route::get('/', 'UserController@index')->name('my-profile');
+    Route::get('/dashboard', 'UserController@dashboard')->name('user.dashboard');
     Route::get('/edit', 'UserController@edit')->name('edit-profile');
     Route::post('/update', 'UserController@update')->name('update-profile');
     Route::post('/reset/password', 'UserController@resetPassword')->name('reset_password');

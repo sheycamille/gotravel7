@@ -32,11 +32,11 @@ class FortifyServiceProvider extends ServiceProvider
               return redirect('/admin/home');
                 break;
             case 'passenger':
-                return redirect()->route('my-profile');
+                return redirect()->route('user.dashboard');
 
                 break;
             case 'driver':
-                return redirect()->route('my-profile');
+                return redirect()->route('user.dashboard');
                 break;
 
             default:

@@ -73,12 +73,12 @@
             </div>
 
             <div class="inner_column">
-          <div class="">
+          {{--<div class="">
             <div class="pull-right">
               <span  >Points Accumulated:</span><br>
               <label style="background-color: #4cc417;" class="badge pull-right">{{ $user->points?$user->points:0 }}</label>
             </div>
-          </div>
+          </div>--}}
           <br>
 
           <div class=" ">

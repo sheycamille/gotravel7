@@ -1,4 +1,5 @@
 @media print {
+
     *,
     *:before,
     *:after {
@@ -7,62 +8,78 @@
         box-shadow: none !important;
         text-shadow: none !important
     }
+
     a,
     a:visited {
         text-decoration: underline
     }
+
     a[href]:after {
         content: " (" attr(href) ")"
     }
+
     abbr[title]:after {
         content: " (" attr(title) ")"
     }
+
     a[href^="#"]:after,
     a[href^="javascript:"]:after {
         content: ""
     }
+
     pre,
     blockquote {
         border: 1px solid #999;
         page-break-inside: avoid
     }
+
     thead {
         display: table-header-group
     }
+
     tr,
     img {
         page-break-inside: avoid
     }
+
     img {
         max-width: 100% !important
     }
+
     p,
     h2,
     h3 {
         orphans: 3;
         widows: 3
     }
+
     h2,
     h3 {
         page-break-after: avoid
     }
+
     .navbar {
         display: none
     }
+
     .btn>.caret,
     .dropup>.btn>.caret {
         border-top-color: #000 !important
     }
+
     .label {
         border: 1px solid #000
     }
+
     .table {
         border-collapse: collapse !important
     }
+
     .table td,
     .table th {
         background-color: #fff !important
     }
+
     .table-bordered th,
     .table-bordered td {
         border: 1px solid #ddd !important
@@ -194,29 +211,31 @@ hr {
 }
 
 .places-search {
-    display:inline; 
-    width:100%;
-    margin-right:5px;
+    display: inline;
+    width: 100%;
+    margin-right: 5px;
 }
 
 .places-search1 {
-    display:inline; 
-    width:45%;
-    margin-right:5px;
+    display: inline;
+    width: 45%;
+    margin-right: 5px;
 }
 
 .search-form__swap {
-    width:6%;
+    width: 6%;
 }
 
 @media (max-width: 991px) {
     .app-logo {
-        height: 150%;   
+        height: 150%;
     }
+
     .places-search {
         width: 100%;
         margin-bottom: 10px;
     }
+
     .search-form__swap {
         display: none;
     }
@@ -228,4 +247,36 @@ hr {
 
 #js-offering-neutral {
     margin-top: 20%;
+}
+
+.ride-vehicle {
+    margin-bottom: 1vw;
+}
+
+.sign-up-form {
+    margin-bottom: 1vw;
+}
+
+.pilot-img {
+    border-radius: 50%;
+    width: 185px;
+    height: 185px;
+}
+
+label {
+    display: block;
+    color: #7d7d7d;
+}
+
+.floatBlock {
+    margin: 0 1.81em 0 0;
+}
+
+.paymentOptions {
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    break-before: always;
+    margin: 0 0 1em 0;
 }

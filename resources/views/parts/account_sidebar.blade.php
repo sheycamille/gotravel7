@@ -2,6 +2,13 @@
 <div class="col-sm-2">
 	<ul class="gm-list hidden-xs">
 		<li class="nav-header">@lang('page.accnt')</li>
+
+		<li class="@yield('sub-menu')">
+			<a  href="{{ route('user.dashboard') }}">
+				<i class="fa fa-inbox"></i> @lang('page.user_dashboard')
+			</a>  
+		</li>
+
 		<li class="@yield('sub-menu1')">
 
 			<a  href="{{ route('my-profile') }}">

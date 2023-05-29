@@ -220,4 +220,17 @@ class UserController extends Controller
                 ->with('error', "There was an error changing your password, please make sure you enter the right old password or get to the administrator to reset it. Also, make sure the new password and it's confirmation match, thanks.");
         }
     }
+
+    public function dashboard()
+    {
+
+        $user = Auth::user();
+
+        $rides = Ride::whereDriverId($user->id)->paginate(20);
+
+        return view('user.dashboard')->with(array(
+            'rides' => $rides,
+            'user' => $user
+        ));
+    }
 }
