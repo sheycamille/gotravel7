@@ -2,7 +2,7 @@
 
 @section('title', 'Edit ride')
 
-@section($menu, 'active')
+@section('active')
 
 @section('head')
 
@@ -211,3 +211,13 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBabVxQOzXEbwg3GL2FuqW5baV_1xu9fJk&libraries=places&callback=activatePlacesSearch" async defer></script>
 
 @endsection
+
+<div class="row">
+	<div class="col-md-6">
+
+	</div>
+
+	<div class="col-md-6">
+		
+	</div>
+</div>

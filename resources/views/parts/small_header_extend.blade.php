@@ -24,13 +24,13 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{ route('welcome') }}">
-                    <img src="/assets/images/go-kamz-black-white-logo.png" class="logo">
+                    <img src="/assets/images/TRAVELZ-LOGO-444444.png" class="logo">
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav primary">
                     <li class="@yield('active-menu1')">
-                        <a href="{{ route('rides', 'persons') }}">@lang('page.share')</a>
+                        <a href="{{ route('get_all_rides') }}">@lang('page.share')</a>
                     </li>
                     <li class="@yield('active-menu2')">
                         <a href="{{ route('rides', 'goods') }}">@lang('page.find_transport')</a>
@@ -53,16 +53,7 @@
 
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="{{ route('my-profile') }}">@lang('page.profile')</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('my-journeys') }}">@lang('page.my_journey')</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('my-rides') }}">@lang('page.my_lift')</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('my-vehicles') }}">My vehicles</a>
+                                <a href="{{ route('user.dashboard') }}">@lang('page.user_dashboard')</a>
                             </li>
                             <li>
                                 <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

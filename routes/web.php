@@ -100,12 +100,13 @@ Route::group(['prefix' => 'rides'], function () {
     Route::post('/update/{id}', 'RideController@update')->name('update-ride');
     //Route::post('/update/{id}', 'RideController@update')->name('update-ride');
     Route::post('/delete/{id}', 'RideController@delete')->name('delete-ride');
-    Route::get('/join/{id}', 'RideController@join')->name('join-ride');
-    Route::get('/cancelbooking', 'RideController@cancelBooking')->name('cancel_booking');
+    Route::post('/join/{id}', 'RideController@join')->name('join');
+    Route::get('/cancelbooking{id}', 'RideController@cancelBooking')->name('cancel-booking');
 });
 
 //rides routes that don't need auth
 Route::get('rides/list/{type?}', 'RideController@search')->name('rides');
+Route::get('rides/list/', 'RideController@getAllRides')->name('get-all-rides');
 Route::get('rides/details/{id}', 'RideController@details')->name('details-ride');
 
 

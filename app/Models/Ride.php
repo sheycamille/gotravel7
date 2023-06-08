@@ -41,7 +41,7 @@ class Ride extends Model
 
     public function isAPassenger()
     {
-        return $this->hasOne('App\Models\RidePassenger')->where('passenger_id', Auth::user()->id)->first();
+        return $this->belongsTo('App\Models\RidePassenger')->where('passenger_id', Auth::user()->id)->first();
     }
 
     public function spacesLeft()

@@ -50,6 +50,8 @@ class RideController extends Controller
 
     public function create(Request $request, $type = 'persons')
     {
+        $type = new Vehicle();
+        $cartype =  $type->getvehicleType();
 
         if ($type == 'goods') {
             $cookie = Cookie::queue('transport', 'goods', 365 * 24 * 60);
@@ -61,7 +63,7 @@ class RideController extends Controller
             $menu = 'active-menu1';
         }
 
-        return view('rides.create', compact('menu'));
+        return view('rides.create', compact('menu', 'cartype'));
     }
 
     public function store(Request $request)
@@ -108,7 +110,7 @@ class RideController extends Controller
 
     public function details(Request $request, $id)
     {
-        
+
         $ride = Ride::find($id);
 
         $vehicle = new Vehicle();
@@ -132,6 +134,8 @@ class RideController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
+
         $ride = Ride::find($id);
         if (!$ride) return redirect()->back()->with('message', 'Ride not found');
 
@@ -148,7 +152,7 @@ class RideController extends Controller
             return redirect()->route('mrides')->with('success', 'Ride Updated succesfully');
         } else {
 
-            return view('rides.edit', compact('ride'))->with('message', 'Ride successfully updated');
+            return view('user.dashboard', compact('ride', 'user'))->with('success', 'Ride successfully updated');
         }
     }
 
@@ -172,15 +176,27 @@ class RideController extends Controller
     public function join(Request $request, $id)
     {
         $ride = Ride::find($id);
+        $seats = $request->num_of_seats;
+
         if (!$ride) return redirect()->back()->with('message', 'Ride not found');
 
-        if ($ride->isAPassenger()) {
-            return redirect()->back()->with('message', "Sorry you can't join your own ride");
+        if ($ride->num_of_seats_left == null) {
+
+            $num_of_seat = $ride->num_of_seats - $seats;
+            $ride->num_of_seats_left = $num_of_seat;
+            $ride->save();
+            //dd($ride);
+        } else {
+
+            $seats_left = $ride->num_of_seats_left - $seats;
+            $ride->num_of_seats_left = $seats_left;
+            $ride->save();
         }
 
         $journey = RidePassenger::create([
             'ride_id' => $id,
             'passenger_id' => Auth::user()->id,
+            'num_of_seats' => $seats,
             'status' => 'in_process',
             'paid' => 'pending',
             'type' => 'persons'
@@ -190,12 +206,9 @@ class RideController extends Controller
     }
 
 
-    public function cancelBooking()
+    public function cancelBooking($id)
     {
-
-        $id = Auth::user()->id;
-
-        DB::table('ride_passengers')->where('passenger_id', $id)->delete();
+        $ride_passenger = RidePassenger::find($id)->forceDelete();
 
         return redirect()->back()->with('success', 'Successfully canceled booking');
     }
@@ -258,7 +271,7 @@ class RideController extends Controller
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination'));
     }
 
-    /*public function getAllRides()
+    public function getAllRides()
     {
         $pickup = '';
         $destination = '';
@@ -266,10 +279,10 @@ class RideController extends Controller
         $start_time = '';
         $menu = 'active-menu1';
         $rides = Ride::where('type', '=', 'persons')
-            ->orderBy('start_day', 'asc')
+            ->orderBy('start_day', 'desc')
             ->orderBy('start_time', 'asc')
-            ->paginate(20);
+            ->paginate(5);
 
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination', 'start_day', 'start_time'));
-    }*/
+    }
 }

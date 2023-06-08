@@ -10,7 +10,7 @@
                     <span class="icon-bar"></span>
                 </button>-->
                 <a class="navbar-brand" href="{{ route('welcome') }}">
-                    <img src="{{ URL::to('assets/images') }}/go-kamz-black-white-green-logo.png" class="app-logo" height="100px">
+                    <img src="{{ URL::to('assets/images') }}/TRAVELZ-LOGO-3333.png" class="app-logo" height="100px">
                     <!--<picture>
                         <source media="(max-width: 992px)" srcset="{{ URL::to('assets/images') }}/new_logo.jpeg"/>
                         <source media="(min-width: 992px)" srcset="{{ URL::to('assets/images') }}/new_logo.jpeg"/>

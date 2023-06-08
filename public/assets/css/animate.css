@@ -10103,9 +10103,9 @@ ul.gm-list ul.gm-list li {
     text-decoration: none
 }
 
-.gm-list li.active a {
+.gm-list li a:active {
     background-color: #fff;
-    color: #333;
+    color: #333 !important;
     cursor: default
 }
 

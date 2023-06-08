@@ -63,7 +63,7 @@ td, th {
                             <td><a href="{{ route('details-ride', $ride->id) }}">More</a></td>
                         </tr>
                         @empty
-                        Sorry you have not booked any rides on Gokamz, visit Gokamz for the best rides, and at your own convinience.<br><br>
+                        Sorry you have not booked any rides on TravelZ, visit TravelZ for the best rides, and at your own convinience.<br><br>
                         @endforelse
                     </tbody>
                 </table>

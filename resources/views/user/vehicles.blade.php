@@ -2,7 +2,7 @@
 
     @section('title', 'My rides offered')
 
-    @section($menu, 'active')
+    @section('active')
 
     @section('sub-menu4', 'active')
 

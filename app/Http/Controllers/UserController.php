@@ -123,8 +123,6 @@ class UserController extends Controller
             'primary_address' => $request->primary_address,
             'nic' => $request->nic,
             'avatar' => $avta
-
-
         ]);
 
 
@@ -176,7 +174,7 @@ class UserController extends Controller
 
         $vehicles = Vehicle::where('owner_id', $id)->get();
 
-        return view('profile.vehicles')->with(array(
+        return view('user.vehicles')->with(array(
             'vehicles' => $vehicles,
             'cartype' => $cartype,
             'type' => $type,
@@ -213,7 +211,7 @@ class UserController extends Controller
             $user->save();
 
             return redirect()->back()
-                ->with('success', 'Password successfully set!');
+                ->with('success', 'Password has been successfully reset!');
         } else {
 
             return redirect()->back()
@@ -223,14 +221,27 @@ class UserController extends Controller
 
     public function dashboard()
     {
-
         $user = Auth::user();
 
-        $rides = Ride::whereDriverId($user->id)->paginate(20);
+        $user_id = $user->id;
+
+        $rides = Ride::where('driver_id', $user_id)->take(3)->get();
+
+        $pendx_jounrneys = Ride::join('ride_passengers', 'rides.id', '=', 'ride_passengers.ride_id')
+            ->where('ride_passengers.passenger_id', '=', $user_id)
+            ->where('ride_passengers.status', '=', 'in_process')
+            ->get();
+
+        $recent_trips = Ride::join('ride_passengers', 'rides.id', '=', 'ride_passengers.ride_id')
+        ->where('ride_passengers.passenger_id', '=', $user_id)
+        ->where('ride_passengers.status', '=', 'ended')
+        ->take(3)->get();
 
         return view('user.dashboard')->with(array(
             'rides' => $rides,
-            'user' => $user
+            'user' => $user,
+            'pendx_jounrneys' => $pendx_jounrneys,
+            'recent_trips' => $recent_trips
         ));
     }
 }

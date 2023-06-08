@@ -3,20 +3,20 @@
 	<ul class="gm-list hidden-xs">
 		<li class="nav-header">@lang('page.accnt')</li>
 
-		<li class="@yield('sub-menu')">
+		<li class="">
 			<a  href="{{ route('user.dashboard') }}">
 				<i class="fa fa-inbox"></i> @lang('page.user_dashboard')
 			</a>  
 		</li>
 
-		<li class="@yield('sub-menu1')">
+		<li class="">
 
 			<a  href="{{ route('my-profile') }}">
 				<i class="fa fa-inbox"></i> @lang('page.profile')
 			</a>  
 		</li>
 
-		<li class="@yield('sub-menu2')">
+		<li class="">
 
 			<a  href="{{ route('my-journeys') }}">
 
@@ -24,7 +24,7 @@
 			</a>  
 		</li>
 
-		<li class="@yield('sub-menu3')">
+		<li class="">
 
 			<a  href="{{ route('my-rides') }}">
 
@@ -32,7 +32,7 @@
 			</a>  
 		</li>
 
-		<li class="@yield('sub-menu4')">
+		<li class="">
 			<a  href="{{ route('my-vehicles') }}">
 				<i class="fa fa-folder-open"></i> My Vehicles
 			</a>  

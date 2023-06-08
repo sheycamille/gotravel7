@@ -19,6 +19,20 @@
 
                 <div class="col-sm-10">
 
+                    @if ($message = Session::get('success'))
+                        <div class="alert alert-success alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
+
+                    @if ($message = Session::get('message'))
+                        <div class="alert alert-info alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
+
                     <h1>Journey from {{ $ride->departure }} to {{ $ride->destination }}</h1>
 
                     <hr class="hidden-xs">
@@ -53,34 +67,12 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <p>Seats Available: <b>{{ $ride->spacesLeft() }}/{{ $ride->num_of_seats }}
+                                        <p>Seats Available: <b>{{ $ride->num_of_seats_left }}/{{ $ride->num_of_seats }}
                                                 Left</b></p>
 
                                         <p>Cost Per Seat: <b>{{ $ride->cost }}</b></p>
 
-                                        <form action="">
-                                            <h5>Select seats to book</h5>
-                                            <div name="paymentContainer" class="paymentOptions">
-                                                @for ($i = 1; $i <= $ride->spacesLeft(); $i++)
-                                                    @if ($i == 1)
-                                                        <div class="floatBlock">
-                                                            <label for=""> <input id="" checked
-                                                                    name="seat" type="radio"
-                                                                    value="{{ $i }}" />{{ $i }}</label>
-                                                        </div>
-                                                    @else
-                                                        <div class="floatBlock">
-                                                            <label for=""> <input id="" name="seat"
-                                                                    type="radio"
-                                                                    value="{{ $i }}" />{{ $i }}</label>
-                                                        </div>
-                                                    @endif
-                                                @endfor
-                                            </div>
 
-                                            <button class="btn btn-success" type="submit">Book</button>
-
-                                        </form>
 
                                         {{-- <div class="form-group">
                                             <div class="controls">
@@ -110,11 +102,72 @@
 
                             </div>
 
-                            <div class="col">
-                                <img src="{{ URL::to('assets/images') }}/1498105293-69-droppin-technologies-ltd.jpg"
-                                    class="ride-vehicle" height="200px">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="{{ URL::to('assets/images') }}/1498105293-69-droppin-technologies-ltd.jpg"
+                                        class="ride-vehicle" height="200px">
 
+                                </div>
+
+                                <div class="col-md-6">
+                                    @if (auth()->check())
+                                        @if ($ride->num_of_seats_left == 0)
+                                            <h5>Sorry, this ride is full, try another one.</h5>
+                                        @else
+                                            <form action="{{ route('join', $ride->id) }}" accept-charset="UTF-8"
+                                                method="post">
+                                                {{ csrf_field() }}
+                                                <h5 style="padding-top: 0px;">Select seats to book</h5>
+                                                <div name="paymentContainer" class="paymentOptions">
+                                                    @if ($ride->num_of_seats_left == null)
+
+                                                        @for ($i = 1; $i <= $ride->num_of_seats; $i++)
+                                                            @if ($i == 1)
+                                                                <div class="floatBlock">
+                                                                    <label for=""> <input id="" checked
+                                                                            name="num_of_seats" type="radio"
+                                                                            value="{{ $i }}" />{{ $i }}</label>
+                                                                </div>
+                                                            @else
+                                                                <div class="floatBlock">
+                                                                    <label for=""> <input id=""
+                                                                            name="num_of_seats" type="radio"
+                                                                            value="{{ $i }}" />{{ $i }}</label>
+                                                                </div>
+                                                            @endif
+                                                        @endfor
+                                                    @else
+                                                        @for ($i = 1; $i <= $ride->num_of_seats_left; $i++)
+                                                            @if ($i == 1)
+                                                                <div class="floatBlock">
+                                                                    <label for=""> <input id="" checked
+                                                                            name="num_of_seats" type="radio"
+                                                                            value="{{ $i }}" />{{ $i }}</label>
+                                                                </div>
+                                                            @else
+                                                                <div class="floatBlock">
+                                                                    <label for=""> <input id=""
+                                                                            name="num_of_seats" type="radio"
+                                                                            value="{{ $i }}" />{{ $i }}</label>
+                                                                </div>
+                                                            @endif
+                                                        @endfor
+                                                    @endif
+                                                </div>
+
+                                                <button class="btn btn-success" type="submit">Book</button>
+
+                                            </form>
+                                        @endif
+                                    @else
+                                        <h6>You need to <a href="{{ route('login') }}"><b>sign in</b></a> or <a
+                                                href="{{ route('register') }}"><b>create an account</b></a> to book
+                                            this ride.</h6>
+                                    @endif
+                                </div>
                             </div>
+
+
 
                         </div>
                     </div>
@@ -145,48 +198,48 @@
                     <div class="form" style="height: inherit;">
 
                         <!-- <form class="form-horizontal row" action="{{ route('reset_password') }}" method="post">
-                                                    {{ csrf_field() }}
-                                                    <input type="hidden" id='user_id' name="user_id" value=""/>
+                                                                            {{ csrf_field() }}
+                                                                            <input type="hidden" id='user_id' name="user_id" value=""/>
 
-                                                    <div class="form-group">
-                                                      <span for="newpass" class="col-md-12 hide control-span">@lang('auth.old_password')</span>
+                                                                            <div class="form-group">
+                                                                              <span for="newpass" class="col-md-12 hide control-span">@lang('auth.old_password')</span>
 
-                                                      <div class="col-md-12">
-                                                        <input id="oldpass" type="password" placeholder="@lang('auth.old_password')" class="form-control input-lg c-square" name="oldpass" required>
-                                                      </div>
-                                                    </div>
+                                                                              <div class="col-md-12">
+                                                                                <input id="oldpass" type="password" placeholder="@lang('auth.old_password')" class="form-control input-lg c-square" name="oldpass" required>
+                                                                              </div>
+                                                                            </div>
 
-                                                    <div class="form-group">
-                                                      <span for="newpass" class="col-md-12 hide control-span">@lang('auth.new_password')</span>
+                                                                            <div class="form-group">
+                                                                              <span for="newpass" class="col-md-12 hide control-span">@lang('auth.new_password')</span>
 
-                                                      <div class="col-md-12">
-                                                        <input id="newpass" type="password" placeholder="@lang('auth.new_password')" class="form-control input-lg c-square" name="newpass" required>
-                                                      </div>
-                                                    </div>
+                                                                              <div class="col-md-12">
+                                                                                <input id="newpass" type="password" placeholder="@lang('auth.new_password')" class="form-control input-lg c-square" name="newpass" required>
+                                                                              </div>
+                                                                            </div>
 
-                                                    <div class="form-group">
-                                                      <span for="cnewpass" class="col-md-12 hide control-span">@lang('auth.confirm_password')</span>
+                                                                            <div class="form-group">
+                                                                              <span for="cnewpass" class="col-md-12 hide control-span">@lang('auth.confirm_password')</span>
 
-                                                      <div class="col-md-12">
-                                                        <input id="cnewpass" placeholder="@lang('auth.signup.confirm_password_placeholder')" type="password" class="form-control input-lg c-square" name="cnewpass" required>
-                                                      </div>
-                                                    </div>
+                                                                              <div class="col-md-12">
+                                                                                <input id="cnewpass" placeholder="@lang('auth.signup.confirm_password_placeholder')" type="password" class="form-control input-lg c-square" name="cnewpass" required>
+                                                                              </div>
+                                                                            </div>
 
-                                                    <div class="form-group col-md-12">
-                                                      <input type="submit" class="btn btn-lg btn-primary pull-right" value="@lang('auth.reset_legend')"/>
-                                                    </div>
+                                                                            <div class="form-group col-md-12">
+                                                                              <input type="submit" class="btn btn-lg btn-primary pull-right" value="@lang('auth.reset_legend')"/>
+                                                                            </div>
 
-                                                  </form> -->
+                                                                          </form> -->
                     </div>
                     <!-- Send the payment of this ride({{ $ride->cost + $ride->charges }}XAF) through <br>
-                                                    <label class="text-center"> MTN Mobile Money number:</label> <label class="text-center"
-                                                        style='font-weight:bold;'>653 762 417</label><br>
-                                                    OR <br>
-                                                    <label class="text-center"> Orange Money:</label> <label class="text-center"
-                                                        style='font-weight:bold;'> 691 828 518</label><br>
-                                                    OR <br>
-                                                    <label class="text-center"> Express Union Money:</label> <label class="text-center"
-                                                        style='font-weight:bold;'>691 828 518</label><br>-->
+                                                                            <label class="text-center"> MTN Mobile Money number:</label> <label class="text-center"
+                                                                                style='font-weight:bold;'>653 762 417</label><br>
+                                                                            OR <br>
+                                                                            <label class="text-center"> Orange Money:</label> <label class="text-center"
+                                                                                style='font-weight:bold;'> 691 828 518</label><br>
+                                                                            OR <br>
+                                                                            <label class="text-center"> Express Union Money:</label> <label class="text-center"
+                                                                                style='font-weight:bold;'>691 828 518</label><br>-->
                     Please <a href="{{ route('login') }}"><b>sign in</b></a> or <a
                         href="{{ route('register') }}"><b>create an account</b></a> to book this ride.
                 </div>

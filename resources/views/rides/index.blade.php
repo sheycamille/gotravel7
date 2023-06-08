@@ -126,21 +126,22 @@
                     <div id="rides">
                         <ul class="list-unstyled">
                             @forelse($rides as $ride)
-
                                 <li class="card pa0 mb4">
                                     <a class="link-unstyled" href="{{ route('details-ride', $ride->id) }}">
                                         <div class="flex-sm">
+
                                             <div
                                                 class="pv4 ph3 ph4-sm flex-sm flex-column flex-grow flex-order-2 minw-0 bb bnb-sm br-sm b--gray-7 overflow-hidden">
                                                 <div class="mb2 flex flex-align-center">
                                                     <h3 class="mb0 f-base f3-sm">
                                                         On {{ $ride->getFullFormatedDate() }}
                                                     </h3>
-                                                    <div class="ml2 flex-grow flex-align-center tright">
+                                                    {{-- <div class="ml2 flex-grow flex-align-center tright">
                                                         <img class="w-20 w-24-sm h-20 h-24-sm ml1 ml2-sm" alt=""
                                                             title="" data-toggle="tooltip" data-placement="top"
-                                                            src="" data-original-title="">
-                                                    </div>
+                                                            src="{{ URL::to('assets/images') }}/1498105293-69-droppin-technologies-ltd.jpg"
+                                                            data-original-title="">
+                                                    </div> --}}
                                                 </div>
 
                                                 <div class="flex-sm flex-grow flex-column hidden-xs">
@@ -170,12 +171,13 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
 
                                             <div
                                                 class="pv2 ph3 pa0-sm flex flex-column-sm flex-align-center flex-order-3 bb bnb-sm b--gray-7 minw-135">
                                                 <div class="pa4-sm flex flex-align-center flex-1 flex-order-2-sm">
-                                                    <span title="" data-toggle="tooltip" data-placement="top"
+                                                    {{-- <span title="" data-toggle="tooltip" data-placement="top"
                                                         data-original-title="{{ $ride->noOfSeats }} seats were available">
                                                         @foreach (array_fill(0, $ride->passengers()->count(), 1) as $index)
                                                             <img alt="{{ $ride->num_of_seats }} seats taken"
@@ -188,8 +190,13 @@
                                                                 src="{{ URL::to('assets/images') }}/green-icon.svg">
                                                         @endforeach
 
-                                                    </span>
-                                                    {{ $ride->spacesLeft() }} Seats left of {{ $ride->num_of_seats }}
+                                                    </span> --}}
+                                                    @if ($ride->num_of_seats_left == 0)
+                                                        <span class="badge bg-success rounded">FULL</span>
+                                                    @else
+                                                        {{ $ride->num_of_seats_left }} Seats left of
+                                                        {{ $ride->num_of_seats }}
+                                                    @endif
                                                 </div>
 
                                                 <div
@@ -200,9 +207,15 @@
                                             <div
                                                 class="pv4 ph3 ph6-sm flex flex-column-sm flex-align-center flex-order-1 br-sm b--gray-7 minw-165 mw-11-sm">
                                                 <div class="mr3 mr0-sm relative">
-                                                    <img alt="{{ $ride->driver->username }}" class="avatar-image"
-                                                        src="{{ asset('uploads/avatars/' . $ride->driver->username) }}">
-                                                    {{-- <img alt="" class="avatar-image__superuser" src=""> --}}
+                                                    @if ($ride->driver->avatar)
+                                                        <img alt="{{ $ride->driver->username }}" class="avatar-image"
+                                                            src="{{ asset('uploads/avatars/' . $ride->driver->avatar) }}">
+                                                        {{-- <img alt="" class="avatar-image__superuser" src=""> --}}
+                                                    @else
+                                                        <img alt="{{ $ride->driver->username }}" class="avatar-image"
+                                                            src="{{ asset('assets/images/user_default.png') }}">
+                                                    @endif
+
                                                 </div>
                                                 <div class="mw-100% tcenter-sm">
                                                     <div class="flex flex-column-sm">
@@ -234,6 +247,8 @@
             </div>
         </div>
     </div>
+
+    {{-- {{ $rides->links() }} --}}
 
 @endsection
 
