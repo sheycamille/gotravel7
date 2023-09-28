@@ -259,9 +259,26 @@ hr {
 
 .pilot-img {
     border-radius: 50%;
-    width: 185px;
-    height: 185px;
+    width: auto;
+    height: 80px;
 }
+
+.momo {
+    width: 62px;
+    height: 72px;
+}
+
+.pay-text {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #eeeeee;
+    color: #777777;
+    display: inline-block;
+    padding: 8px 10px;
+}
+
+
 
 label {
     display: block;
@@ -280,3 +297,19 @@ label {
     break-before: always;
     margin: 0 0 1em 0;
 }
+
+@media only screen and (max-width: 600px) {
+    .ride-vehicle {
+        margin-bottom: 8vw;
+        width: 224px;
+        border-radius: 3px;
+    }
+
+    .pay-wrapper {
+        border: none !important;
+    }
+
+    .pay-button {
+        margin-bottom:8vw ;
+    }
+  }

@@ -10,7 +10,7 @@ return [
     'app' => env('MOMO_APP', 'Go Travelz'),
 
     // Momo API transaction currency code.
-    'currency' => env('MOMO_CURRENCY', 'XAF'),
+    'currency' => env('MOMO_CURRENCY', 'EUR'),
 
     /*
      * Target environment.

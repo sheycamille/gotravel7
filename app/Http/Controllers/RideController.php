@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\RidePassenger;
 use App\Models\User;
@@ -12,6 +13,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Carbon;
+
+use Bmatovu\MtnMomo\Products\Collection;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
 use Datatables;
 
@@ -92,7 +98,8 @@ class RideController extends Controller
             'start_time' => $start_time,
             'cost' => $cost,
             'driver_id' => $driver_id,
-            "num_of_seats" => $num_seats
+            "num_of_seats" => $num_seats,
+            "num_of_seats_left" => $num_seats
         );
 
         // $this->doValidate($data)->validate();
@@ -104,7 +111,7 @@ class RideController extends Controller
             return redirect()->route('mrides')->with('success', 'Ride Created succesfully');
         } else {
 
-            return redirect()->intended('profile/rides')->with('success', 'Ride successfully created');
+            return redirect()->route('get-all-rides')->with('success', 'Ride successfully created');
         }
     }
 
@@ -173,12 +180,65 @@ class RideController extends Controller
     }
 
 
+    public function momoRequestToPay(Request $request, $id)
+    {
+        $collection = new Collection();
+        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
+
+        $ride = Ride::find($id);
+        
+        $cost = $ride->cost;
+        $seats = $request->num_of_seats;
+        $momo = $request->momo_number;
+
+        $totalCost = $seats * $cost;
+
+        $referenceId = $collection->requestToPay($transactionId, $momo, $totalCost);
+
+        $journey = Momo::create([
+            'transaction_id' => $referenceId,
+            'user_id' => Auth::user()->id,
+            'ride_id' => $ride,
+            'phone_number' => $momo,
+            'amount' => $totalCost,
+            'status' => ''
+        ]);
+
+        if($journey){
+            return response()->json(['success' => true, 'message' => "You're about to make a payment of  $referenceId XAF to Travel Z, please dial *126# on your mobile phone to confirm this payment. Once done click "], 200);
+        }else{
+            return response()->json(['success' => false, 'message' => 'error'], 422);
+        }
+
+    }
+
+    public function getTransactionStatus(){
+
+        $collection = new Collection();
+        //$ride = Ride::find($id);
+    
+        $transId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
+
+        $refreid = $collection->getTransactionStatus($transId);
+
+        //return $this->join(Request $request, $id);
+
+        dd($refreid);
+    }
+
+
     public function join(Request $request, $id)
     {
+
         $ride = Ride::find($id);
-        $seats = $request->num_of_seats;
 
         if (!$ride) return redirect()->back()->with('message', 'Ride not found');
+
+        $cost = $ride->cost;
+        $seats = $request->num_of_seats;
+        $momo = $request->momoNumber;
+
+        $test = $seats * $cost;
 
         if ($ride->num_of_seats_left == null) {
 
