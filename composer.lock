@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a0ee67de0eb3e04dc6c7e635ab35af2",
+    "content-hash": "29184e8febb6726c2c638d7baf52e005",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -202,10 +202,6 @@
                 "oauth2",
                 "package"
             ],
-            "support": {
-                "issues": "https://github.com/mtvbrianking/oauth-negotiator/issues",
-                "source": "https://github.com/mtvbrianking/oauth-negotiator/tree/v2.1.0"
-            },
             "time": "2022-03-26T13:30:16+00:00"
         },
         {
