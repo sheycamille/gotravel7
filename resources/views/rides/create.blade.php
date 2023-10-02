@@ -20,6 +20,19 @@
                 @include('parts.options_sidebar')
 
                 <div class="col-sm-10">
+                    @if ($message = Session::get('success'))
+                        <div class="alert alert-success alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
+
+                    @if ($message = Session::get('message'))
+                        <div class="alert alert-info alert-block">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>{{ $message }}</strong>
+                        </div>
+                    @endif
 
                     <div class="col-md-6">
                         @if (\Session::get('transport') == 'goods')

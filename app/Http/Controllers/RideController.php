@@ -20,6 +20,7 @@ use Bmatovu\MtnMomo\Products\Collection;
 use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
 use Datatables;
+use Exception;
 
 class RideController extends Controller
 {
@@ -98,20 +99,20 @@ class RideController extends Controller
             'start_time' => $start_time,
             'cost' => $cost,
             'driver_id' => $driver_id,
-            "num_of_seats" => $num_seats,
-            "num_of_seats_left" => $num_seats
+            "num_of_seats" => $num_seats
         );
 
         // $this->doValidate($data)->validate();
 
         DB::table('rides')->insert($data);
+        $action = '<a class="m-1 btn btn-danger btn-sm text-nowrap" href="' . route("get-all-rides") . '">View Here</a>';
 
         if (Auth()->user()->type == 'administrator') {
 
             return redirect()->route('mrides')->with('success', 'Ride Created succesfully');
         } else {
 
-            return redirect()->route('get-all-rides')->with('success', 'Ride successfully created');
+            return redirect()->back()->with('success', ' Ride succesfully created ');
         }
     }
 
@@ -186,10 +187,12 @@ class RideController extends Controller
         $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
 
         $ride = Ride::find($id);
-        
+
         $cost = $ride->cost;
         $seats = $request->num_of_seats;
         $momo = $request->momo_number;
+
+        session(["ride_num_seats" => $request->input('num_of_seats')]);
 
         $totalCost = $seats * $cost;
 
@@ -201,64 +204,53 @@ class RideController extends Controller
             'ride_id' => $ride,
             'phone_number' => $momo,
             'amount' => $totalCost,
-            'status' => ''
+            'status' => 'pending',
+            'status_code' => 200
         ]);
 
-        if($journey){
-            return response()->json(['success' => true, 'message' => "You're about to make a payment of  $referenceId XAF to Travel Z, please dial *126# on your mobile phone to confirm this payment. Once done click "], 200);
-        }else{
-            return response()->json(['success' => false, 'message' => 'error'], 422);
-        }
+        return response()->json(['success' => true, 'message' => "You're about to make a payment of  $totalCost XAF to Travel Z, please dial *126# on your mobile phone to confirm this payment. Once done click "], 200);
 
+        //return response()->json(['success' => false, 'message' => 'Something went wrong, try again later.'], 422);
     }
 
-    public function getTransactionStatus(){
+    public function checkTransactionStatus($id)
+    {
 
         $collection = new Collection();
-        //$ride = Ride::find($id);
-    
+
+        $ride_id = Ride::find($id);
+
         $transId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
 
         $refreid = $collection->getTransactionStatus($transId);
 
-        //return $this->join(Request $request, $id);
-
-        dd($refreid);
+        return $this->join($ride_id, session("ride_num_seats"));
     }
 
 
-    public function join(Request $request, $id)
+    public function join($ride_id, $seats)
     {
+        //dd($ride_id, $seats);
 
-        $ride = Ride::find($id);
+        if ($ride_id->num_of_seats_left == null) {
 
-        if (!$ride) return redirect()->back()->with('message', 'Ride not found');
-
-        $cost = $ride->cost;
-        $seats = $request->num_of_seats;
-        $momo = $request->momoNumber;
-
-        $test = $seats * $cost;
-
-        if ($ride->num_of_seats_left == null) {
-
-            $num_of_seat = $ride->num_of_seats - $seats;
-            $ride->num_of_seats_left = $num_of_seat;
-            $ride->save();
+            $num_of_seat = $ride_id->num_of_seats - $seats;
+            $ride_id->num_of_seats_left = $num_of_seat;
+            $ride_id->save();
             //dd($ride);
         } else {
 
-            $seats_left = $ride->num_of_seats_left - $seats;
-            $ride->num_of_seats_left = $seats_left;
-            $ride->save();
+            $seats_left = $ride_id->num_of_seats_left - $seats;
+            $ride_id->num_of_seats_left = $seats_left;
+            $ride_id->save();
         }
 
         $journey = RidePassenger::create([
-            'ride_id' => $id,
+            'ride_id' => $ride_id,
             'passenger_id' => Auth::user()->id,
             'num_of_seats' => $seats,
             'status' => 'in_process',
-            'paid' => 'pending',
+            'paid' => 'completed',
             'type' => 'persons'
         ]);
 

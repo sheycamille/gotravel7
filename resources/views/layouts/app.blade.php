@@ -55,7 +55,7 @@
 
 </head>
 
-<body class="default " data-gr-c-s-loaded="true">
+<body class="default " data-gr-c-s-loaded="true" >
 
     @yield('content')
 
