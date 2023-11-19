@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\User;
-use Mail;
-use Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class ForgotPasswordController extends Controller
@@ -48,8 +48,8 @@ class ForgotPasswordController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users',
-            'password' => 'required|string|min:6|confirmed',
-            'password_confirm' => 'required|min:6'
+            'password' => 'required|string|min:6',
+            'password_confirm' => 'required|min:6|same:password'
         ]);
 
         $updatePassword = DB::table('password_reset_tokens')
