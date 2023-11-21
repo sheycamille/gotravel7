@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Validator;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 
 use App\Models\User;
 use App\Mail\API\VerifyEmail;
+use App\Http\Resources\UserResource;
 
 
 class AuthenticationController extends Controller
@@ -35,21 +34,18 @@ class AuthenticationController extends Controller
         }
 
         if (!auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-            //$user = Auth::user();
-            //$success['token'] =  $user->createToken('Gokamz')->accessToken;
-            //$expiration = $tokenData->token->expires_at->diffInSeconds(Carbon::now());
-            //return response()->json(['success' => $success], $this->successStatus);
+            return response()->json(['error' => 'User credentials not correct'], 401);
         }
 
         $tokenData = auth()->user()->createToken('Gokamz');
         $token = $tokenData->accessToken;
+        $user = User::where('email', $request->email)->first();
 
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            //'expires_in' => $expiration
-        ]);
+            'token' => $token,
+            'user' => new UserResource($user),
+            'message' => 'Login Successful',
+        ], 200);
     }
 
     public function loginGrant(Request $request)
@@ -80,11 +76,6 @@ class AuthenticationController extends Controller
         return response()->json($result);
     }
 
-    /** 
-     * Register api 
-     * 
-     * @return \Illuminate\Http\Response 
-     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -103,7 +94,7 @@ class AuthenticationController extends Controller
 
         $name = $request->first_name;
         $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
+        $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
 
         $code = random_int(100000, 999999);
