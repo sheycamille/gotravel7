@@ -34,6 +34,7 @@ class PasswordResetController extends Controller
                 ],404);
         }
 
+
         $code = random_int(100000, 999999);
         $user->update(['otp' => $code]);
         Mail::to($user->email)->send(new RequestPasswordReset($code));
