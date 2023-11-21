@@ -128,7 +128,7 @@ class AuthenticationController extends Controller
             return response()->json(['message' => $validator->errors()], 401);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where(['email' => $request->email])->first();
 
         if($user->otp !== $request->otp){
             return response()->json(['message' => 'Invalid Code'], 401);
