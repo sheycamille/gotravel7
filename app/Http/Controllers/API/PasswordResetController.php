@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 use App\Mail\API\RequestPasswordReset;
 
@@ -40,15 +40,13 @@ class PasswordResetController extends Controller
         Mail::to($email)->send(new RequestPasswordReset($code));
 
         return response()->json([
-            'message' => 'code generated successfuly!',
-            'code' => $code
+            'message' => 'Account verification code sent!',
         ]);
     }
 
     public function find(Request $request)
     {
-
-        $user = PasswordReset::where('code', $request->code)->first();
+        $user = PasswordReset::where('code', $request->email)->first();
 
         if (!$user)
             return response()->json([
@@ -63,7 +61,6 @@ class PasswordResetController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
-            'password_confirm' => 'required|min:6|same:password'
         ]);
 
         if ($validator->fails()) {
@@ -76,7 +73,7 @@ class PasswordResetController extends Controller
 
         if (!$user)
             return response()->json([
-                'message' => "We can't find a user with that e-mail address."
+                'message' => "User account not found"
             ], 404);
 
         User::where('email', $request->email)
@@ -85,7 +82,7 @@ class PasswordResetController extends Controller
         $password_reset->delete();
 
         return response()->json([
-            'message' => 'password has been reset successfully!',
+            'message' => 'password reset successfully!',
             'user' => $user,
         ]);
     }
