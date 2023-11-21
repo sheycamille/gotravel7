@@ -119,20 +119,31 @@ class AuthenticationController extends Controller
 
     public function emailVerify(Request $request)
     {
-        $validator = Validator::make($request->all(), ['otp' => 'required']);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'otp' => 'required'
+        ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json(['message' => $validator->errors()], 401);
         }
 
-        $user = User::where('otp', $request->otp)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if(!$user) 
-        return response()->json(['message' => 'Invalid Code'], 404);
-
-        $success['token'] =  $user->createToken('Gokamz')->accessToken;
-        $success['email'] = $user->email;
-        //$success['code'] =  $code;
-        return response()->json(['success' => $success], $this->successStatus);
+        if($user->otp !== $request->otp){
+            return response()->json(['message' => 'Invalid Code'], 401);
+        }
+        
+        $user->update(['otp' => '']);
+        $user->save();
+        $token =  $user->createToken('Gokamz')->accessToken;
+        
+        return response()->json([
+            'token' => $token,
+            'user' => new UserResource($user),
+            'message' => 'Registration Successful',
+            'status' => 'true'
+        ], 200);
+    
     }
 }
