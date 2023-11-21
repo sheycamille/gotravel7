@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 use App\Mail\API\VerifyEmail;
@@ -36,15 +37,15 @@ class AuthenticationController extends Controller
         if (!auth()->attempt($credentials)) {
             return response()->json(['error' => 'User credentials not correct'], 401);
         }
-
-        $tokenData = auth()->user()->createToken('Gokamz');
-        $token = $tokenData->accessToken;
+    
         $user = User::where('email', $request->email)->first();
+        $token = $user->createToken('Gokamz')->accessToken;
 
         return response()->json([
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Login Successful',
+            'status' => 'true'
         ], 200);
     }
 
@@ -79,31 +80,39 @@ class AuthenticationController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required', 'string', 'max:255',
-            'last_name' => 'required', 'string', 'max:255',
-            'username' => 'required', 'string', 'max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
             'phone_number' => 'required',
-            'email' => 'required', 'string', 'email', 'max:255', 'unique:users',
-            'password' => 'required', 'string', 'min:8',
-            'password_confirmation' => 'same:password',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json(['message' => $validator->errors()->first()], 401);
         }
 
         $name = $request->first_name;
-        $input = $request->all();
-        $input['password'] = Hash::make($input['password']);
-        $user = User::create($input);
+
+        $user = User::create([
+            'first_name'=> $request->first_name,
+            'last_name'=> $request->last_name,
+            'username'=> $request->username,
+            'phone_number' => $request->phone_number,
+            'email'=> $request->email,
+            'password'=> Hash::make($request->password),
+        ]);
 
         $code = random_int(100000, 999999);
 
-        user::where('email', $user->email)->update(['otp' => $code]);
+        User::where('email', $user->email)->update(['otp' => $code]);
 
         Mail::to($user->email)->send(new VerifyEmail($code, $name));
 
-        return response()->json($this->successStatus);
+        return response([
+            "message" => "Email verification sent",
+            "status" => "true",
+        ], 200);
 
     }
 
