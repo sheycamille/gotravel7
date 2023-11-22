@@ -15,17 +15,22 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('register', 'API\AuthenticationController@register');
-Route::post('login', 'API\AuthenticationController@login');
-Route::post('verify', 'API\AuthenticationController@emailVerify');
-Route::post('reset', 'API\PasswordResetController@create');
-Route::post('find', 'API\PasswordResetController@find');
-Route::post('reset', 'API\PasswordResetController@reset');
+Route::group(["prefix"=> "user"], function () {
+
+    Route::group(["prefix"=> "auth"], function () {
+        Route::post('register', 'API\AuthenticationController@register');
+        Route::post('login', 'API\AuthenticationController@login');
+        Route::post('verify', 'API\AuthenticationController@emailVerify');
+
+        Route::post('find-account', 'API\PasswordResetController@findAccount');
+        Route::post('reset-password', 'API\PasswordResetController@changePassword');
+    });
+
+});
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
 //Route::post('login_grant', 'API\AuthenticationController@loginGrant');
    
 Route::middleware('auth:api')->group( function () {
