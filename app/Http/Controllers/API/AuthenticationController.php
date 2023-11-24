@@ -51,10 +51,11 @@ class AuthenticationController extends Controller
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'username' => 'required|string|max:255',
+            'verifiedWith' => 'required|string',
             // 'phone_number' => 'sometimes|required_without:email|string|max:255|unique:users',
             // 'email' => 'sometimes|required_without:phone_number|string|email|max:255|unique:users',
-            'phone_number' => 'sometimes|required_without:email|string|max:255',
-            'email' => 'sometimes|required_without:phone_number|string|email|max:255',
+            'phone' => 'sometimes|required_without:email|nullable|max:255',
+            'email' => 'sometimes|required_without:phone|nullable|email|max:255',
             'password' => 'required|string|min:8',
         ]);
 
@@ -68,24 +69,37 @@ class AuthenticationController extends Controller
             'first_name'=> $request->firstname,
             'last_name'=> $request->lastname,
             'username'=> $request->username,
-            'phone_number' => $request->phone_number,
+            'phone_number' => $request->phone,
             'email'=> $request->email,
             'password'=> Hash::make($request->password),
         ]);
 
         $code = random_int(100000, 999999);
-        if(isset($request->email) && $request->email != '') {
-            User::where('phone_number', $user->phone)->update(['otp' => $code]);
-            Mail::to($user->email)->send(new VerifyEmail($code, $name));
-            return response([
-                "message" => "Email verification sent",
-                "status" => true,
-            ], 200);
+
+        if($request->verifiedWith == 'email'){
+            if(isset($request->email) && $request->email != '') {
+                User::where('phone_number', $user->phone)->update(['otp' => $code]);
+                Mail::to($user->email)->send(new VerifyEmail($code, $name));
+                return response([
+                    "message" => "Email verification sent",
+                    "status" => true,
+                ], 200);
+            }else{
+                return response([
+                    'message' => 'Something happened, try again'
+                ], 500);
+            }
         }else{
+
+            $token =  $user->createToken('Gokamz')->accessToken;
             return response([
-                'message' => 'Something happened, try again'
-            ], 500);
+                'token' => $token,
+                'user' => new UserResource($user),
+                'message' => 'Registration Successful',
+                'status' => 'true'
+            ], 200);
         }
+        
 
         
 
@@ -141,6 +155,8 @@ class AuthenticationController extends Controller
         ], 200);
 
     }
+
+
 
     
 }
