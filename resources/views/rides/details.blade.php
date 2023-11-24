@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card mx-auto  mt-3 p-0">
-                                        <img src="{{ URL::to('assets/images') }}/momo-logo.webp" class="momo">
+
                                         <div class="pay-card-body">
                                             <p class="text-muted">Select seats</p>
                                             <div class="numbr mb-3">
@@ -78,23 +78,33 @@
                                                     @endif
                                                 </select>
                                             </div>
-                                            <p class="text-muted">Momo number</p>
+                                            <p class="text-muted">Select payment method</p>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="optradio" checked><img
+                                                    src="{{ URL::to('assets/images') }}/momo-logo.webp" class="momo">
+                                            </label>
+                                            <label class="radio-inline om">
+                                                <input type="radio" name="optradio"><img
+                                                    src="{{ URL::to('assets/images') }}/orange-money-logo-8F2AED308D-seeklogo.com.png"
+                                                    class="orange-moni">
+                                            </label>
+                                            <p class="text-muted">Phone number</p>
                                             <div class="numbr mb-3">
-                                                <input type="text" class="form-control" name="momo_number"
-                                                    placeholder="enter momo number ">
+                                                <input type="text" class="form-control" name="momo_number" required
+                                                    placeholder="enter transaction number ">
                                             </div>
                                         </div>
-                                        @if(auth()->check())
-                                        <div class="footer pay-footer text-center p-0">
-                                            <div class="col">
-                                                <button type="submit" class="pay-btn" id="proceed">Proceed To
-                                                    Payment</button>
+                                        @if (auth()->check())
+                                            <div class="footer pay-footer text-center p-0">
+                                                <div class="col">
+                                                    <button type="submit" class="pay-btn" id="proceed">Proceed To
+                                                        Payment</button>
+                                                </div>
                                             </div>
-                                        </div>
                                         @else
-                                        <h6>You need to <a href="{{ route('login') }}"><b>sign in</b></a> or <a
-                                            href="{{ route('register') }}"><b>create an account</b></a> to book
-                                        this ride.</h6>
+                                            <h6>You need to <a href="{{ route('login') }}"><b>sign in</b></a> or <a
+                                                    href="{{ route('register') }}"><b>create an account</b></a> to book
+                                                this ride.</h6>
                                         @endif
                                     </div>
                                 </div>
@@ -339,7 +349,7 @@
                         '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
                         '<strong><i class="glyphicon glyphicon-ok-sign push-5-r"></</strong> ' +
                         response.message +
-                        '<a href="{{ route('trans-status', $ride->id) }}">HERE</a>' +
+                        '<a class="verify-pay" href="{{ route('trans-status', $ride->id) }}">Payment Verified</a>' +
                         '</div>';
 
                     $(messages).html(successHtml);

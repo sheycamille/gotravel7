@@ -19,22 +19,22 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'first_name' => $this->faker->firstName(),
-            'last_name' => $this->faker->lastName(),
-            'email' => $this->faker->email(),
-            'email_verified_at' => $this->faker->dateTime(),
-            'username' => $this->faker->userName(),
-            'password' => Hash::make('Secret'),
-            'phone_number' => $this->faker->phoneNumber(),
-            'nic' => '11111',
-            'primary_address' => $this->faker->address(),
-            'dob' => $this->faker->date(),
-            'gender' => $this->faker->randomElement(['M', 'F']),
-            'points' => $this->faker->randomNumber(),
-            'language' => $this->faker->languageCode(),
-            'status' => $this->faker->randomElement([0, 1]),
-            'avatar' => $this->faker->imageUrl(),
-            'type' => $this->faker->randomElement(['driver', 'passenger', 'administrator']),
+            // 'first_name' => $this->faker->firstName(),
+            // 'last_name' => $this->faker->lastName(),
+            // 'email' => $this->faker->email(),
+            // 'email_verified_at' => $this->faker->dateTime(),
+            // 'username' => $this->faker->userName(),
+            // 'password' => Hash::make('Secret'),
+            // 'phone_number' => $this->faker->phoneNumber(),
+            // 'nic' => '11111',
+            // 'primary_address' => $this->faker->address(),
+            // 'dob' => $this->faker->date(),
+            // 'gender' => $this->faker->randomElement(['M', 'F']),
+            // 'points' => $this->faker->randomNumber(),
+            // 'language' => $this->faker->languageCode(),
+            // 'status' => $this->faker->randomElement([0, 1]),
+            // 'avatar' => $this->faker->imageUrl(),
+            // 'type' => $this->faker->randomElement(['driver', 'passenger', 'administrator']),
         ];
     }
 

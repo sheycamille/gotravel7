@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('max');
             $table->enum('status', [0, 1])->default(0);
             $table->longText('logo')->nullable();
-            $table->string('view');
+            $table->string('view')->nullable();;
             $table->timestamps();
             $table->softDeletes();
         });
