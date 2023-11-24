@@ -269,6 +269,11 @@ hr {
     height: 72px;
 }
 
+.orange-moni {
+    width: 62px;
+    height: 72px;
+}
+
 .pay-text {
     font-size: 11px;
     font-weight: 700;
@@ -358,6 +363,18 @@ label {
     
 }
 
+.verify-pay {
+    cursor: pointer;
+    border: none;
+    background-color: green;
+    height: 54px;
+    width: auto;
+    color: #ffff !important;
+    font-size: 1.2em;
+    padding: 6px 10px;
+    /* margin-top: 13px !important; */
+}
+
 
 .fa-lock {
     margin-right: 10px;
@@ -384,5 +401,9 @@ label {
 
     .seats {
         width: 55%;
+    }
+
+    .om {
+        margin-left: 0 !important;
     }
 }

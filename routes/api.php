@@ -30,11 +30,15 @@ Route::group(["prefix"=> "user"], function () {
 
 });
 
+//Route::get('ride-details/{id}', 'API\RideController@details');
+
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-//Route::post('login_grant', 'API\AuthenticationController@loginGrant');
    
 Route::middleware('auth:api')->group( function () {
-    //Route::resource('products', 'API\ProductController');
+    Route::get('/ride-details/{id}', 'API\RideController@details');
+    Route::post('/logout', 'API\AuthenticationController@logout');
 });

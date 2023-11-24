@@ -188,6 +188,8 @@ class RideController extends Controller
 
         $ride = Ride::find($id);
 
+        $name = Auth::user()->username;
+
         $cost = $ride->cost;
         $seats = $request->num_of_seats;
         $momo = $request->momo_number;
@@ -208,7 +210,7 @@ class RideController extends Controller
             'status_code' => 200
         ]);
 
-        return response()->json(['success' => true, 'message' => "You're about to make a payment of  $totalCost XAF to Travel Z, please dial *126# on your mobile phone to confirm this payment. Once done click "], 200);
+        return response()->json(['success' => true, 'message' => " Hello, $name. You're about to make a payment of  $totalCost XAF to Travel Z. please be patient while we process the payment. Once you verify the payment, click on: "], 200);
 
         //return response()->json(['success' => false, 'message' => 'Something went wrong, try again later.'], 422);
     }
