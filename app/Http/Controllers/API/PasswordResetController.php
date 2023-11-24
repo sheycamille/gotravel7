@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 use App\Mail\API\RequestPasswordReset;
-
-use App\Models\API\PasswordReset;
 use App\Models\User;
 
 class PasswordResetController extends Controller

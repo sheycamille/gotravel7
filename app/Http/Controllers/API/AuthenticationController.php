@@ -16,16 +16,11 @@ use App\Http\Resources\UserResource;
 
 class AuthenticationController extends Controller
 {
-    public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
-     */
+
     public function login(Request $request)
     {
-        $credentials = $request->only(['email', 'password']);
-        $validator = Validator::make($credentials, [
+
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required'
         ]);
@@ -34,14 +29,14 @@ class AuthenticationController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        if (!auth()->attempt($credentials)) {
+        if (!auth()->attempt($request->all())) {
             return response()->json(['error' => 'User credentials not correct'], 401);
         }
     
         $user = User::where('email', $request->email)->first();
         $token = $user->createToken('Gokamz')->accessToken;
 
-        return response()->json([
+        return response([
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Login Successful',
@@ -49,42 +44,17 @@ class AuthenticationController extends Controller
         ], 200);
     }
 
-    public function loginGrant(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        //$baseUrl = url('/');
-        $response = Http::post("http://127.0.0.1:8000/api/oauth/token", [
-            'username' => $request->email,
-            'password' => $request->password,
-            'client_id' => config('passport.password_grant_client.id'),
-            'client_secret' => config('passport.password_grant_client.secret'),
-            'grant_type' => 'password',
-            'scope' => '',
-        ]);
-
-        $result = json_decode($response->getBody(), true);
-        if (!$response->ok()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        return response()->json($result);
-    }
-
     public function register(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             'username' => 'required|string|max:255',
-            'phone_number' => 'required',
-            'email' => 'required|string|email|max:255|unique:users',
+            // 'phone_number' => 'sometimes|required_without:email|string|max:255|unique:users',
+            // 'email' => 'sometimes|required_without:phone_number|string|email|max:255|unique:users',
+            'phone_number' => 'sometimes|required_without:email|string|max:255',
+            'email' => 'sometimes|required_without:phone_number|string|email|max:255',
             'password' => 'required|string|min:8',
         ]);
 
@@ -95,8 +65,8 @@ class AuthenticationController extends Controller
         $name = $request->first_name;
 
         $user = User::create([
-            'first_name'=> $request->first_name,
-            'last_name'=> $request->last_name,
+            'first_name'=> $request->firstname,
+            'last_name'=> $request->lastname,
             'username'=> $request->username,
             'phone_number' => $request->phone_number,
             'email'=> $request->email,
@@ -104,15 +74,20 @@ class AuthenticationController extends Controller
         ]);
 
         $code = random_int(100000, 999999);
+        if(isset($request->email) && $request->email != '') {
+            User::where('phone_number', $user->phone)->update(['otp' => $code]);
+            Mail::to($user->email)->send(new VerifyEmail($code, $name));
+            return response([
+                "message" => "Email verification sent",
+                "status" => true,
+            ], 200);
+        }else{
+            return response([
+                'message' => 'Something happened, try again'
+            ], 500);
+        }
 
-        User::where('email', $user->email)->update(['otp' => $code]);
-
-        Mail::to($user->email)->send(new VerifyEmail($code, $name));
-
-        return response([
-            "message" => "Email verification sent",
-            "status" => "true",
-        ], 200);
+        
 
     }
 
@@ -138,7 +113,7 @@ class AuthenticationController extends Controller
         $user->save();
         $token =  $user->createToken('Gokamz')->accessToken;
         
-        return response()->json([
+        return response([
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Registration Successful',
@@ -146,4 +121,26 @@ class AuthenticationController extends Controller
         ], 200);
     
     }
+
+    public function resendOtp(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], 401);
+        }
+
+        $code = random_int(100000, 999999);
+        $user = User::where('email', $request->phone)->update(['otp' => $code]);
+        Mail::to($user->email)->send(new VerifyEmail($code, $user->first_name));
+
+        return response([
+            'message' => 'Otp code sent',
+            'status' => true
+        ], 200);
+
+    }
+
+    
 }
