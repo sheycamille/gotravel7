@@ -88,6 +88,18 @@ class AuthenticationController extends Controller
         ]);
 
         $code = random_int(100000, 999999);
+        if(isset($request->email) && $request->email != '') {
+            User::where('phone_number', $user->phone)->update(['otp' => $code]);
+            Mail::to($user->email)->send(new VerifyEmail($code, $name));
+            return response([
+                "message" => "Email verification sent",
+                "status" => true,
+            ], 200);
+        }else{
+            return response([
+                'message' => 'Something happened, try again'
+            ], 500);
+        }
 
         if($request->verifiedWith == 'email'){
             if(isset($request->email) && $request->email != '') {
@@ -175,8 +187,6 @@ class AuthenticationController extends Controller
         ], 200);
 
     }
-
-
 
     
 }
