@@ -17,14 +17,18 @@ class PasswordResetController extends Controller
 {
     public function findAccount(Request $request){
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'nullable',
+            'phone' => 'nullable',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()], 401);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+                    ->orWhere('phone_number', $request->phone)
+                    ->first();
+
         if(!isset($user)){
             return response()->json([
                 'message'=> 'User account not found'
@@ -33,7 +37,7 @@ class PasswordResetController extends Controller
 
         $code = random_int(100000, 999999);
         $user->update(['otp' => $code]);
-        Mail::to($request->email)->send(new RequestPasswordReset($code));
+        Mail::to($user->email)->send(new RequestPasswordReset($code));
 
         return response([
             'user'=> $user,
@@ -44,8 +48,10 @@ class PasswordResetController extends Controller
     }
 
     public function changePassword(Request $request){
+        
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'nullable',
+            'phone' => 'nullable',
             'password' => 'required'
         ]);
 
@@ -53,9 +59,15 @@ class PasswordResetController extends Controller
             return response()->json(['message' => $validator->errors()], 401);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+                    ->orWhere('phone_number', $request->phone)
+                    ->first();
+
+        info([$request->phone, $request->email ]);
+
         $user->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'otp' => ''
         ]);
 
         return response([

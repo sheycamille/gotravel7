@@ -52,10 +52,8 @@ class AuthenticationController extends Controller
             'lastname' => 'required|string|max:255',
             'username' => 'required|string|max:255',
             'verifiedWith' => 'required|string',
-            // 'phone_number' => 'sometimes|required_without:email|string|max:255|unique:users',
-            // 'email' => 'sometimes|required_without:phone_number|string|email|max:255|unique:users',
-            'phone' => 'sometimes|required_without:email|nullable|max:255',
-            'email' => 'sometimes|required_without:phone|nullable|email|max:255',
+            'phone' => 'sometimes|required_without:email|string|max:255|unique:users',
+            'email' => 'sometimes|required_without:phone|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 

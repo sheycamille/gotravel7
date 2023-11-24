@@ -18,13 +18,14 @@ use Illuminate\Support\Facades\Route;
 Route::group(["prefix"=> "user"], function () {
 
     Route::group(["prefix"=> "auth"], function () {
+
         Route::post('register', 'API\AuthenticationController@register');
         Route::post('login', 'API\AuthenticationController@login');
         Route::post('verify', 'API\AuthenticationController@emailVerify');
         Route::post('otp/resend', 'API\AuthenticationController@resendOtp');
-
         Route::post('find-account', 'API\PasswordResetController@findAccount');
         Route::post('reset-password', 'API\PasswordResetController@changePassword');
+        
     });
 
 });
