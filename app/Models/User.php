@@ -22,7 +22,7 @@ class User extends Authenticatable
     const GENDER_FEMALE = 'female';
 
     protected $fillable = [
-        'first_name', 'last_name', 'username', 'name', 'email', 'email_verified_at', 'password', 'phone_number', 'type', 'nic', 'primary_address', 'dob', 'language', 'status', 'points', 'avatar', 'gender',
+        'first_name', 'last_name', 'username', 'name', 'email', 'email_verified_at', 'password', 'phone_number', 'type', 'nic', 'primary_address', 'dob', 'language', 'status', 'points', 'avatar', 'gender', 'otp'
     ];
 
     protected $hidden = [

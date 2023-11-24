@@ -98,10 +98,7 @@ class AuthenticationController extends Controller
                 'message' => 'Registration Successful',
                 'status' => 'true'
             ], 200);
-        }
-        
-
-        
+        }    
 
     }
 
@@ -146,7 +143,10 @@ class AuthenticationController extends Controller
         }
 
         $code = random_int(100000, 999999);
-        $user = User::where('email', $request->phone)->update(['otp' => $code]);
+        $user = User::where('email', $request->email)->first();
+        info($user);
+        $user->update(['otp' => $code]);
+        $user->save();
         Mail::to($user->email)->send(new VerifyEmail($code, $user->first_name));
 
         return response([
