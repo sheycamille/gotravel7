@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
+use Hash;
 
 use App\Models\User;
 use App\Mail\API\VerifyEmail;
@@ -105,6 +106,13 @@ class AuthenticationController extends Controller
 
         return response()->json($this->successStatus);
 
+    }
+
+    public function logout (Request $request) {
+        $token = $request->user()->token();
+        $token->revoke();
+        $response = ['message' => 'You have been successfully logged out!'];
+        return response($response, $this->successStatus);
     }
 
 
