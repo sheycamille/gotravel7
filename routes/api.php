@@ -15,14 +15,24 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('/register', 'API\AuthenticationController@register');
-Route::post('/login', 'API\AuthenticationController@login');
+Route::group(["prefix"=> "user"], function () {
 
-Route::post('verify', 'API\AuthenticationController@emailVerify');
+    Route::group(["prefix"=> "auth"], function () {
 
-Route::post('reset', 'API\PasswordResetController@create');
-Route::post('find', 'API\PasswordResetController@find');
-Route::post('reset', 'API\PasswordResetController@reset');
+        Route::post('register', 'API\AuthenticationController@register');
+        Route::post('login', 'API\AuthenticationController@login');
+        Route::post('verify', 'API\AuthenticationController@emailVerify');
+        Route::post('otp/resend', 'API\AuthenticationController@resendOtp');
+        Route::post('find-account', 'API\PasswordResetController@findAccount');
+        Route::post('reset-password', 'API\PasswordResetController@changePassword');
+        
+    });
+
+});
+
+//Route::get('ride-details/{id}', 'API\RideController@details');
+
+
 
 //Route::get('ride-details/{id}', 'API\RideController@details');
 
