@@ -48,7 +48,7 @@ class PasswordResetController extends Controller
     }
 
     public function changePassword(Request $request){
-        
+
         $validator = Validator::make($request->all(), [
             'email' => 'nullable',
             'phone' => 'nullable',
@@ -62,8 +62,6 @@ class PasswordResetController extends Controller
         $user = User::where('email', $request->email)
                     ->orWhere('phone_number', $request->phone)
                     ->first();
-
-        info([$request->phone, $request->email ]);
 
         $user->update([
             'password' => Hash::make($request->password),

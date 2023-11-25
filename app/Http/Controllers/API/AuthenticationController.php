@@ -21,19 +21,34 @@ class AuthenticationController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'input' => 'nullable',
             'password' => 'required'
         ]);
 
+
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json(['message' => $validator->errors()->first()], 401);
         }
 
         if (!auth()->attempt($request->all())) {
             return response()->json(['error' => 'User credentials not correct'], 401);
         }
     
-        $user = User::where('email', $request->email)->first();
+        $user = User::where(['email' => $request->input])
+                    ->orWhere(['phone_number' => $request->input])
+                    ->first();
+
+        // $user = User::where(function ($query) use ($request) {
+        //     if ($request->email) {
+        //         $query->where('email', $request->email);
+        //     }
+        //     if ($request->phone) {
+        //         $query->orWhere('phone_number', $request->phone);
+        //     }
+        // })->first();
+        
+
+
         $token = $user->createToken('Gokamz')->accessToken;
 
         return response([
