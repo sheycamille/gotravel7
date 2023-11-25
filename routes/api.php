@@ -34,6 +34,10 @@ Route::group(["prefix"=> "user"], function () {
 
 
 
+//Route::get('ride-details/{id}', 'API\RideController@details');
+
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
