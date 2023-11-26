@@ -41,7 +41,6 @@ class AuthenticationController extends Controller
         info("came out");
     
         $user = User::where('phone_number', $request->phone)->first();
-
         $token = $user->createToken('Gokamz')->accessToken;
 
         return response([
