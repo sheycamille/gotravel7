@@ -21,34 +21,26 @@ class AuthenticationController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'input' => 'nullable',
-            'password' => 'required'
+            'phone' => 'required|string',
+            'password' => 'required|string'
         ]);
 
-
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()->first()], 401);
+            return response(['message' => $validator->errors()->first()], 400);
         }
 
-        if (!auth()->attempt($request->all())) {
-            return response()->json(['error' => 'User credentials not correct'], 401);
+        info("entered attempt");
+
+        if (!(auth()->attempt(['phone_number' => $request->phone, 'password' => $request->password]))) {
+            return response([
+                'message' => "User phone or password not correct",
+                'userData' => $request->all()
+            ], 401);
         }
+
+        info("came out");
     
-        $user = User::where(['email' => $request->input])
-                    ->orWhere(['phone_number' => $request->input])
-                    ->first();
-
-        // $user = User::where(function ($query) use ($request) {
-        //     if ($request->email) {
-        //         $query->where('email', $request->email);
-        //     }
-        //     if ($request->phone) {
-        //         $query->orWhere('phone_number', $request->phone);
-        //     }
-        // })->first();
-        
-
-
+        $user = User::where('phone_number', $request->phone)->first();
         $token = $user->createToken('Gokamz')->accessToken;
 
         return response([
@@ -57,6 +49,7 @@ class AuthenticationController extends Controller
             'message' => 'Login Successful',
             'status' => 'true'
         ], 200);
+
     }
 
     public function register(Request $request)
@@ -127,12 +120,12 @@ class AuthenticationController extends Controller
 
     }
 
-    // public function logout (Request $request) {
-    //     $token = $request->user()->token();
-    //     $token->revoke();
-    //     $response = ['message' => 'You have been successfully logged out!'];
-    //     return response($response, $this->successStatus);
-    // }
+    public function logout (Request $request) {
+        $token = $request->user()->token();
+        $token->revoke();
+        $response = ['message' => 'You have been successfully logged out!'];
+        return response($response);
+    }
 
 
     public function emailVerify(Request $request)
