@@ -33,10 +33,10 @@ class AuthenticationController extends Controller
         if (!auth()->attempt($request->all())) {
             return response()->json(['error' => 'User credentials not correct'], 401);
         }
-    
+
         $user = User::where(['email' => $request->input])
-                    ->orWhere(['phone_number' => $request->input])
-                    ->first();
+            ->orWhere(['phone_number' => $request->input])
+            ->first();
 
         // $user = User::where(function ($query) use ($request) {
         //     if ($request->email) {
@@ -46,7 +46,7 @@ class AuthenticationController extends Controller
         //         $query->orWhere('phone_number', $request->phone);
         //     }
         // })->first();
-        
+
 
 
         $token = $user->createToken('Gokamz')->accessToken;
@@ -79,42 +79,42 @@ class AuthenticationController extends Controller
         $name = $request->first_name;
 
         $user = User::create([
-            'first_name'=> $request->firstname,
-            'last_name'=> $request->lastname,
-            'username'=> $request->username,
+            'first_name' => $request->firstname,
+            'last_name' => $request->lastname,
+            'username' => $request->username,
             'phone_number' => $request->phone,
-            'email'=> $request->email,
-            'password'=> Hash::make($request->password),
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
         $code = random_int(100000, 999999);
-        if(isset($request->email) && $request->email != '') {
+        if (isset($request->email) && $request->email != '') {
             User::where('phone_number', $user->phone)->update(['otp' => $code]);
             Mail::to($user->email)->send(new VerifyEmail($code, $name));
             return response([
                 "message" => "Email verification sent",
                 "status" => true,
             ], 200);
-        }else{
+        } else {
             return response([
                 'message' => 'Something happened, try again'
             ], 500);
         }
 
-        if($request->verifiedWith == 'email'){
-            if(isset($request->email) && $request->email != '') {
+        if ($request->verifiedWith == 'email') {
+            if (isset($request->email) && $request->email != '') {
                 User::where('phone_number', $user->phone)->update(['otp' => $code]);
                 Mail::to($user->email)->send(new VerifyEmail($code, $name));
                 return response([
                     "message" => "Email verification sent",
                     "status" => true,
                 ], 200);
-            }else{
+            } else {
                 return response([
                     'message' => 'Something happened, try again'
                 ], 500);
             }
-        }else{
+        } else {
 
             $token =  $user->createToken('Gokamz')->accessToken;
             return response([
@@ -123,8 +123,7 @@ class AuthenticationController extends Controller
                 'message' => 'Registration Successful',
                 'status' => 'true'
             ], 200);
-        }    
-
+        }
     }
 
     // public function logout (Request $request) {
@@ -148,24 +147,24 @@ class AuthenticationController extends Controller
 
         $user = User::where(['email' => $request->email])->first();
 
-        if($user->otp !== $request->otp){
+        if ($user->otp !== $request->otp) {
             return response()->json(['message' => 'Invalid Code'], 401);
         }
-        
+
         $user->update(['otp' => '']);
         $user->save();
         $token =  $user->createToken('Gokamz')->accessToken;
-        
+
         return response([
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Registration Successful',
             'status' => 'true'
         ], 200);
-    
     }
 
-    public function resendOtp(Request $request){
+    public function resendOtp(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
         ]);
@@ -185,8 +184,5 @@ class AuthenticationController extends Controller
             'message' => 'Otp code sent',
             'status' => true
         ], 200);
-
     }
-
-    
 }

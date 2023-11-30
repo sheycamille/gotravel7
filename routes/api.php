@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::group(["prefix"=> "user"], function () {
+Route::group(["prefix" => "user"], function () {
 
-    Route::group(["prefix"=> "auth"], function () {
+    Route::group(["prefix" => "auth"], function () {
 
         Route::post('register', 'API\AuthenticationController@register');
         Route::post('login', 'API\AuthenticationController@login');
@@ -25,24 +25,14 @@ Route::group(["prefix"=> "user"], function () {
         Route::post('otp/resend', 'API\AuthenticationController@resendOtp');
         Route::post('find-account', 'API\PasswordResetController@findAccount');
         Route::post('reset-password', 'API\PasswordResetController@changePassword');
-        
     });
-
 });
 
-//Route::get('ride-details/{id}', 'API\RideController@details');
+Route::middleware('auth:api')->group(function () {
+    Route::post('create-ride', 'API\RideController@create');
+    Route::get('ride-details/{id}', 'API\RideController@rideDetails');
 
+    Route::get('get-user', 'API\UserController@getUser');
 
-
-//Route::get('ride-details/{id}', 'API\RideController@details');
-
-
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-   
-Route::middleware('auth:api')->group( function () {
-    Route::get('/ride-details/{id}', 'API\RideController@details');
-    Route::post('/logout', 'API\AuthenticationController@logout');
+    //Route::post('logout', 'API\AuthenticationController@logout');
 });
