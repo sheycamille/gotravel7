@@ -233,9 +233,9 @@ class UserController extends Controller
             ->get();
 
         $recent_trips = Ride::join('ride_passengers', 'rides.id', '=', 'ride_passengers.ride_id')
-        ->where('ride_passengers.passenger_id', '=', $user_id)
-        ->where('ride_passengers.status', '=', 'ended')
-        ->take(3)->get();
+            ->where('ride_passengers.passenger_id', '=', $user_id)
+            ->where('ride_passengers.status', '=', 'ended')
+            ->take(3)->get();
 
         return view('user.dashboard')->with(array(
             'rides' => $rides,

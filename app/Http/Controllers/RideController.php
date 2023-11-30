@@ -81,30 +81,54 @@ class RideController extends Controller
         $this->doValidate($data)->validate();
 
         $ride = Ride::create($data);*/
+        $request->validate([
+            'pickup_location' => 'required|string',
+            'departure' => 'required|string',
+            'destination' => 'required|string',
+            'start_day' => 'required|string',
+            'start_time' => 'required|string',
+            'car_img' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'number_plate' => 'required|string',
+            'cost' => 'required|min:1',
+            'noOfSeats' => 'min:1',
+            'comments' => 'string',
+        ]);
 
-        $pickup_location = $request->input('pickup_location');
-        $departure = $request->input('departure');
-        $destination = $request->input('destination');
-        $start_day = $request->input('start_day');
-        $start_time = $request->input('start_time');
-        $cost = $request->input('cost', '');
-        $driver_id = Auth::user()->id;
-        $num_seats = $request->input('noOfSeats');
+        $images = [];
+
+        if ($request->hasfile('car_img')) {
+            foreach ($request->car_img as $img) {
+                $imageName = time() . rand(1, 99) . '.' . $img->getClientOriginalName();
+                $img->move(public_path('uploads/images'), $imageName);
+                $images[] = $imageName;
+            }
+        }
+
+        //$fileName = time() . '.' . $request->car_img->();
+        //$fileName = $request->car_img->getClientOriginalName();
+        //$request->car_img->storeAs('public/images', $fileName);
+        //$fileName = time() . '.' . $request->car_img->getClientOriginalName();
+        //$request->car_img->storeAs('public/images', $fileName);
 
         $data = array(
-            'pickup_location' => $pickup_location,
-            "departure" => $departure,
-            "destination" => $destination,
-            "start_day" => $start_day,
-            'start_time' => $start_time,
-            'cost' => $cost,
-            'driver_id' => $driver_id,
-            "num_of_seats" => $num_seats
+            'pickup_location' => $request->input('pickup_location'),
+            "departure" => $request->input('departure'),
+            "destination" => $request->input('destination'),
+            "start_day" => $request->input('start_day'),
+            'start_time' => $request->input('start_time'),
+            'cost' => $request->input('cost'),
+            'driver_id' => auth()->user()->id,
+            "num_of_seats" => $request->input('noOfSeats'),
+            'carImages' => json_encode($images),
+            'carNumberPlate' => $request->input('number_plate'),
+            'comments' => $request->comments,
         );
 
         // $this->doValidate($data)->validate();
 
         DB::table('rides')->insert($data);
+
         $action = '<a class="m-1 btn btn-danger btn-sm text-nowrap" href="' . route("get-all-rides") . '">View Here</a>';
 
         if (Auth()->user()->type == 'administrator') {
