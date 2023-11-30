@@ -41,6 +41,7 @@ class AuthenticationController extends Controller
         info("came out");
     
         $user = User::where('phone_number', $request->phone)->first();
+
         $token = $user->createToken('Gokamz')->accessToken;
 
         return response([
@@ -90,7 +91,7 @@ class AuthenticationController extends Controller
                 "message" => "Email verification sent",
                 "status" => true,
             ], 200);
-        }else{
+        } else {
             return response([
                 'message' => 'Something happened, try again'
             ], 500);
@@ -104,12 +105,12 @@ class AuthenticationController extends Controller
                     "message" => "Email verification sent",
                     "status" => true,
                 ], 200);
-            }else{
+            } else {
                 return response([
                     'message' => 'Something happened, try again'
                 ], 500);
             }
-        }else{
+        } else {
 
             $token =  $user->createToken('Gokamz')->accessToken;
             return response([
@@ -118,8 +119,7 @@ class AuthenticationController extends Controller
                 'message' => 'Registration Successful',
                 'status' => 'true'
             ], 200);
-        }    
-
+        }
     }
 
     public function logout (Request $request) {
@@ -143,24 +143,24 @@ class AuthenticationController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if($user->otp !== $request->otp){
+        if ($user->otp !== $request->otp) {
             return response()->json(['message' => 'Invalid Code'], 401);
         }
-        
+
         $user->update(['otp' => '']);
         $user->save();
         $token =  $user->createToken('Gokamz')->accessToken;
-        
+
         return response([
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Registration Successful',
             'status' => 'true'
         ], 200);
-    
     }
 
-    public function resendOtp(Request $request){
+    public function resendOtp(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
         ]);
@@ -180,8 +180,5 @@ class AuthenticationController extends Controller
             'message' => 'Otp code sent',
             'status' => true
         ], 200);
-
     }
-
-    
 }
