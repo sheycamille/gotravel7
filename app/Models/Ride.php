@@ -132,4 +132,9 @@ class Ride extends Model
     {
         return $this->hasMany(Images::class, 'owner_id');
     }
+
+    public function RouteDirection()
+    {
+        return $this->hasOne( RouteDirection::class);
+    }
 }

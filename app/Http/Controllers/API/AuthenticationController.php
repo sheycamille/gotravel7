@@ -16,6 +16,7 @@ use App\Http\Resources\UserResource;
 
 class AuthenticationController extends Controller
 {
+    
 
     public function login(Request $request)
     {
