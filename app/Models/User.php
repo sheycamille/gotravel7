@@ -78,4 +78,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Vehicle::class, 'owner_id');
     }
+
+  
+
 }

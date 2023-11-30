@@ -114,4 +114,9 @@ class Ride extends Model
     {
         $this->attributes['start_day'] = date_format(date_create($value), 'd-m-Y');
     }
+
+    public function RouteDirection()
+    {
+        return $this->hasOne( RouteDirection::class);
+    }
 }
