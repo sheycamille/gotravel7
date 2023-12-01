@@ -18,5 +18,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('ride-details/{id}', 'API\RideController@rideDetails');
 
     Route::get('get-user', 'API\UserController@getUser');
+
+    //Route::post('logout', 'API\AuthenticationController@logout');
 });
 
