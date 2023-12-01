@@ -70,6 +70,7 @@ class RideController extends Controller
 
     public function getRides()
     {
+        
     }
 
     public function rideDetails(Request $request, $id)
