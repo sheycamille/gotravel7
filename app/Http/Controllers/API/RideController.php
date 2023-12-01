@@ -8,12 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
-
 
 use Bmatovu\MtnMomo\Products\Collection;
 use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
@@ -30,11 +28,14 @@ use App\Models\Vehicle;
 use Exception;
 use Throwable;
 
+
 class RideController extends Controller
 {
 
     public function create(Request $request)
     {
+
+        info($request->all());
 
         $validator = Validator::make($request->all(), [
             'pickupLocation' => 'required|string',
@@ -90,6 +91,7 @@ class RideController extends Controller
             'message' => 'Ride created successfully',
             'status' => true,
         ], 200);
+
     }
 
     public function getRidesNextTwoDays()
@@ -323,6 +325,7 @@ class RideController extends Controller
             'routes' => $ride_directions,
         ], 200);
     }
+
 
 }
 
