@@ -3,48 +3,35 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Ride;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
             $table->integer('driver_id');
-            $table->integer('vehicle_id')->nullable();
-            $table->string('pickup_location');
-            $table->integer('num_of_seats');
-            $table->integer('num_of_seats_left')->nullable()->default(null);
-            $table->enum('type', ['persons', 'goods']);
-            $table->enum('status', ['in_process', 'started', 'ended'])->default('in_process');
+            $table->string('pickupLocation');
+            $table->integer('availableSeats');
+            $table->enum('typeOfContent', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
+            $table->enum('status', [ Ride::RIDE_STATUS_PROGRESS, Ride::RIDE_STATUS_STARTED, Ride::RIDE_STATUS_ENDED])->default(Ride::RIDE_STATUS_PROGRESS);
             $table->string('departure');
             $table->string('destination');
-            $table->string('start_day');
-            $table->string('start_time');
+            $table->string('departureDay');
+            $table->string('departureTime');
             $table->longText('comments')->nullable();
-            $table->double('cost');
-            $table->double('charges')->nullable();
-            $table->double('total_cost')->nullable();
-            $table->json('carImages');
-            //$table->string('carBrand');
+            $table->double('pricePerSeat');
+            $table->string('carModel');
             $table->string('carNumberPlate');
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('rides');
     }
+    
 };

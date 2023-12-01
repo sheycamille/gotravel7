@@ -14,11 +14,20 @@ Route::group(["prefix" => "auth"], function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    Route::post('create-ride', 'API\RideController@create');
-    Route::get('ride-details/{id}', 'API\RideController@rideDetails');
 
-    Route::get('get-user', 'API\UserController@getUser');
 
-    //Route::post('logout', 'API\AuthenticationController@logout');
+    Route::group(['prefix' => 'user'], function(){
+        Route::get('get-user', 'API\UserController@getUser');
+    });
+
+    Route::group(['prefix' => 'ride'], function(){
+        Route::post('create', 'API\RideController@create');
+        Route::get('rides', 'API\RideController@getRides');
+        Route::get('details/{id}', 'API\RideController@rideDetails');
+        Route::post('cancel/{id}', 'API\RideController@cancelRide');
+        Route::post('book/{id}', 'API\RideController@bookRide');
+    });
+
+    
 });
 
