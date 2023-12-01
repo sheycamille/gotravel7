@@ -13,6 +13,7 @@ class Images extends Model
         'owner_id',
         'url'
     ];
+    
 
     public function ride()
     {
