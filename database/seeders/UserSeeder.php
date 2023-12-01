@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@gokamz.com',
             'username' => 'admin',
             'phone_number'=> '673572533',
-            'password' => Hash::make('test12345'),
+            'password' => Hash::make('password'),
             'primary_address' => 'SouthWest,buea',
             'status' => '0',
             'type' => 'administrator',

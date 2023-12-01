@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Ride;
@@ -69,6 +70,7 @@ class RideController extends Controller
 
     public function getRides()
     {
+        
     }
 
     public function rideDetails(Request $request, $id)
