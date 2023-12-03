@@ -32,8 +32,6 @@ class RideController extends Controller
     public function create(Request $request)
     {
 
-        info($request->all());
-
         $validator = Validator::make($request->all(), [
             'pickupLocation' => 'required|string',
             'departure' => 'required|string',
@@ -83,6 +81,7 @@ class RideController extends Controller
                 ]);
             }
         }
+        
 
         return response([
             'message' => "Ride created successfully",

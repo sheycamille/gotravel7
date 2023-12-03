@@ -140,4 +140,8 @@ class Ride extends Model
     }
 
    
+    public function images()
+    {
+        return $this->hasMany(Images::class, 'owner_id');
+    }
 }
