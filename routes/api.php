@@ -22,13 +22,22 @@ Route::middleware('auth:api')->group(function () {
 
     Route::group(['prefix' => 'ride'], function(){
         Route::post('create', 'API\RideController@create');
-        Route::get('rides', 'API\RideController@getRides');
+        Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
+        Route::get('rides-later', 'API\RideController@getRidesLater');
+        Route::post('delete', 'API\RideController@deleteRide');
         Route::get('details/{id}', 'API\RideController@rideDetails');
         Route::post('cancel/{id}', 'API\RideController@cancelRide');
         Route::post('book/{id}', 'API\RideController@bookRide');
 
         Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');
         Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
+
+    });
+
+    Route::group(['prefix' => 'booking'], function(){
+        Route::post('book', 'API\BookingController@bookRide');
+        Route::get('get-bookings', 'API\BookingController@getBookings');
+        Route::post('cancel', 'API\BookingController@cancelBooking');
     });
 
     
