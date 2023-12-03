@@ -56,7 +56,7 @@ class Ride extends Model
 
     public function spacesLeft()
     {
-        return $this->num_of_seats - $this->passengers()->count();
+        return $this->availableSeats - $this->passengers()->count();
     }
 
     public function getFullDate()
@@ -126,5 +126,10 @@ class Ride extends Model
 
     public function getRouteDirection(){
         return $this->departure . ' - ' . $this->destination;
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Images::class, 'owner_id');
     }
 }

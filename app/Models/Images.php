@@ -13,4 +13,11 @@ class Images extends Model
         'owner_id',
         'url'
     ];
+
+    public function ride()
+    {
+        return $this->belongsTo(Ride::class, 'owner_id');
+    }
+    
 }
+

@@ -10,81 +10,14 @@ use Illuminate\Support\Str;
 
 use App\Models\Ride;
 use App\Models\Images;
+use App\Models\Booking;
 
 class RideController extends Controller
 {
 
-    // public $successStatus = 200;
-    // public function create(Request $request)
-    // {
-
-    //     $validator = Validator::make($request->all(), [
-    //         'pickup_location' => 'required|string',
-    //         'departure' => 'required|string',
-    //         'destination' => 'required|string',
-    //         'start_day' => 'required|string',
-    //         'start_time' => 'required|string',
-    //         'car_img' => 'required',
-    //         'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //         'number_plate' => 'required|string',
-    //         'cost' => 'required|min:1',
-    //         'noOfSeats' => 'min:1',
-    //         'comments' => 'string'
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 401);
-    //     }
-
-    //     $images = [];
-
-    //     if ($request->hasfile('car_img')) {
-    //         foreach ($request->car_img as $img) {
-    //             $imageName = time() . rand(1, 99) . '.' . $img->getClientOriginalName();
-    //             $img->move(public_path('uploads/images'), $imageName);
-    //             $images[] = $imageName;
-    //         }
-    //     }
-
-    //     $data = array(
-    //         'pickup_location' => $request->input('pickup_location'),
-    //         "departure" => $request->input('departure'),
-    //         "destination" => $request->input('destination'),
-    //         "start_day" => $request->input('start_day'),
-    //         'start_time' => $request->input('start_time'),
-    //         'cost' => $request->input('cost'),
-    //         'driver_id' => auth()->user()->id,
-    //         "num_of_seats" => $request->input('noOfSeats'),
-    //         'carImages' => json_encode($images),
-    //         'carNumberPlate' => $request->input('number_plate'),
-    //         'comments' => $request->comments
-    //     );
-
-    //     // $this->doValidate($data)->validate();
-
-    //     DB::table('rides')->insert($data);
-
-    //     return response()->json([$data], $this->successStatus);
-    // }
-    // public function getRides()
-    // {  
-    // }
-    // public function rideDetails(Request $request, $id)
-    // {
-
-    //     $ride = Ride::find($id);
-
-    //     //$vehicle = new Vehicle();
-
-    //     if (!$ride) return response()->json(['error' => 'ride not found.'], 400);
-
-    //     return response()->json(['details' => $ride], $this->successStatus);
-    // }
 
     public function create(Request $request)
     {
-
-        info($request->all());
 
         $validator = Validator::make($request->all(), [
             'pickupLocation' => 'required|string',
@@ -93,7 +26,7 @@ class RideController extends Controller
             'departureDay' => 'required|string',
             'departureTime' => 'required|string',
             'carModel' => 'required|string',
-            'carImages.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'carImages' => 'required|array',
             'carNumberPlate' => 'required|nullable',
             'pricePerSeat' => 'required|min:1',
             'availableSeats' => 'required|string|min:1',
@@ -102,7 +35,7 @@ class RideController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()], 401);
+            return response(['message' => $validator->errors()], 401);
         }
 
         $ride = Ride::create([
@@ -122,16 +55,20 @@ class RideController extends Controller
         
         ]);
 
-        if(!empty($request->images) ) {
-            foreach ($request->carImages as $image) {
-                $file_name = (string)Str::uuid()->toString() . time() . '.png';
+
+        if ($request->hasFile('carImages')) {
+            $images = $request->file('carImages');
+            foreach ($images as $image) {
+                $file_name = (string) Str::uuid()->toString() . time() . '.png';
                 $path = Storage::putFileAs('ride_images', $image, $file_name);
+        
                 Images::create([
                     'owner_id' => $ride->id,
                     'url' => $path,
                 ]);
             }
         }
+        
 
         return response([
             'message' => "Ride created successfully",
@@ -140,20 +77,47 @@ class RideController extends Controller
 
     }
 
-    public function getRides()
+    public function getRidesNextTwoDays()
     {
+        $rides = Ride::whereDate('departureDay', '>=', now()->format('Y-m-d'))
+                     ->whereDate('departureDay', '<=', now()->addDays(2)->format('Y-m-d'))
+                     ->get();
+        return response([
+            'rides' => $rides,
+            'status' => true,
+        ], 200);
+
+    }
+    public function getRidesLater()
+    {
+        $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('Y-m-d'))
+                ->get();
+
+        return response([
+            'rides' => $rides,
+            'status' => true,
+        ], 200);
 
     }
 
-    public function bookRide(){
+    public function deleteRide(Request $request){
+        $validator = Validator::make($request->all(), [
+            'rideId' => 'required|string',
+        ]);
 
-    }
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()], 401);
+        }
 
-    public function cancelRide(){
+        $ride = Ride::where('id', $request->rideId)
+                    ->where('driver_id', auth()->user()->id)
+                    ->first();
+        $ride->delete();
 
-    }
-
-    public function deleteRide(){
+        return response([
+            "message" => "Ride deleted successfully",
+            "status" => true
+        ]);
 
     }
 

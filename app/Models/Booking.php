@@ -4,22 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RidePassenger extends Model
+class Booking extends Model
 {
     use HasFactory;
-    use SoftDeletes;
-
 
     protected $fillable = [
-        'ride_id', 'passenger_id', 'type', 'paid', 'status', 'num_of_seats'
+        "ride_id",
+        "passenger_id",
+        "fee_paid",
+        "payment_method",
+        "status",
     ];
-
-    protected $dates = ['deleted_at'];
 
     public function ride()
     {
         return $this->belongsTo(Ride::class);
     }
+
+    public function passenger()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    
+
 }
