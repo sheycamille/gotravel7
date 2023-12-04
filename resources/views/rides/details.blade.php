@@ -80,17 +80,17 @@
                                             </div>
                                             <p class="text-muted">Select payment method</p>
                                             <label class="radio-inline">
-                                                <input type="radio" name="optradio" checked><img
+                                                <input type="radio" name="pay-method" checked><img
                                                     src="{{ URL::to('assets/images') }}/momo-logo.webp" class="momo">
                                             </label>
                                             <label class="radio-inline om">
-                                                <input type="radio" name="optradio"><img
+                                                <input type="radio" name="pay-method"><img
                                                     src="{{ URL::to('assets/images') }}/orange-money-logo-8F2AED308D-seeklogo.com.png"
                                                     class="orange-moni">
                                             </label>
                                             <p class="text-muted">Phone number</p>
                                             <div class="numbr mb-3">
-                                                <input type="text" class="form-control" name="momo_number" required
+                                                <input type="text" class="form-control" name="momo_number" 
                                                     placeholder="enter transaction number ">
                                             </div>
                                         </div>
@@ -355,8 +355,22 @@
                     $(messages).html(successHtml);
                 },
 
-                error: function(response) {
-                    alert('Something went wrong, please try again later.');
+                error: function(response, xhr) {
+                    //alert('Something went wrong, please try again later.');
+
+                    var status = response.status;
+                    //console.log(status);
+
+                    var messages = $('.messages');
+
+                    var erroMessage = '<div class="alert alert-danger">' +
+                        '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                        '<strong><i class="glyphicon glyphicon-ok-sign push-5-r"></</strong> ' +'Something went wrong, try again!' +
+                        '</div>';
+
+                    $(messages).html(erroMessage);
+
+                    console.log(status);
                 },
                 complete: function(response) {
                     $("#proceed").prop('disabled', false).html('Proceed to payment');

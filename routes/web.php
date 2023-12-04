@@ -100,7 +100,7 @@ Route::group(['prefix' => 'rides'], function () {
     Route::post('/update/{id}', 'RideController@update')->name('update-ride');
     //Route::post('/update/{id}', 'RideController@update')->name('update-ride');
     Route::post('/delete/{id}', 'RideController@delete')->name('delete-ride');
-    Route::post('/paymentRequest/{id}', 'RideController@momoRequestToPay')->name('request-to-pay');
+    Route::post('/request-to-pay/{id}', 'RideController@momoRequestToPay')->name('request-to-pay');
     Route::get('/join/', 'RideController@join')->name('join');
     Route::get('/checkTransactionStatus/{id}', 'RideController@checkTransactionStatus')->name('trans-status');
     Route::get('/cancelbooking{id}', 'RideController@cancelBooking')->name('cancel-booking');
