@@ -32,6 +32,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');
         Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
 
+        Route::post('search/{type?}', 'API\RideController@search');
+
     });
 
     Route::group(['prefix' => 'booking'], function(){
