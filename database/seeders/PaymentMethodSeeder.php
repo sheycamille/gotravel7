@@ -18,7 +18,7 @@ class PaymentMethodSeeder extends Seeder
     {
         //mobile money
         DB::table('payment_methods')->insert([
-            'name' => 'mobile money',
+            'name' => 'MOMO',
             'logo' => '',
             'min' => '1000',
             'max' => '20000',
@@ -30,7 +30,7 @@ class PaymentMethodSeeder extends Seeder
 
         //orange money
         DB::table('payment_methods')->insert([
-            'name' => 'orange money',
+            'name' => 'O_MONEY',
             'logo' => '',
             'min' => '1000',
             'max' => '20000',

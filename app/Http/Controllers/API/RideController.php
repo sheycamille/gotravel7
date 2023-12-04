@@ -8,8 +8,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use Bmatovu\MtnMomo\Products\Collection;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+
 use App\Models\Ride;
 use App\Models\Vehicle;
+use App\Models\Momo;
+use Exception;
+use GuzzleHttp\Exception\RequestException;
+use Throwable;
 
 class RideController extends Controller
 {
@@ -70,7 +77,6 @@ class RideController extends Controller
 
     public function getRides()
     {
-        
     }
 
     public function rideDetails(Request $request, $id)
@@ -84,4 +90,82 @@ class RideController extends Controller
 
         return response()->json(['details' => $ride], $this->successStatus);
     }
+
+    public function momoRequestToPay(Request $request, $id)
+    {
+        $collection = new Collection();
+        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
+
+        $ride = Ride::find($id);
+
+        $name = Auth::user()->username;
+
+        $cost = $ride->cost;
+        $seats = $request->num_of_seats;
+        $momo = $request->momo_number;
+
+        session(["ride_num_seats" => $request->input('num_of_seats')]);
+
+        $totalCost = $seats * $cost;
+
+        try {
+            $referenceId = $collection->requestToPay($transactionId, $momo, $totalCost);
+
+            $journey = Momo::create([
+                'transaction_id' => $referenceId,
+                'user_id' => Auth::user()->id,
+                'ride_id' => $ride,
+                'phone_number' => $momo,
+                'amount' => $totalCost,
+                'status' => 'pending',
+                'status_code' => 200
+            ]);
+
+            return response()->json([
+                'payer' => $request->all(),
+                'message' => 'Request to pay successful!',
+                'status' => 'true',
+                'journey' => $journey
+            ], 200);
+
+        } catch (CollectionRequestException $e) {
+            return response()->json([
+                'payer' => $request->all(),
+                'message' => $e->getMessage(),
+                'status' => 'false',
+
+            ], 400);
+        }
+
+    }
+
+    public function checkTransactionStatus($id)
+    {
+
+        $collection = new Collection();
+
+        $ride_id = Ride::find($id);
+
+        $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first(); 
+
+        try {
+            $refreid = $collection->getTransactionStatus($transactionId);
+
+            return response()->json([
+                'message' => 'success',
+                'status' => 'true',
+                'requestToPayResult' => $refreid
+
+            ], 200);
+
+        } catch (RequestException $ex) {
+            return response()->json([
+                'message' => 'Unable to get transaction status',
+                'status' => 'false',
+
+            ], 400);
+        }
+
+    }
+
 }

@@ -16,9 +16,11 @@ Route::group(["prefix" => "auth"], function () {
 Route::middleware('auth:api')->group(function () {
     Route::post('create-ride', 'API\RideController@create');
     Route::get('ride-details/{id}', 'API\RideController@rideDetails');
+    Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');
+    Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
 
     Route::get('get-user', 'API\UserController@getUser');
 
-    //Route::post('logout', 'API\AuthenticationController@logout');
+    Route::post('logout', 'API\AuthenticationController@logout');
 });
 
