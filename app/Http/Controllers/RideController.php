@@ -253,9 +253,9 @@ class RideController extends Controller
 
         $refreid = $collection->getTransactionStatus($transId);
 
-        //return response()->json($refreid);
+        return response()->json($refreid);
 
-        return $this->join($ride_id, session("ride_num_seats"));
+        //return $this->join($ride_id, session("ride_num_seats"));
     }
 
 
