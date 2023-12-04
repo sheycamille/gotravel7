@@ -17,7 +17,6 @@ Route::group(["prefix" => "auth"], function () {
 
 
 Route::middleware('auth:api')->group(function () {
-
     Route::group(['prefix' => 'user'], function(){
         Route::get('get-user', 'API\UserController@getUser');
     });
