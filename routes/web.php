@@ -24,42 +24,31 @@ use Illuminate\Support\Facades\Route;
 });*/
 
 Route::get('/', 'FrontController@welcome')->name('welcome');
-
 Route::get('/terms', 'FrontController@terms')->name('terms');
-
 Route::get('/faqs', 'FrontController@faqs')->name('faqs');
-
 Route::get('/about', 'FrontController@about')->name('about');
-
 Route::get('/sitemap', 'FrontController@sitemap')->name('sitemap');
-
 Route::get('/rides/persons', 'RideController@getAllRides')->name('get_all_rides');
-
 Route::get('/support', 'FrontController@support')->name('support');
-
 Route::get('/popular/routes', 'FrontController@popular_routes')->name('popular-routes');
-
 Route::get('/switch/language/{lang}', 'FrontController@switch_language')->name('switch-language');
-
 Route::get('/switch/transport/{type}', 'FrontController@switch_transport_type')->name('switch-transport-type');
-
 Route::get('/forget-password', 'ForgotPasswordController@ForgetPasswordForm')->name('forget.password');
-
 Route::post('/forget-password', 'ForgotPasswordController@submitForgetPasswordForm')->name('forget.password.post');
-
 Route::get('/reset-password/{token}', 'ForgotPasswordController@showResetPasswordForm')->name('reset.password.get');
-
 Route::post('/reset-password', 'ForgotPasswordController@submitResetPasswordForm')->name('reset.password.post');
 
 
+
+Route::middleware('auth')->group(function() {    
 //management routes starts here
 Route::group(['prefix' => 'admin'],function(){
     Route::get('/home', 'AdminController@dashboard')->name('dash-home');
-    Route::get('/users/list', 'AdminController@getUsers')->name('fetchusers');
-    Route::get('/drivers/list', 'UserController@driversList')->name('get-drivers');
-    Route::get('/passengers/list', 'UserController@passengersList')->name('get-passengers');
-    Route::get('/rides/list', 'AdminController@ridelist')->name('mrides'); // yajra ridelist
-    Route::get('/vehicle/list', 'VehicleController@vehiclesList')->name('fetchvehicles');
+    Route::get('/users-list', 'AdminController@getUsers')->name('fetchusers');
+    Route::get('/drivers-list', 'UserController@driversList')->name('get-drivers');
+    Route::get('/passengers-list', 'UserController@passengersList')->name('get-passengers');
+    Route::get('/rides-list', 'AdminController@ridelist')->name('mrides'); // yajra ridelist
+    Route::get('/vehicle-list', 'VehicleController@vehiclesList')->name('fetchvehicles');
     Route::get('/update-profile', 'AdminController@profileEdit')->name('editprofile');
     Route::post('/profile-update', 'AdminController@profileUpdate')->name('update-p');
     Route::get('/user/block/{id}', 'AdminController@uBlock')->name('blockuser');
@@ -82,7 +71,7 @@ Route::group(['prefix' => 'user'], function (){
     Route::get('/dashboard', 'UserController@dashboard')->name('user.dashboard');
     Route::get('/edit', 'UserController@edit')->name('edit-profile');
     Route::post('/update', 'UserController@update')->name('update-profile');
-    Route::post('/reset/password', 'UserController@resetPassword')->name('reset_password');
+    Route::post('/reset-password', 'UserController@resetPassword')->name('reset_password');
     Route::get('/rides', 'UserController@rides')->name('my-rides');
     Route::get('/journeys', 'UserController@journeys')->name('my-journeys');
     Route::get('/vehicles', 'UserController@vehicles')->name('my-vehicles');
@@ -90,7 +79,7 @@ Route::group(['prefix' => 'user'], function (){
 });
 
 //everything about rides management starts here
-Route::group(['prefix' => 'rides'], function () {
+Route::group(['prefix' => 'ride'], function () {
     Route::get('/', 'RideController@store')->name('store-rides');
     //Route::get('/', 'RideController::class,'search')->name('rides');
     Route::get('/create/{type?}', 'RideController@create')->name('create-ride');
@@ -102,8 +91,10 @@ Route::group(['prefix' => 'rides'], function () {
     Route::post('/delete/{id}', 'RideController@delete')->name('delete-ride');
     Route::post('/request-to-pay/{id}', 'RideController@momoRequestToPay')->name('request-to-pay');
     Route::get('/join/', 'RideController@join')->name('join');
-    Route::get('/checkTransactionStatus/{id}', 'RideController@checkTransactionStatus')->name('trans-status');
-    Route::get('/cancelbooking{id}', 'RideController@cancelBooking')->name('cancel-booking');
+    Route::get('/check-transaction-status/{id}', 'RideController@checkTransactionStatus')->name('trans-status');
+    Route::get('/cancel-booking{id}', 'RideController@cancelBooking')->name('cancel-booking');
+});
+
 });
 
 //rides routes that don't need auth
