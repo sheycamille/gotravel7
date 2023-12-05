@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -85,25 +86,10 @@ class RideController extends Controller
             }
         }
 
-        $data = array(
-            'pickup_location' => $request->input('pickup_location'),
-            "departure" => $request->input('departure'),
-            "destination" => $request->input('destination'),
-            "start_day" => $request->input('start_day'),
-            'start_time' => $request->input('start_time'),
-            'cost' => $request->input('cost'),
-            'driver_id' => auth()->user()->id,
-            "num_of_seats" => $request->input('noOfSeats'),
-            'carImages' => json_encode($images),
-            'carNumberPlate' => $request->input('number_plate'),
-            'comments' => $request->comments
-        );
-
-        // $this->doValidate($data)->validate();
-
-        DB::table('rides')->insert($data);
-
-        return response()->json([$data], 200);
+        return response()->json([
+            'message' => 'Ride created successfully',
+            'status' => true,
+        ], 200);
     }
 
     public function getRidesNextTwoDays()
@@ -169,6 +155,8 @@ class RideController extends Controller
 
         //session(["pay_method" => $request->input('pay_method')]);
 
+        session(["pay_method" => $request->input('pay_method')]);
+
         $totalCost = $seats * $cost;
 
 
@@ -199,7 +187,6 @@ class RideController extends Controller
 
             ], 400);
         }
-
     }
 
     public function checkTransactionStatus($id)
@@ -231,11 +218,7 @@ class RideController extends Controller
                 'requestToPayResult' => $refreid
             ], 200);
 
-            return [$response, $join_ride];
-            
-            /*if (in_array('SUCCESSFUL', array_values($arr))) {  
-            } else {   
-            }*/
+            return [$join_ride, $response];
         } catch (RequestException $ex) {
             return response()->json([
                 'message' => 'Unable to get transaction status',
@@ -340,5 +323,6 @@ class RideController extends Controller
             'routes' => $ride_directions,
         ], 200);
     }
+
 }
 
