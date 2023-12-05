@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -13,7 +12,14 @@ Route::group(["prefix" => "auth"], function () {
     Route::post('reset-password', 'API\PasswordResetController@changePassword');
 });
 
+Route::group(['prefix' => 'ride'], function () {
+
+    Route::post('search/{type?}', 'API\RideController@search');
+
+});
+
 Route::middleware('auth:api')->group(function () {
+
     Route::post('create-ride', 'API\RideController@create');
     Route::get('ride-details/{id}', 'API\RideController@rideDetails');
     Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');

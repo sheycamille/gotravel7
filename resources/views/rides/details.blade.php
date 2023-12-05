@@ -80,11 +80,11 @@
                                             </div>
                                             <p class="text-muted">Select payment method</p>
                                             <label class="radio-inline">
-                                                <input type="radio" name="pay-method" checked><img
+                                                <input type="radio" name="pay_method" value="1" checked><img
                                                     src="{{ URL::to('assets/images') }}/momo-logo.webp" class="momo">
                                             </label>
                                             <label class="radio-inline om">
-                                                <input type="radio" name="pay-method"><img
+                                                <input type="radio" name="pay_method" value="2"><img
                                                     src="{{ URL::to('assets/images') }}/orange-money-logo-8F2AED308D-seeklogo.com.png"
                                                     class="orange-moni">
                                             </label>
