@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string',
+            'email' => 'required|string',
             'password' => 'required|string'
         ]);
 
@@ -31,7 +31,7 @@ class AuthenticationController extends Controller
 
         info("entered attempt");
 
-        if (!(auth()->attempt(['phone_number' => $request->phone, 'password' => $request->password]))) {
+        if (!(auth()->attempt(['email' => $request->email, 'password' => $request->password]))) {
             return response([
                 'message' => "User phone or password not correct",
                 'userData' => $request->all()
@@ -40,7 +40,7 @@ class AuthenticationController extends Controller
 
         info("came out");
     
-        $user = User::where('phone_number', $request->phone)->first();
+        $user = User::where('email', $request->email)->first();
         $token = $user->createToken('Gokamz')->accessToken;
 
         return response([
