@@ -55,8 +55,6 @@ class AuthenticationController extends Controller
     public function register(Request $request)
     {
 
-        info($request->all());
-
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
