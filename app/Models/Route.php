@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RouteDirection extends Model
+class Route extends Model
 {
     use HasFactory;
 
@@ -13,9 +13,12 @@ class RouteDirection extends Model
         "to",
         "from",
         "status",
-        "distance"
-    ];
+        "distance",
+        "created_at",
+        "updated_at",
+        ];
 
+        
     public function Ride()
     {
         return $this->hasOne(Ride::class);

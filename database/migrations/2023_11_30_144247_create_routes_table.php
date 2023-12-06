@@ -13,12 +13,12 @@ return new class extends Migration
     // "distance"
     public function up(): void
     {
-        Schema::create('route_directions', function (Blueprint $table) {
+        Schema::create('routes', function (Blueprint $table) {
             $table->id();
             $table->string("to");
             $table->string("from");
-            $table->enum('status', ["active", 'suspended']);
-            $table->string("distance");
+            $table->enum('status', ["active", "suspended"])->default("äctive");
+            $table->string("distance")->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('route_directions');
+        Schema::dropIfExists('routes');
     }
 };

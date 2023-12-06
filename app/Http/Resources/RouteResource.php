@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RouteDirectionResource extends JsonResource
+class RouteResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,6 +19,8 @@ class RouteDirectionResource extends JsonResource
             'from' =>$this->from,
             'status' =>$this->status,
             'distance' => $this->distance,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
        // return parent::toArray($request);
     }
