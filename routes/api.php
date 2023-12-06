@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Ride;
+use App\Models\RouteDirection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,3 +48,5 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/ride-details/{id}', 'API\RideController@details');
     Route::post('/logout', 'API\AuthenticationController@logout');
 });
+
+Route::get('/routes', 'RideController@getRoutes');

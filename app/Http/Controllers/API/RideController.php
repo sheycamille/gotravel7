@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RouteResource;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Ride;
+use App\Models\Route;
 use App\Models\Vehicle;
 
 class RideController extends Controller
@@ -64,5 +66,9 @@ class RideController extends Controller
     
     }
 
+    public function getRoutes(Request $request)
+    {
+        return RouteResource::collection(Route::withStatus('active')->get());
+    }
     
 }
