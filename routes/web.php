@@ -42,7 +42,7 @@ Route::post('/reset-password', 'ForgotPasswordController@submitResetPasswordForm
 
 Route::middleware('auth')->group(function() {    
 //management routes starts here
-Route::group(['prefix' => 'admin'],function(){
+Route::group(['prefix' => 'admin', 'middleware' => ['guest'],],function(){
     Route::get('/home', 'AdminController@dashboard')->name('dash-home');
     Route::get('/users-list', 'AdminController@getUsers')->name('fetchusers');
     Route::get('/drivers-list', 'UserController@driversList')->name('get-drivers');

@@ -21,10 +21,12 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                $user = Auth::user();
+                if ($user->type == 'passenger' || $user->type == 'driver') {
+                    return redirect()->route('user.dashboard');
+                }
             }
         }
-
         return $next($request);
     }
 }
