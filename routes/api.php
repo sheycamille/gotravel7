@@ -21,6 +21,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::group(['prefix' => 'ride'], function(){
+
         Route::post('create', 'API\RideController@create');
         Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
         Route::get('rides-later', 'API\RideController@getRidesLater');
@@ -36,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
 
     });
 
+    
     Route::group(['prefix' => 'booking'], function(){
         Route::post('book', 'API\BookingController@bookRide');
         Route::get('get-bookings', 'API\BookingController@getBookings');

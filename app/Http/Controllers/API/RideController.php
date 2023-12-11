@@ -141,34 +141,35 @@ class RideController extends Controller
     public function momoRequestToPay(Request $request, $rideId)
 
     {
+
+        $validator = Validator::make($request->all(), [
+            'phoneNumber' => 'required|string',
+            'payMethod' => 'required|string',
+            'numOfSeats' => 'required|string',
+            'rideId' => 'required|string',
+            'pricePerSeat' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()], 401);
+        }
+        
         $collection = new Collection();
         $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
 
-        $ride = Ride::find($rideId);
-
-        $name = auth()->user()->username;
-
-        $cost = $ride->cost;
-        $seats = $request->num_of_seats;
-        $momo = $request->phoneNumber;
-
-        session::put("ride_num_seats", $request->input('num_of_seats'));
-
-        //session(["pay_method" => $request->input('pay_method')]);
-
-        session(["pay_method" => $request->input('pay_method')]);
-
-        $totalCost = $seats * $cost;
+        $ride = Ride::find($request->rideId);
+        $totalCost = $request->numOfSeats * $request->pricePerSeat;
 
 
         try {
-            $referenceId = $collection->requestToPay($transactionId, $momo, $totalCost);
+
+            $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $totalCost);
 
             $journey = Momo::create([
                 'transaction_id' => $referenceId,
                 'user_id' => auth()->user()->id,
                 'ride_id' => $ride,
-                'phone_number' => $momo,
+                'phone_number' => $request->phoneNumber,
                 'amount' => $totalCost,
                 'status' => 'pending',
                 'status_code' => 200
@@ -180,6 +181,7 @@ class RideController extends Controller
                 'status' => true,
                 'journey' => $journey
             ], 200);
+
         } catch (CollectionRequestException $e) {
             return response()->json([
                 'payer' => $request->all(),
@@ -254,6 +256,7 @@ class RideController extends Controller
             'paid' => 'completed',
             'type' => 'persons'
         ]);
+
     }
 
     public function search(Request $request, $type = '')
@@ -324,7 +327,6 @@ class RideController extends Controller
             'routes' => $ride_directions,
         ], 200);
     }
-
 
 }
 
