@@ -53,7 +53,7 @@
 
                     <div class="col-md-8">
                         <form class="form simple" id="new_user" action="{{ route('store-ride') }}" accept-charset="UTF-8"
-                            method="post">
+                            method="post" enctype="multipart/form-data">
                             {{ csrf_field() }}
                             <div class="row">
                                 <div class="col-md-6">
@@ -61,7 +61,7 @@
                                         <label for="departure">Departure Town</label>
                                         <div class="controls">
                                             <input class="form-control places-search" id="departure" type="text"
-                                                value="{{ old('departure') }}" name="departure" required autofocus
+                                                value="{{ old('departure') }}" name="departure" autofocus
                                                 placeholder="from...">
                                             @if ($errors->has('departure'))
                                                 <span class="help-block">
@@ -77,7 +77,7 @@
                                         <label for="destination">Arrival Town</label>
                                         <div class="controls">
                                             <input class="form-control places-search" id="destination" type="text"
-                                                value="{{ old('destination') }}" name="destination" required autofocus
+                                                value="{{ old('destination') }}" name="destination" autofocus
                                                 placeholder="to...">
                                             @if ($errors->has('destination'))
                                                 <span class="help-block">
@@ -95,7 +95,7 @@
                                         <label for="start_day">Day</label>
                                         <div class="controls">
                                             <input class="form-control" id="datetime1" type="text"
-                                                value="{{ old('start_day') }}" name="start_day" required autofocus
+                                                value="{{ old('start_day') }}" name="start_day" autofocus
                                                 placeholder="day...">
 
                                             @if ($errors->has('start_day'))
@@ -111,7 +111,7 @@
                                         <label for="start_day">Time</label>
                                         <div class="controls">
                                             <input class="form-control" id="datetime2" type="text"
-                                                value="{{ old('start_time') }}" name="start_time" required autofocus
+                                                value="{{ old('start_time') }}" name="start_time" autofocus
                                                 placeholder="time...">
                                             @if ($errors->has('start_day'))
                                                 <span class="help-block">
@@ -130,7 +130,7 @@
                                         <label for="type">For...</label>
                                         <div class="controls">
                                             <select class="form-control" id="type" type="text"
-                                                value="{{ old('type') }}" name="type" required autofocus
+                                                value="{{ old('type') }}" name="type" autofocus
                                                 placeholder="transport persons or goods">
                                                 <option @if (\Session::get('transport') == 'persons') selected="selected" @endif
                                                     value="persons">Persons</option>
@@ -190,7 +190,7 @@
                                         <label for="cost">Cost</label>
                                         <div class="controls">
                                             <input class="form-control" id="cost" type="text"
-                                                value="{{ old('cost') }}" name="cost" required="required" autofocus
+                                                value="{{ old('cost') }}" name="cost" autofocus
                                                 placeholder="we advice you give a lower quote than the normal to attract clients">
                                             @if ($errors->has('cost'))
                                                 <span class="help-block">
@@ -205,11 +205,43 @@
                                         <label for="pickup_location">Pickup Location</label>
                                         <div class="controls">
                                             <input class="form-control places-search" id="pickup_location" type="text"
-                                                value="{{ old('pickup_location') }}" name="pickup_location" required
-                                                autofocus placeholder="agreed meeting position">
+                                                value="{{ old('pickup_location') }}" name="pickup_location" autofocus
+                                                placeholder="agreed meeting position">
                                             @if ($errors->has('pickup_location'))
                                                 <span class="help-block">
                                                     <strong>{{ $errors->first('pickup_location') }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group{{ $errors->has('number_plate') ? ' has-error' : '' }}">
+                                        <label for="number_plate">Vehicle Number Plate</label>
+                                        <div class="controls">
+                                            <input class="form-control" id="number_plate" type="text"
+                                                value="{{ old('number_plate') }}" name="number_plate" autofocus
+                                                placeholder="enter number plate">
+                                            @if ($errors->has('number_plate'))
+                                                <span class="help-block">
+                                                    <strong>{{ $errors->first('number_plate') }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group{{ $errors->has('car_img') ? ' has-error' : '' }}">
+                                        <label for="car_img">Vehicle Images</label>
+                                        <div class="controls">
+                                            <input class="form-control" id="car_img[]" multiple type="file"
+                                                accept="image/*" value="{{ old('car_img') }}" name="car_img">
+                                            @if ($errors->has('car_img'))
+                                                <span class="help-block">
+                                                    <strong>{{ $errors->first('car_img') }}</strong>
                                                 </span>
                                             @endif
                                         </div>

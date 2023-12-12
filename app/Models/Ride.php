@@ -19,7 +19,11 @@ class Ride extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'driver_id', 'departure', 'vehicle_id', 'pickup_location', 'destination', 'start_time', 'start_day', 'comments', 'cost', 'charges', 'total_cost', 'num_of_seats', 'type', 'status',
+        'driver_id', 'departure', 'vehicle_id', 'pickup_location', 'destination', 'start_time', 'start_day', 'comments', 'cost', 'charges', 'total_cost', 'num_of_seats', 'type', 'status', 'carImages','carBrand', 'carNumberPlate'
+    ];
+
+    protected $cast = [
+        'carImages'=>'array'
     ];
 
     /**

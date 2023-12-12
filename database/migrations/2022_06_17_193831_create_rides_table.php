@@ -30,6 +30,9 @@ return new class extends Migration
             $table->double('cost');
             $table->double('charges')->nullable();
             $table->double('total_cost')->nullable();
+            $table->json('carImages');
+            //$table->string('carBrand');
+            $table->string('carNumberPlate');
             $table->timestamps();
             $table->softDeletes();
         });
