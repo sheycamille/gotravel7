@@ -15,6 +15,7 @@ Route::group(["prefix" => "auth"], function () {
     Route::post('reset-password', 'API\PasswordResetController@changePassword');
 });
 
+
 Route::middleware('auth:api')->group(function () {
 
     Route::group(['prefix' => 'user'], function(){

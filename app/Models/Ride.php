@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 
 class Ride extends Model
@@ -135,6 +136,8 @@ class Ride extends Model
 
     public function RouteDirection()
     {
-        return $this->hasOne( RouteDirection::class);
+        return $this->hasOne( Route::class);
     }
+
+   
 }

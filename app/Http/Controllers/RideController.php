@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RouteResource;
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\RidePassenger;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -87,8 +89,8 @@ class RideController extends Controller
             'destination' => 'required|string',
             'start_day' => 'required|string',
             'start_time' => 'required|string',
-            'car_img' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            //'car_img' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            //'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'number_plate' => 'required|string',
             'cost' => 'required|min:1',
             'noOfSeats' => 'min:1',
@@ -364,5 +366,12 @@ class RideController extends Controller
             ->paginate(5);
 
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination', 'start_day', 'start_time'));
+    }
+
+    public function getRoutes (request $request)
+    {
+       //return  RouteResource::collection(Route::withstatus('active')->get());
+       return  RouteResource::collection(Route::all());
+       //return RouteResource::collection(Ride::all());
     }
 }
