@@ -15,6 +15,7 @@ Route::group(["prefix" => "auth"], function () {
 Route::group(['prefix' => 'ride'], function () {
 
     Route::post('search/{type?}', 'API\RideController@search');
+    
 
 });
 
@@ -27,7 +28,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('get-user', 'API\UserController@getUser');
 
+    Route::get('/routes', 'RideController@getRoutes');
+
     Route::post('logout', 'API\AuthenticationController@logout');
 });
 
-Route::get('/routes', 'RideController@getRoutes');
+
