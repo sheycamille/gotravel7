@@ -139,7 +139,6 @@ class RideController extends Controller
         return RouteResource::collection(Route::withStatus('active')->get());
     }
 
-
     public function momoRequestToPay(Request $request, $id)
     {
         $collection = new Collection();
