@@ -238,7 +238,7 @@
                                         <label for="car_img">Vehicle Images</label>
                                         <div class="controls">
                                             <input class="form-control" id="car_img[]" multiple type="file"
-                                                accept="image/*" value="{{ old('car_img') }}" name="car_img">
+                                                accept="png" value="{{ old('car_img') }}" name="car_img">
                                             @if ($errors->has('car_img'))
                                                 <span class="help-block">
                                                     <strong>{{ $errors->first('car_img') }}</strong>

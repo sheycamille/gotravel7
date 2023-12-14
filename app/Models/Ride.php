@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 
 class Ride extends Model
@@ -118,4 +119,11 @@ class Ride extends Model
     {
         $this->attributes['start_day'] = date_format(date_create($value), 'd-m-Y');
     }
+
+    public function RouteDirection()
+    {
+        return $this->hasOne( Route::class);
+    }
+
+   
 }
