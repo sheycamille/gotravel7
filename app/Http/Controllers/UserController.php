@@ -198,7 +198,7 @@ class UserController extends Controller
         return view('user.journeys', compact('user', 'journeys'));
     }
 
-    public function resetPassword(Request $request)
+    public function changePassword(Request $request)
     {
         $user = Auth::user();
         if (!$user) return redirect()->back()->with('message', 'User not found');
@@ -207,7 +207,7 @@ class UserController extends Controller
         $cnewpass = $request->cnewpass;
 
         if ($newpass == $cnewpass && Hash::check($request->oldpass, $user->password)) {
-            $user->password = bcrypt($newpass);
+            $user->password = Hash::make($newpass);
             $user->save();
 
             return redirect()->back()
