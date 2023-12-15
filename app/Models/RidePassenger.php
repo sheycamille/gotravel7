@@ -11,7 +11,6 @@ class RidePassenger extends Model
     use HasFactory;
     use SoftDeletes;
 
-
     protected $fillable = [
         'ride_id', 'passenger_id', 'type', 'paid', 'status', 'num_of_seats'
     ];

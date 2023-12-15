@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
-            $table->integer('driver_id');
+            $table->unsignedBigInteger('driver_id')->constrained("users")->onDelete("cascade");
             $table->string('pickupLocation');
             $table->integer('availableSeats');
             $table->enum('typeOfContent', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);

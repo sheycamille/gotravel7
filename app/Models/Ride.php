@@ -20,6 +20,7 @@ class Ride extends Model
     const RIDE_TYPE_GOODS = 'goods';
 
     protected $fillable = [
+        'driver_id',
         'departure',  
         'pickupLocation', 
         'destination', 
@@ -42,7 +43,8 @@ class Ride extends Model
 
     public function driver()
     {
-        return $this->belongsTo('App\Models\User');
+        $user = User::find($this->driver_id);
+        return $user->first_name . ' ' . $user->last_name;
     }
 
     public function passengers()
@@ -52,7 +54,7 @@ class Ride extends Model
 
     public function isAPassenger()
     {
-        return $this->belongsTo('App\Models\RidePassenger')->where('passenger_id', Auth::user()->id)->first();
+        return $this->belongsTo('App\Models\Booking')->where('passenger_id', Auth::user()->id)->first();
     }
 
     public function spacesLeft()
@@ -139,9 +141,4 @@ class Ride extends Model
         return $this->hasOne( Route::class);
     }
 
-   
-    public function images()
-    {
-        return $this->hasMany(Images::class, 'owner_id');
-    }
 }

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 
@@ -18,6 +17,7 @@ use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
 use App\Models\Ride;
 use App\Models\Images;
+use App\Http\Resources\RideCollectionResource;
 use App\Models\Booking;
 use App\Models\Route;
 use App\Models\RidePassenger;
@@ -27,7 +27,6 @@ use GuzzleHttp\Exception\RequestException;
 use App\Models\Vehicle;
 use Exception;
 use Throwable;
-
 
 class RideController extends Controller
 {
@@ -71,7 +70,6 @@ class RideController extends Controller
         
         ]);
 
-
         if ($request->hasFile('carImages')) {
             $images = $request->file('carImages');
             foreach ($images as $image) {
@@ -85,9 +83,8 @@ class RideController extends Controller
             }
         }
         
-
-        return response()->json([
-            'message' => 'Ride created successfully',
+        return response([
+            'message' => "Ride created successfully",
             'status' => true,
         ], 200);
 
@@ -95,23 +92,24 @@ class RideController extends Controller
 
     public function getRidesNextTwoDays()
     {
-        $rides = Ride::whereDate('departureDay', '>=', now()->format('Y-m-d'))
-                     ->whereDate('departureDay', '<=', now()->addDays(2)->format('Y-m-d'))
+        $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
+                     ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
                      ->get();
         return response([
-            'rides' => $rides,
+            'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
 
     }
 
+
     public function getRidesLater()
     {
-        $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('Y-m-d'))
+        $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
                 ->get();
 
         return response([
-            'rides' => $rides,
+            'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
 
@@ -138,10 +136,44 @@ class RideController extends Controller
 
     }
 
-    public function momoRequestToPay(Request $request, $rideId)
+    public function myRides(){
+        $rides = Ride::where('driver_id', auth()->user()->id)->get();
+        return response([
+            'rides' => new RideCollectionResource($rides),
+            'status' => true,
+        ], 200);
+    }
 
+    public function myBookings(){
+        $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
+        return response([
+            'bookings' => $bookings,
+            'status' => true,
+        ], 200);
+    }
+
+    public function searchRides(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'departure' => 'required|string',
+            'destination' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()->first()], 401);
+        }
+
+        $rides = Ride::where(['departure' => $request->departure, 'destination' => $request->destination])->get();
+
+        return response([
+            'rides' => new RideCollectionResource($rides),
+            'status' => true,
+        ], 200);
+    }
+
+    
+    public function momoRequestToPay(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'phoneNumber' => 'required|string',
             'payMethod' => 'required|string',
@@ -259,65 +291,65 @@ class RideController extends Controller
 
     }
 
-    public function search(Request $request, $type = '')
-    {
+    // public function search(Request $request, $type = '')
+    // {
 
-        if (isset($request->type) && $type == '') {
-            $type = $request->type;
-        }
+    //     if (isset($request->type) && $type == '') {
+    //         $type = $request->type;
+    //     }
 
-        if ($type == '') {
-            $type = Session::get('transport');
-        }
+    //     if ($type == '') {
+    //         $type = Session::get('transport');
+    //     }
 
-        if ($type == 'goods') {
-            $cookie = Cookie::queue('transport', 'goods', 365 * 24 * 60);
-            session(['transport' => 'goods']);
-        } else {
-            $cookie = Cookie::queue('transport', 'persons', 365 * 24 * 60);
-            session(['transport' => 'persons']);
-        }
+    //     if ($type == 'goods') {
+    //         $cookie = Cookie::queue('transport', 'goods', 365 * 24 * 60);
+    //         session(['transport' => 'goods']);
+    //     } else {
+    //         $cookie = Cookie::queue('transport', 'persons', 365 * 24 * 60);
+    //         session(['transport' => 'persons']);
+    //     }
 
-        $pickup = '';
-        $destination = '';
-        $start_day = '';
-        $start_time = '';
-        $where = array(['type', '=', $type], ['status', '<>', 'in_process']);
+    //     $pickup = '';
+    //     $destination = '';
+    //     $start_day = '';
+    //     $start_time = '';
+    //     $where = array(['type', '=', $type], ['status', '<>', 'in_process']);
 
-        if ($request->pickup) {
-            $pickup = strtolower($request->pickup);
-        }
-        if ($request->destination) {
-            $destination = strtolower($request->destination);
-        }
-        if ($request->start_day) {
-            $start_day = $request->start_day;
-        }
-        if ($request->start_time) {
-            $start_time = $request->start_time;
-        }
+    //     if ($request->pickup) {
+    //         $pickup = strtolower($request->pickup);
+    //     }
+    //     if ($request->destination) {
+    //         $destination = strtolower($request->destination);
+    //     }
+    //     if ($request->start_day) {
+    //         $start_day = $request->start_day;
+    //     }
+    //     if ($request->start_time) {
+    //         $start_time = $request->start_time;
+    //     }
 
-        $rides = [];
+    //     $rides = [];
 
-        if ($pickup != '' || $destination != '') {
-            $rides = Ride::where($where)
-                ->orWhere('departure', 'like', '%' . $pickup . '%')
-                ->orWhere('destination', 'like', '%' . $destination . '%')
-                ->orderBy('start_day', 'asc')
-                ->orderBy('start_time', 'asc')
-                ->take(10)
-                ->get();
-        }
+    //     if ($pickup != '' || $destination != '') {
+    //         $rides = Ride::where($where)
+    //             ->orWhere('departure', 'like', '%' . $pickup . '%')
+    //             ->orWhere('destination', 'like', '%' . $destination . '%')
+    //             ->orderBy('start_day', 'asc')
+    //             ->orderBy('start_time', 'asc')
+    //             ->take(10)
+    //             ->get();
+    //     }
 
-        if (!$rides) return response()->json([
-            'message' => 'Search did not match any record in our database'
-        ], 400);
+    //     if (!$rides) return response()->json([
+    //         'message' => 'Search did not match any record in our database'
+    //     ], 400);
 
-        return response()->json([
-            'rides' => $rides,
-            'status' => true
-        ], 200);
-    }
+    //     return response()->json([
+    //         'rides' => $rides,
+    //         'status' => true
+    //     ], 200);
+    // }
 
     public function getRoutes()
     {
