@@ -198,7 +198,7 @@ class UserController extends Controller
         return view('user.journeys', compact('user', 'journeys'));
     }
 
-    public function resetPassword(Request $request)
+    public function changePassword(Request $request)
     {
         $user = Auth::user();
         if (!$user) return redirect()->back()->with('message', 'User not found');
@@ -207,7 +207,7 @@ class UserController extends Controller
         $cnewpass = $request->cnewpass;
 
         if ($newpass == $cnewpass && Hash::check($request->oldpass, $user->password)) {
-            $user->password = bcrypt($newpass);
+            $user->password = Hash::make($newpass);
             $user->save();
 
             return redirect()->back()
@@ -233,9 +233,9 @@ class UserController extends Controller
             ->get();
 
         $recent_trips = Ride::join('ride_passengers', 'rides.id', '=', 'ride_passengers.ride_id')
-        ->where('ride_passengers.passenger_id', '=', $user_id)
-        ->where('ride_passengers.status', '=', 'ended')
-        ->take(3)->get();
+            ->where('ride_passengers.passenger_id', '=', $user_id)
+            ->where('ride_passengers.status', '=', 'ended')
+            ->take(3)->get();
 
         return view('user.dashboard')->with(array(
             'rides' => $rides,

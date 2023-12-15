@@ -191,12 +191,17 @@
                                                         @endforeach
 
                                                     </span> --}}
-                                                    @if ($ride->num_of_seats_left == 0)
-                                                        <span class="badge bg-success rounded">FULL</span>
+                                                    @if ($ride->num_of_seats_left === null)
+                                                        {{ $ride->num_of_seats }} seats left
                                                     @else
                                                         {{ $ride->num_of_seats_left }} Seats left of
                                                         {{ $ride->num_of_seats }}
                                                     @endif
+                                                    
+                                                    @if ($ride->num_of_seats === $ride->num_of_seats_left)
+                                                        <span class="badge bg-success rounded">FULL</span>
+                                                    @endif
+
                                                 </div>
 
                                                 <div

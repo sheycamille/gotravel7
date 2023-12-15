@@ -7,6 +7,9 @@ use App\Models\Ride;
 use App\Models\RidePassenger;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\Route;
+
+
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,30 +84,54 @@ class RideController extends Controller
         $this->doValidate($data)->validate();
 
         $ride = Ride::create($data);*/
+        $request->validate([
+            'pickup_location' => 'required|string',
+            'departure' => 'required|string',
+            'destination' => 'required|string',
+            'start_day' => 'required|string',
+            'start_time' => 'required|string',
+            'car_img' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'number_plate' => 'required|string',
+            'cost' => 'required|min:1',
+            'noOfSeats' => 'min:1',
+            'comments' => 'string',
+        ]);
 
-        $pickup_location = $request->input('pickup_location');
-        $departure = $request->input('departure');
-        $destination = $request->input('destination');
-        $start_day = $request->input('start_day');
-        $start_time = $request->input('start_time');
-        $cost = $request->input('cost', '');
-        $driver_id = Auth::user()->id;
-        $num_seats = $request->input('noOfSeats');
+        $images = [];
+
+        if ($request->hasfile('car_img')) {
+            foreach ($request->car_img as $img) {
+                $imageName = time() . rand(1, 99) . '.' . $img->getClientOriginalName();
+                $img->move(public_path('uploads/images'), $imageName);
+                $images[] = $imageName;
+            }
+        }
+
+        //$fileName = time() . '.' . $request->car_img->();
+        //$fileName = $request->car_img->getClientOriginalName();
+        //$request->car_img->storeAs('public/images', $fileName);
+        //$fileName = time() . '.' . $request->car_img->getClientOriginalName();
+        //$request->car_img->storeAs('public/images', $fileName);
 
         $data = array(
-            'pickup_location' => $pickup_location,
-            "departure" => $departure,
-            "destination" => $destination,
-            "start_day" => $start_day,
-            'start_time' => $start_time,
-            'cost' => $cost,
-            'driver_id' => $driver_id,
-            "num_of_seats" => $num_seats
+            'pickup_location' => $request->input('pickup_location'),
+            "departure" => $request->input('departure'),
+            "destination" => $request->input('destination'),
+            "start_day" => $request->input('start_day'),
+            'start_time' => $request->input('start_time'),
+            'cost' => $request->input('cost'),
+            'driver_id' => auth()->user()->id,
+            "num_of_seats" => $request->input('noOfSeats'),
+            'carImages' => json_encode($images),
+            'carNumberPlate' => $request->input('number_plate'),
+            'comments' => $request->comments,
         );
 
         // $this->doValidate($data)->validate();
 
         DB::table('rides')->insert($data);
+
         $action = '<a class="m-1 btn btn-danger btn-sm text-nowrap" href="' . route("get-all-rides") . '">View Here</a>';
 
         if (Auth()->user()->type == 'administrator') {
@@ -188,6 +215,8 @@ class RideController extends Controller
 
         $ride = Ride::find($id);
 
+        $name = Auth::user()->username;
+
         $cost = $ride->cost;
         $seats = $request->num_of_seats;
         $momo = $request->momo_number;
@@ -208,7 +237,7 @@ class RideController extends Controller
             'status_code' => 200
         ]);
 
-        return response()->json(['success' => true, 'message' => "You're about to make a payment of  $totalCost XAF to Travel Z, please dial *126# on your mobile phone to confirm this payment. Once done click "], 200);
+        return response()->json(['success' => true, 'message' => " Hello, $name. You're about to make a payment of  $totalCost XAF to Travel Z. please be patient while we process the payment. Once you verify the payment, click on: "], 200);
 
         //return response()->json(['success' => false, 'message' => 'Something went wrong, try again later.'], 422);
     }
@@ -223,6 +252,8 @@ class RideController extends Controller
         $transId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
 
         $refreid = $collection->getTransactionStatus($transId);
+
+        //return response()->json($refreid);
 
         return $this->join($ride_id, session("ride_num_seats"));
     }
@@ -337,4 +368,5 @@ class RideController extends Controller
 
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination', 'start_day', 'start_time'));
     }
+
 }

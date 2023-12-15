@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-
+use App\Models\User;
 use Carbon\Carbon;
 
 use Illuminate\Database\Seeder;
@@ -15,12 +15,13 @@ class UserSeeder extends Seeder
     {
 
         // default admin
-        DB::table('users')->insert([
+        User::create([
             'first_name' => 'super',
             'last_name' => 'admin',
             'email' => 'admin@gokamz.com',
             'username' => 'admin',
-            'password' => Hash::make('test12345'),
+            'phone_number'=> '673572533',
+            'password' => Hash::make('password'),
             'primary_address' => 'SouthWest,buea',
             'status' => '0',
             'type' => 'administrator',
@@ -29,11 +30,12 @@ class UserSeeder extends Seeder
         ]);
 
         // default admin
-        DB::table('users')->insert([
+        User::create([
             'first_name' => 'super',
             'last_name' => 'admin',
             'email' => 'camille@gokamz.com',
             'username' => 'user',
+            'phone_number'=> '5362526322',
             'password' => Hash::make('test12345'),
             'primary_address' => 'SouthWest,buea',
             'status' => '1',

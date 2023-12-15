@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card mx-auto  mt-3 p-0">
-                                        <img src="{{ URL::to('assets/images') }}/momo-logo.webp" class="momo">
+
                                         <div class="pay-card-body">
                                             <p class="text-muted">Select seats</p>
                                             <div class="numbr mb-3">
@@ -78,23 +78,33 @@
                                                     @endif
                                                 </select>
                                             </div>
-                                            <p class="text-muted">Momo number</p>
+                                            <p class="text-muted">Select payment method</p>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="pay_method" value="1" checked><img
+                                                    src="{{ URL::to('assets/images') }}/momo-logo.webp" class="momo">
+                                            </label>
+                                            <label class="radio-inline om">
+                                                <input type="radio" name="pay_method" value="2"><img
+                                                    src="{{ URL::to('assets/images') }}/orange-money-logo-8F2AED308D-seeklogo.com.png"
+                                                    class="orange-moni">
+                                            </label>
+                                            <p class="text-muted">Phone number</p>
                                             <div class="numbr mb-3">
-                                                <input type="text" class="form-control" name="momo_number"
-                                                    placeholder="enter momo number ">
+                                                <input type="text" class="form-control" name="momo_number" 
+                                                    placeholder="enter transaction number ">
                                             </div>
                                         </div>
-                                        @if(auth()->check())
-                                        <div class="footer pay-footer text-center p-0">
-                                            <div class="col">
-                                                <button type="submit" class="pay-btn" id="proceed">Proceed To
-                                                    Payment</button>
+                                        @if (auth()->check())
+                                            <div class="footer pay-footer text-center p-0">
+                                                <div class="col">
+                                                    <button type="submit" class="pay-btn" id="proceed">Proceed To
+                                                        Payment</button>
+                                                </div>
                                             </div>
-                                        </div>
                                         @else
-                                        <h6>You need to <a href="{{ route('login') }}"><b>sign in</b></a> or <a
-                                            href="{{ route('register') }}"><b>create an account</b></a> to book
-                                        this ride.</h6>
+                                            <h6>You need to <a href="{{ route('login') }}"><b>sign in</b></a> or <a
+                                                    href="{{ route('register') }}"><b>create an account</b></a> to book
+                                                this ride.</h6>
                                         @endif
                                     </div>
                                 </div>
@@ -281,28 +291,7 @@
     </div>
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Payment Confirmation</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>You're about to make a payment of {{ $ride->cost }} XAF to Travel Z, please dial *126# on your
-                        mobile phone to confirm this payment. Once done click on 'Confirm Payment'</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" href="{{ route('join', $ride->id) }}">Confirm
-                        Payment</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 @endsection
 
 
@@ -339,14 +328,28 @@
                         '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
                         '<strong><i class="glyphicon glyphicon-ok-sign push-5-r"></</strong> ' +
                         response.message +
-                        '<a href="{{ route('trans-status', $ride->id) }}">HERE</a>' +
+                        '<a class="verify-pay" href="{{ route('trans-status', $ride->id) }}">Payment Verified</a>' +
                         '</div>';
 
                     $(messages).html(successHtml);
                 },
 
-                error: function(response) {
-                    alert('Something went wrong, please try again later.');
+                error: function(response, xhr) {
+                    //alert('Something went wrong, please try again later.');
+
+                    var status = response.status;
+                    //console.log(status);
+
+                    var messages = $('.messages');
+
+                    var erroMessage = '<div class="alert alert-danger">' +
+                        '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                        '<strong><i class="glyphicon glyphicon-ok-sign push-5-r"></</strong> ' +'Something went wrong, try again!' +
+                        '</div>';
+
+                    $(messages).html(erroMessage);
+
+                    console.log(status);
                 },
                 complete: function(response) {
                     $("#proceed").prop('disabled', false).html('Proceed to payment');

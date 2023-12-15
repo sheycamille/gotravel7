@@ -8,85 +8,70 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Validator;
-
+use Illuminate\Support\Facades\Validator;
 use App\Mail\API\RequestPasswordReset;
-
-use App\Models\API\PasswordReset;
 use App\Models\User;
 
 class PasswordResetController extends Controller
 {
-
-    public $successStatus = 200;
-
-    public function create(Request $request)
-    {
-
-        $request->validate([
-            'email' => 'required|email|string',
-        ]);
-
-        $email = $request->email;
-
-        $code = random_int(100000, 999999);
-
-        DB::table('password_resets')->insert([
-            'email' => $email,
-            'code' => $code,
-            'created_at' => Carbon::now()
-        ]);
-
-        Mail::to($email)->send(new RequestPasswordReset($code));
-
-        return response()->json([
-            'message' => 'code generated successfuly!',
-            'code' => $code
-        ]);
-    }
-
-    public function find(Request $request)
-    {
-
-        $user = PasswordReset::where('code', $request->code)->first();
-
-        if (!$user)
-            return response()->json([
-                'message' => 'Invalid code.'
-            ], 404);
-
-        return response()->json($user, $this->successStatus);
-    }
-
-    public function reset(Request $request)
-    {
+    public function findAccount(Request $request){
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-            'password_confirm' => 'required|min:6|same:password'
+            'email' => 'nullable',
+            'phone' => 'nullable',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json(['message' => $validator->errors()], 401);
         }
 
-        $password_reset = PasswordReset::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+                    ->orWhere('phone_number', $request->phone)
+                    ->first();
 
-        $user = User::where('email', $password_reset)->first();
-
-        if (!$user)
+        if(!isset($user)){
             return response()->json([
-                'message' => "We can't find a user with that e-mail address."
-            ], 404);
+                'message'=> 'User account not found'
+                ],404);
+        }
 
-        User::where('email', $request->email)
-            ->update(['password' => Hash::make($request->password)]);
+        $code = random_int(100000, 999999);
+        $user->update(['otp' => $code]);
+        Mail::to($user->email)->send(new RequestPasswordReset($code));
 
-        $password_reset->delete();
 
-        return response()->json([
-            'message' => 'password has been reset successfully!',
-            'user' => $user,
+        return response([
+            'user'=> $user,
+            'message' => 'User account exist',
+            'status' => true,
         ]);
+
+    }
+
+    public function changePassword(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'nullable',
+            'phone' => 'nullable',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], 401);
+        }
+
+        $user = User::where('email', $request->email)
+                    ->orWhere('phone_number', $request->phone)
+                    ->first();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'otp' => ''
+        ]);
+
+        return response([
+            'message'=> 'Password changed successfully',
+            'status'=> true
+        ], 200);
+
     }
 }

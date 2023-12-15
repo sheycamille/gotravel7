@@ -13,8 +13,16 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     use SoftDeletes;
 
+    const ROLE_ADMIN = 'administrator';
+    const ROLE_DRIVER = 'driver';
+    const ROLE_PASSENGER = 'passenger';
+    const LANG_EN = 'english';
+    const LANG_FR = 'french';
+    const GENDER_MALE = 'male';
+    const GENDER_FEMALE = 'female';
+
     protected $fillable = [
-        'first_name', 'last_name', 'username', 'name', 'email', 'email_verified_at', 'password', 'phone_number', 'type', 'nic', 'primary_address', 'dob', 'language', 'status', 'points', 'avatar', 'gender',
+        'first_name', 'last_name', 'username', 'name', 'email', 'email_verified_at', 'password', 'phone_number', 'type', 'nic', 'primary_address', 'dob', 'language', 'status', 'points', 'avatar', 'gender', 'otp'
     ];
 
     protected $hidden = [
@@ -41,24 +49,24 @@ class User extends Authenticatable
     public function isAdmin()
     {
 
-        return $this->type === 'administrator';
+        return $this->type === User::ROLE_ADMIN;
     }
 
     public function isUser()
     {
 
-        return $this->type === 'driver' || 'passenger';
+        return $this->type === User::ROLE_DRIVER || User::ROLE_PASSENGER;
         
     }
 
     public static function getUserGenders()
     {
-        return ['male', 'female'];
+        return [User::GENDER_MALE, User::GENDER_FEMALE];
     }
 
     public static function getUserLanguages()
     {
-        return ['english', 'french'];
+        return [User::LANG_EN, User::LANG_FR];
     }
 
     public function rides()
@@ -70,4 +78,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(Vehicle::class, 'owner_id');
     }
+
+  
+
 }
