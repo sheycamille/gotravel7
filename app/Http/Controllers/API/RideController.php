@@ -10,13 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 
+use App\Http\Resources\RouteResource;
+
 use Bmatovu\MtnMomo\Products\Collection;
 use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
 use App\Models\Ride;
 use App\Models\RidePassenger;
 use App\Models\Momo;
-use Exception;
+use App\Models\Route;
 use GuzzleHttp\Exception\RequestException;
 
 
@@ -24,7 +26,6 @@ class RideController extends Controller
 {
 
     public $successStatus = 200;
-    public $method;
 
     public function create(Request $request)
     {
@@ -81,11 +82,7 @@ class RideController extends Controller
         ], $this->successStatus);
     }
 
-    public function getRides()
-    {
-    }
-
-    public function rideDetails(Request $request, $id)
+    public function rideDetails($id)
     {
 
         $ride = Ride::find($id);
@@ -97,31 +94,32 @@ class RideController extends Controller
         return response()->json(['details' => $ride], $this->successStatus);
     }
 
-    public function momoRequestToPay(Request $request, $id)
+    public function momoRequestToPay(Request $request, $rideId)
     {
         $collection = new Collection();
         $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
 
-        $ride = Ride::find($id);
+        $ride = Ride::find($rideId);
 
-        $name = Auth::user()->username;
+        $name = auth()->user()->username;
 
         $cost = $ride->cost;
         $seats = $request->num_of_seats;
-        $momo = $request->momo_number;
+        $momo = $request->phoneNumber;
 
-        session(["ride_num_seats" => $request->input('num_of_seats')]);
+        session::put("ride_num_seats", $request->input('num_of_seats'));
 
-        session(["pay_method" => $request->input('pay_method')]);
+        //session(["pay_method" => $request->input('pay_method')]);
 
         $totalCost = $seats * $cost;
+
 
         try {
             $referenceId = $collection->requestToPay($transactionId, $momo, $totalCost);
 
             $journey = Momo::create([
                 'transaction_id' => $referenceId,
-                'user_id' => Auth::user()->id,
+                'user_id' => auth()->user()->id,
                 'ride_id' => $ride,
                 'phone_number' => $momo,
                 'amount' => $totalCost,
@@ -154,22 +152,32 @@ class RideController extends Controller
 
         $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
 
-        //return response()->json(session('pay_method'));
-
         try {
 
             $refreid = $collection->getTransactionStatus($transactionId);
 
-            $join_ride = $this->join($ride_id, session("ride_num_seats"));
+            $status = $refreid['status'];
+
+            if (!$status === 'SUCCESSFUL')
+                return response()->json([
+                    'message' => 'pending',
+                    'requestToPayResult' => $refreid
+
+                ], 400);
+
+            $join_ride = $this->join($ride_id, session::get("ride_num_seats"));
 
             $response = response()->json([
-                'message' => 'success',
-                'status' => true,
+                'message' => 'complete',
                 'requestToPayResult' => $refreid
 
             ], 200);
 
-            return [$join_ride, $response];
+            return [$response, $join_ride];
+            
+            /*if (in_array('SUCCESSFUL', array_values($arr))) {  
+            } else {   
+            }*/
         } catch (RequestException $ex) {
             return response()->json([
                 'message' => 'Unable to get transaction status',
@@ -263,6 +271,15 @@ class RideController extends Controller
         return response()->json([
             'rides' => $rides,
             'status' => true
+        ], 200);
+    }
+
+    public function getRoutes()
+    {
+        $ride_directions =  RouteResource::collection(Route::all());
+
+        return response()->json([
+            'routes' => $ride_directions,
         ], 200);
     }
 }

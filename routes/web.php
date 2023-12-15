@@ -71,7 +71,7 @@ Route::group(['prefix' => 'user'], function (){
     Route::get('/dashboard', 'UserController@dashboard')->name('user.dashboard');
     Route::get('/edit', 'UserController@edit')->name('edit-profile');
     Route::post('/update', 'UserController@update')->name('update-profile');
-    Route::post('/reset-password', 'UserController@resetPassword')->name('reset_password');
+    Route::post('/change-password', 'UserController@changePassword')->name('reset_password');
     Route::get('/rides', 'UserController@rides')->name('my-rides');
     Route::get('/journeys', 'UserController@journeys')->name('my-journeys');
     Route::get('/vehicles', 'UserController@vehicles')->name('my-vehicles');
@@ -98,9 +98,9 @@ Route::group(['prefix' => 'ride'], function () {
 });
 
 //rides routes that don't need auth
-Route::get('rides/list/{type?}', 'RideController@search')->name('rides');
-Route::get('rides/list/', 'RideController@getAllRides')->name('get-all-rides');
-Route::get('rides/details/{id}', 'RideController@details')->name('details-ride');
+Route::get('search-ride/{type?}', 'RideController@search')->name('rides');
+Route::get('rides/ride-list', 'RideController@getAllRides')->name('get-all-rides');
+Route::get('rides/ride-details/{id}', 'RideController@details')->name('details-ride');
 
 
 Route::group(['prefix' => 'how'], function () {

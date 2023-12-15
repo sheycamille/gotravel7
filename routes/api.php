@@ -23,12 +23,14 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('create-ride', 'API\RideController@create');
     Route::get('ride-details/{id}', 'API\RideController@rideDetails');
-    Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');
+    Route::post('request-to-pay/{rideId}', 'API\RideController@momoRequestToPay');
     Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
+
+    Route::post('change-password', 'API\UserController@changePassword');
 
     Route::get('get-user', 'API\UserController@getUser');
 
-    Route::get('/routes', 'RideController@getRoutes');
+    Route::get('get-routes', 'API\RideController@getRoutes');
 
     Route::post('logout', 'API\AuthenticationController@logout');
 });

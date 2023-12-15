@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\RouteResource;
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\RidePassenger;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\Route;
+
+
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -368,10 +369,4 @@ class RideController extends Controller
         return view('rides.index', compact('rides', 'menu', 'pickup', 'destination', 'start_day', 'start_time'));
     }
 
-    public function getRoutes (request $request)
-    {
-       //return  RouteResource::collection(Route::withstatus('active')->get());
-       return  RouteResource::collection(Route::all());
-       //return RouteResource::collection(Ride::all());
-    }
 }
