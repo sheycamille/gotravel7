@@ -15,6 +15,13 @@ Route::group(["prefix" => "auth"], function () {
     Route::post('reset-password', 'API\PasswordResetController@changePassword');
 });
 
+Route::group(['prefix' => 'ride'], function () {
+
+    Route::post('search/{type?}', 'API\RideController@search');
+    
+
+});
+
 Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'user'], function(){
         Route::get('get-user', 'API\UserController@getUser');
@@ -48,4 +55,5 @@ Route::middleware('auth:api')->group(function () {
 
     
 });
+
 

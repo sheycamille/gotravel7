@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
+
+use App\Http\Resources\RouteResource;
 
 use Bmatovu\MtnMomo\Products\Collection;
 use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
@@ -263,6 +266,99 @@ class RideController extends Controller
         }
     }
 
+    public function momoRequestToPay(Request $request, $rideId)
+    {
+        $collection = new Collection();
+        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
+
+        $ride = Ride::find($rideId);
+
+        $name = auth()->user()->username;
+
+        $cost = $ride->cost;
+        $seats = $request->num_of_seats;
+        $momo = $request->phoneNumber;
+
+        session::put("ride_num_seats", $request->input('num_of_seats'));
+
+        //session(["pay_method" => $request->input('pay_method')]);
+
+        $totalCost = $seats * $cost;
+
+
+        try {
+            $referenceId = $collection->requestToPay($transactionId, $momo, $totalCost);
+
+            $journey = Momo::create([
+                'transaction_id' => $referenceId,
+                'user_id' => auth()->user()->id,
+                'ride_id' => $ride,
+                'phone_number' => $momo,
+                'amount' => $totalCost,
+                'status' => 'pending',
+                'status_code' => 200
+            ]);
+
+            return response()->json([
+                'payer' => $request->all(),
+                'message' => 'Request to pay successful!',
+                'status' => true,
+                'journey' => $journey
+            ], 200);
+        } catch (CollectionRequestException $e) {
+            return response()->json([
+                'payer' => $request->all(),
+                'message' => $e->getMessage(),
+                'status' => 'false',
+
+            ], 400);
+        }
+    }
+
+    public function checkTransactionStatus($id)
+    {
+
+        $collection = new Collection();
+
+        $ride_id = Ride::find($id);
+
+        $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
+
+        try {
+
+            $refreid = $collection->getTransactionStatus($transactionId);
+
+            $status = $refreid['status'];
+
+            if (!$status === 'SUCCESSFUL')
+                return response()->json([
+                    'message' => 'pending',
+                    'requestToPayResult' => $refreid
+
+                ], 400);
+
+            $join_ride = $this->join($ride_id, session::get("ride_num_seats"));
+
+            $response = response()->json([
+                'message' => 'complete',
+                'requestToPayResult' => $refreid
+
+            ], 200);
+
+            return [$response, $join_ride];
+            
+            /*if (in_array('SUCCESSFUL', array_values($arr))) {  
+            } else {   
+            }*/
+        } catch (RequestException $ex) {
+            return response()->json([
+                'message' => 'Unable to get transaction status',
+                'status' => 'false',
+
+            ], 400);
+        }
+    }
+
     public function join($ride_id, $seats)
     {
         //dd($ride_id, $seats);
@@ -288,68 +384,67 @@ class RideController extends Controller
             'paid' => 'completed',
             'type' => 'persons'
         ]);
-
     }
 
-    // public function search(Request $request, $type = '')
-    // {
+    public function search(Request $request, $type = '')
+    {
 
-    //     if (isset($request->type) && $type == '') {
-    //         $type = $request->type;
-    //     }
+        if (isset($request->type) && $type == '') {
+            $type = $request->type;
+        }
 
-    //     if ($type == '') {
-    //         $type = Session::get('transport');
-    //     }
+        if ($type == '') {
+            $type = Session::get('transport');
+        }
 
-    //     if ($type == 'goods') {
-    //         $cookie = Cookie::queue('transport', 'goods', 365 * 24 * 60);
-    //         session(['transport' => 'goods']);
-    //     } else {
-    //         $cookie = Cookie::queue('transport', 'persons', 365 * 24 * 60);
-    //         session(['transport' => 'persons']);
-    //     }
+        if ($type == 'goods') {
+            $cookie = Cookie::queue('transport', 'goods', 365 * 24 * 60);
+            session(['transport' => 'goods']);
+        } else {
+            $cookie = Cookie::queue('transport', 'persons', 365 * 24 * 60);
+            session(['transport' => 'persons']);
+        }
 
-    //     $pickup = '';
-    //     $destination = '';
-    //     $start_day = '';
-    //     $start_time = '';
-    //     $where = array(['type', '=', $type], ['status', '<>', 'in_process']);
+        $pickup = '';
+        $destination = '';
+        $start_day = '';
+        $start_time = '';
+        $where = array(['type', '=', $type], ['status', '<>', 'in_process']);
 
-    //     if ($request->pickup) {
-    //         $pickup = strtolower($request->pickup);
-    //     }
-    //     if ($request->destination) {
-    //         $destination = strtolower($request->destination);
-    //     }
-    //     if ($request->start_day) {
-    //         $start_day = $request->start_day;
-    //     }
-    //     if ($request->start_time) {
-    //         $start_time = $request->start_time;
-    //     }
+        if ($request->pickup) {
+            $pickup = strtolower($request->pickup);
+        }
+        if ($request->destination) {
+            $destination = strtolower($request->destination);
+        }
+        if ($request->start_day) {
+            $start_day = $request->start_day;
+        }
+        if ($request->start_time) {
+            $start_time = $request->start_time;
+        }
 
-    //     $rides = [];
+        $rides = [];
 
-    //     if ($pickup != '' || $destination != '') {
-    //         $rides = Ride::where($where)
-    //             ->orWhere('departure', 'like', '%' . $pickup . '%')
-    //             ->orWhere('destination', 'like', '%' . $destination . '%')
-    //             ->orderBy('start_day', 'asc')
-    //             ->orderBy('start_time', 'asc')
-    //             ->take(10)
-    //             ->get();
-    //     }
+        if ($pickup != '' || $destination != '') {
+            $rides = Ride::where($where)
+                ->orWhere('departure', 'like', '%' . $pickup . '%')
+                ->orWhere('destination', 'like', '%' . $destination . '%')
+                ->orderBy('start_day', 'asc')
+                ->orderBy('start_time', 'asc')
+                ->take(10)
+                ->get();
+        }
 
-    //     if (!$rides) return response()->json([
-    //         'message' => 'Search did not match any record in our database'
-    //     ], 400);
+        if (!$rides) return response()->json([
+            'message' => 'Search did not match any record in our database'
+        ], 400);
 
-    //     return response()->json([
-    //         'rides' => $rides,
-    //         'status' => true
-    //     ], 200);
-    // }
+        return response()->json([
+            'rides' => $rides,
+            'status' => true
+        ], 200);
+    }
 
     public function getRoutes()
     {
