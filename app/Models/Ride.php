@@ -13,30 +13,38 @@ class Ride extends Model
     use HasFactory;
     use SoftDeletes;
 
+    const RIDE_STATUS_PROGRESS = 'in_progress';
+    const RIDE_STATUS_STARTED = 'started';
+    const RIDE_STATUS_ENDED = 'ended';
+    const RIDE_TYPE_PERSONS = 'persons';
+    const RIDE_TYPE_GOODS = 'goods';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'driver_id', 'departure', 'vehicle_id', 'pickup_location', 'destination', 'start_time', 'start_day', 'comments', 'cost', 'charges', 'total_cost', 'num_of_seats', 'type', 'status', 'carImages','carBrand', 'carNumberPlate'
+        'driver_id',
+        'departure',  
+        'pickupLocation', 
+        'destination', 
+        'departureTime', 
+        'departureDay', 
+        'comments', 
+        'pricePerSeat', 
+        'availableSeats',
+        'status', 
+        'typeOfContent',
+        'carModel',
+        'carNumberPlate'
     ];
 
     protected $cast = [
         'carImages'=>'array'
     ];
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected $dates = ['deleted_at'];
 
     public function driver()
     {
-        return $this->belongsTo('App\Models\User');
+        $user = User::find($this->driver_id);
+        return $user->first_name . ' ' . $user->last_name;
     }
 
     public function passengers()
@@ -46,12 +54,12 @@ class Ride extends Model
 
     public function isAPassenger()
     {
-        return $this->belongsTo('App\Models\RidePassenger')->where('passenger_id', Auth::user()->id)->first();
+        return $this->belongsTo('App\Models\Booking')->where('passenger_id', Auth::user()->id)->first();
     }
 
     public function spacesLeft()
     {
-        return $this->num_of_seats - $this->passengers()->count();
+        return $this->availableSeats - $this->passengers()->count();
     }
 
     public function getFullDate()
@@ -64,9 +72,6 @@ class Ride extends Model
         return date_format(date_create($this->getFullDate()), 'd M Y H:m:s');
     }
 
-    /**
-     * Always set the departure to lowercase when we save it to the database
-     */
     public function setDepartureAttribute($value)
     {
         $this->attributes['departure'] = trim(strtolower($value));
@@ -99,9 +104,10 @@ class Ride extends Model
     /**
      * Always set the pickup_location to lowercase when we save it to the database
      */
+
     public function setPickupLocationAttribute($value)
     {
-        $this->attributes['pickup_location'] = trim(strtolower($value));
+        $this->attributes['pickupLocation'] = trim(strtolower($value));
     }
 
     /**
@@ -117,7 +123,17 @@ class Ride extends Model
      */
     public function setStartDayAttribute($value)
     {
-        $this->attributes['start_day'] = date_format(date_create($value), 'd-m-Y');
+        $this->attributes['departureDay'] = date_format(date_create($value), 'd-m-Y');
+    }
+
+
+    public function getRouteDirection(){
+        return $this->departure . ' - ' . $this->destination;
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Images::class, 'owner_id');
     }
 
     public function RouteDirection()
@@ -125,5 +141,4 @@ class Ride extends Model
         return $this->hasOne( Route::class);
     }
 
-   
 }
