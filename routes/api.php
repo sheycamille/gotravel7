@@ -17,12 +17,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::group(['prefix' => 'user'], function(){
         Route::get('get-user', 'API\UserController@getUser');
-<<<<<<< HEAD
         Route::post('change-password', 'API\UserController@changePassword');
         Route::post('edit-profile', 'API\UserController@update');
-=======
-       
->>>>>>> 975127a (Payment method resource)
     });
 
     Route::group(['prefix' => 'ride'], function(){

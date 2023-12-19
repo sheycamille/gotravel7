@@ -1,11 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\API;
+<<<<<<< HEAD
+=======
+
+use Exception;
+use Throwable;
+>>>>>>> 72e55b9 (Trying to fix the editprofileapi)
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\Route;
 use App\Models\Images;
 use App\Models\Booking;
+<<<<<<< HEAD
 use App\Models\PaymentMethod;
 use App\Models\RidePassenger;
 use Bmatovu\MtnMomo\Products\Collection;
@@ -15,11 +22,14 @@ use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 use App\Http\Resources\RideResource;
 use App\Http\Resources\RouteCollectionResource;
 use App\Http\Resources\MyRidesCollectionResource;
+=======
+>>>>>>> 72e55b9 (Trying to fix the editprofileapi)
 use App\Models\Vehicle;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
 
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +38,24 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Validator;
+=======
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\RouteResource;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Bmatovu\MtnMomo\Products\Collection;
+
+use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+>>>>>>> 72e55b9 (Trying to fix the editprofileapi)
 
 class RideController extends Controller
 {
@@ -408,7 +436,10 @@ class RideController extends Controller
         ], 200);
     }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 72e55b9 (Trying to fix the editprofileapi)
 }
 
