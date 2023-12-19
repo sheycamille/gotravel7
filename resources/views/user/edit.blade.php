@@ -32,14 +32,14 @@
                         method="post" enctype="multipart/form-data">
                         {{ csrf_field() }}
 
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name">Name</label>
+                        <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
+                            <label for="username">username</label>
                             <div class="controls">
                                 <input class="form-control places-search" id="username" type="text"
-                                    value="{{ $user->username }}" name="username"  placeholder="name">
-                                @if ($errors->has('name'))
+                                    value="{{ $user->username }}" name="username"  placeholder="username">
+                                @if ($errors->has('username'))
                                     <span class="help-block">
-                                        <strong>{{ $errors->first('name') }}</strong>
+                                        <strong>{{ $errors->first('username') }}</strong>
                                     </span>
                                 @endif
                             </div>

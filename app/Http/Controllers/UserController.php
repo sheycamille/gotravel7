@@ -93,7 +93,7 @@ class UserController extends Controller
 
     public function edit()
     {
-        $user = Auth::user();
+        $user = auth()->user();
         if (!$user) return redirect()->back()->with('message', 'User not found');
 
         return view('user.edit', compact('user'));
@@ -101,45 +101,31 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
+
         if (!$user) return redirect()->back()->with('message', 'User not found');
 
-        $request->validate([
+        $user->update([
+            'username' => $request->username,
+            'fitst_name' => $request->fitst_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone_number' => $request->phone,
+            //'primary_address' => $request->primary_address,
+            //'nic' => $request->nic,
+            //'avatar' => $avta
+        ]);
+
+        //dd($user);
+
+        /*$request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000',
         ]);
 
         $avta = $imageName = time() . '.' . $request->avatar->getClientOriginalName();
 
         // Public Folder
-        $request->avatar->move(public_path('uploads/avatars'), $imageName);
-
-        $user->update([
-            'username' => $request->username,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'type' => $request->type,
-            'gender' => $request->gender,
-            'language' => $request->language,
-            'primary_address' => $request->primary_address,
-            'nic' => $request->nic,
-            'avatar' => $avta
-        ]);
-
-
-
-        // $this->doValidate($data)->validate();
-
-        /* $imageName = '';
-        if ($request->has('avatar')) {
-            $imageN = substr($request->avatar->getClientOriginalName(), 0, strpos($request->avatar->getClientOriginalName(), '.'));
-            $imageN = strtolower(preg_replace('#[ -]+#', '-', $imageN));
-            $imageName = $imageN . '-' . date('Y-m-d-H:m:s') . '.' . $request->avatar->getClientOriginalExtension();
-            request()->avatar->move(public_path('uploads/avatars'), $imageName);
-            $imageName = '/uploads/avatars/' . $imageName;
-            $data['avatar'] = $imageName;
-        }*/
-
-        //$user->save();
+        $request->avatar->move(public_path('uploads/avatars'), $imageName);*/
 
         //switch the user's language
         if ($request->language == 'french') {
@@ -152,7 +138,7 @@ class UserController extends Controller
             Session::save();
         }
 
-        return view('user.details', compact('user'))->with('message', 'Your account information successfully updated')->with('image', $imageName);
+        return redirect()->back()->with('message', 'Your account information successfully updated');
     }
 
     public function rides()
