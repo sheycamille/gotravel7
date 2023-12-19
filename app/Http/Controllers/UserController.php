@@ -102,6 +102,7 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
+        
         if (!$user) return redirect()->back()->with('message', 'User not found');
 
         $request->validate([
@@ -124,6 +125,15 @@ class UserController extends Controller
             'nic' => $request->nic,
             'avatar' => $avta
         ]);
+
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->phone_number = $request['phone_number'];
+        $user->type = $request['type'];
+        $user->gender = $request['gender'];
+        $user->language = $request['language'];
+        $user->primary_address = $request['primary_address'];
+
 
 
 

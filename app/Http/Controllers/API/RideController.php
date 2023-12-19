@@ -2,34 +2,34 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\RouteResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cookie;
-
-use App\Http\Resources\RouteResource;
-
-use Bmatovu\MtnMomo\Products\Collection;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-
-use App\Models\Ride;
-use App\Models\Images;
-use App\Http\Resources\RideCollectionResource;
-use App\Models\Booking;
-use App\Models\Route;
-use App\Models\RidePassenger;
-use App\Models\Momo;
-use GuzzleHttp\Exception\RequestException;
-
-use App\Models\Vehicle;
 use Exception;
 use Throwable;
+use App\Models\Momo;
+use App\Models\Ride;
+use App\Models\Route;
+use App\Models\Images;
+use App\Models\Booking;
+use App\Models\Vehicle;
+use Illuminate\Support\Str;
+
+use Illuminate\Http\Request;
+
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\RouteResource;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Bmatovu\MtnMomo\Products\Collection;
+
+use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
 class RideController extends Controller
 {
@@ -452,6 +452,15 @@ class RideController extends Controller
 
         return response()->json([
             'routes' => $ride_directions,
+        ], 200);
+    }
+
+    public function getPaymentMethod()
+    {
+        $pay_methods = PaymentMethod::get();
+
+        return response()->json([
+            'paymentmethods' => $pay_methods,
         ], 200);
     }
 
