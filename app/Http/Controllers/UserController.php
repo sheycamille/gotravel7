@@ -101,13 +101,8 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-<<<<<<< HEAD
         $user = auth()->user();
 
-=======
-        $user = Auth::user();
-        
->>>>>>> 72e55b9 (Trying to fix the editprofileapi)
         if (!$user) return redirect()->back()->with('message', 'User not found');
 
         $user->update([
