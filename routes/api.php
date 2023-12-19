@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Ride;
+use App\Models\RouteDirection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -20,19 +23,37 @@ Route::group(['prefix' => 'ride'], function () {
 });
 
 Route::middleware('auth:api')->group(function () {
+    Route::group(['prefix' => 'user'], function(){
+        Route::get('get-user', 'API\UserController@getUser');
+    });
 
-    Route::post('create-ride', 'API\RideController@create');
-    Route::get('ride-details/{id}', 'API\RideController@rideDetails');
-    Route::post('request-to-pay/{rideId}', 'API\RideController@momoRequestToPay');
-    Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
+    Route::group(['prefix' => 'ride'], function(){
 
-    Route::post('change-password', 'API\UserController@changePassword');
+        Route::post('create', 'API\RideController@create');
+        Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
+        Route::get('rides-later', 'API\RideController@getRidesLater');
+        Route::post('delete', 'API\RideController@deleteRide');
+        Route::get('details/{id}', 'API\RideController@rideDetails');
+        Route::post('cancel/{id}', 'API\RideController@cancelRide');
+        Route::post('book/{id}', 'API\RideController@bookRide');
+        Route::get('my-rides', 'API\RideController@myRides');
+        Route::get('my-bookings', 'API\RideController@myBookings');
+        Route::post('search', 'API\RideController@searchRides');
 
-    Route::get('get-user', 'API\UserController@getUser');
+        Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');
+        Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
 
-    Route::get('get-routes', 'API\RideController@getRoutes');
+        // Route::post('search/{type?}', 'API\RideController@search');
+    });
 
-    Route::post('logout', 'API\AuthenticationController@logout');
+
+    Route::group(['prefix' => 'booking'], function(){
+        Route::post('book', 'API\BookingController@bookRide');
+        Route::get('get-bookings', 'API\BookingController@getBookings');
+        Route::post('cancel', 'API\BookingController@cancelBooking');
+    });
+
+    
 });
 
 

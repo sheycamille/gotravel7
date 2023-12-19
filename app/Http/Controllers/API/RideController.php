@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RouteResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -16,82 +19,251 @@ use Bmatovu\MtnMomo\Products\Collection;
 use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
 use App\Models\Ride;
+use App\Models\Images;
+use App\Http\Resources\RideCollectionResource;
+use App\Models\Booking;
+use App\Models\Route;
 use App\Models\RidePassenger;
 use App\Models\Momo;
-use App\Models\Route;
 use GuzzleHttp\Exception\RequestException;
 
+use App\Models\Vehicle;
+use Exception;
+use Throwable;
 
 class RideController extends Controller
 {
-
-    public $successStatus = 200;
 
     public function create(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
-            'pickup_location' => 'required|string',
+            'pickupLocation' => 'required|string',
             'departure' => 'required|string',
             'destination' => 'required|string',
-            'start_day' => 'required|string',
-            'start_time' => 'required|string',
-            'car_img' => 'required',
-            'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'number_plate' => 'required|string',
-            'cost' => 'required|min:1',
-            'noOfSeats' => 'min:1',
-            'comments' => 'string'
+            'departureDay' => 'required|string',
+            'departureTime' => 'required|string',
+            'carModel' => 'required|string',
+            'carImages' => 'required|array',
+            'carNumberPlate' => 'required|nullable',
+            'pricePerSeat' => 'required|min:1',
+            'availableSeats' => 'required|string|min:1',
+            'additionalComment' => 'string'
+
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 401);
+            return response(['message' => $validator->errors()], 401);
         }
 
-        $images = [];
+        $ride = Ride::create([
+            "driver_id" => auth()->user()->id,
+            "pickupLocation" => $request->pickupLocation,
+            "availableSeats" => $request->availableSeats,
+            "typeOfContent" => Ride::RIDE_TYPE_PERSONS,
+            "status" => Ride::RIDE_STATUS_PROGRESS,
+            "departure" => $request->departure,
+            "destination" => $request->destination,
+            "departureDay" => $request->departureDay,
+            "departureTime" => $request->departureTime,
+            "comments" => $request->additionalComment,
+            "pricePerSeat" => $request->pricePerSeat,
+            "carModel" => $request->carModel,
+            "carNumberPlate" => $request->carNumberPlate,
+        
+        ]);
 
-        if ($request->hasfile('car_img')) {
-            foreach ($request->car_img as $img) {
-                $imageName = time() . rand(1, 99) . '.' . $img->getClientOriginalName();
-                $img->move(public_path('uploads/images'), $imageName);
-                $images[] = $imageName;
+        if ($request->hasFile('carImages')) {
+            $images = $request->file('carImages');
+            foreach ($images as $image) {
+                $file_name = (string) Str::uuid()->toString() . time() . '.png';
+                $path = Storage::putFileAs('ride_images', $image, $file_name);
+        
+                Images::create([
+                    'owner_id' => $ride->id,
+                    'url' => $path,
+                ]);
             }
         }
+        
+        return response([
+            'message' => "Ride created successfully",
+            'status' => true,
+        ], 200);
 
-        $data = array(
-            'pickup_location' => $request->input('pickup_location'),
-            "departure" => $request->input('departure'),
-            "destination" => $request->input('destination'),
-            "start_day" => $request->input('start_day'),
-            'start_time' => $request->input('start_time'),
-            'cost' => $request->input('cost'),
-            'driver_id' => auth()->user()->id,
-            "num_of_seats" => $request->input('noOfSeats'),
-            'carImages' => json_encode($images),
-            'carNumberPlate' => $request->input('number_plate'),
-            'comments' => $request->comments
-        );
-
-        // $this->doValidate($data)->validate();
-
-        DB::table('rides')->insert($data);
-
-        return response()->json([
-            'message' => 'Ride created successfully',
-            'ride' => $data,
-        ], $this->successStatus);
     }
 
-    public function rideDetails($id)
+    public function getRidesNextTwoDays()
+    {
+        $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
+                     ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
+                     ->get();
+        return response([
+            'rides' => new RideCollectionResource($rides),
+            'status' => true,
+        ], 200);
+
+    }
+
+
+    public function getRidesLater()
+    {
+        $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
+                ->get();
+
+        return response([
+            'rides' => new RideCollectionResource($rides),
+            'status' => true,
+        ], 200);
+
+    }
+
+    public function deleteRide(Request $request){
+        $validator = Validator::make($request->all(), [
+            'rideId' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()], 401);
+        }
+
+        $ride = Ride::where('id', $request->rideId)
+                    ->where('driver_id', auth()->user()->id)
+                    ->first();
+        $ride->delete();
+
+        return response([
+            "message" => "Ride deleted successfully",
+            "status" => true
+        ]);
+
+    }
+
+    public function myRides(){
+        $rides = Ride::where('driver_id', auth()->user()->id)->get();
+        return response([
+            'rides' => new RideCollectionResource($rides),
+            'status' => true,
+        ], 200);
+    }
+
+    public function myBookings(){
+        $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
+        return response([
+            'bookings' => $bookings,
+            'status' => true,
+        ], 200);
+    }
+
+    public function searchRides(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'departure' => 'required|string',
+            'destination' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()->first()], 401);
+        }
+
+        $rides = Ride::where(['departure' => $request->departure, 'destination' => $request->destination])->get();
+
+        return response([
+            'rides' => new RideCollectionResource($rides),
+            'status' => true,
+        ], 200);
+    }
+
+    
+    public function momoRequestToPay(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phoneNumber' => 'required|string',
+            'payMethod' => 'required|string',
+            'numOfSeats' => 'required|string',
+            'rideId' => 'required|string',
+            'pricePerSeat' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()], 401);
+        }
+        
+        $collection = new Collection();
+        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
+
+        $ride = Ride::find($request->rideId);
+        $totalCost = $request->numOfSeats * $request->pricePerSeat;
+
+
+        try {
+
+            $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $totalCost);
+
+            $journey = Momo::create([
+                'transaction_id' => $referenceId,
+                'user_id' => auth()->user()->id,
+                'ride_id' => $ride,
+                'phone_number' => $request->phoneNumber,
+                'amount' => $totalCost,
+                'status' => 'pending',
+                'status_code' => 200
+            ]);
+
+            return response()->json([
+                'payer' => $request->all(),
+                'message' => 'Request to pay successful!',
+                'status' => true,
+                'journey' => $journey
+            ], 200);
+
+        } catch (CollectionRequestException $e) {
+            return response()->json([
+                'payer' => $request->all(),
+                'message' => $e->getMessage(),
+                'status' => 'false',
+
+            ], 400);
+        }
+    }
+
+    public function checkTransactionStatus($id)
     {
 
-        $ride = Ride::find($id);
+        $collection = new Collection();
 
-        //$vehicle = new Vehicle();
+        $ride_id = Ride::find($id);
 
-        if (!$ride) return response()->json(['error' => 'Ride not found.'], 400);
+        $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
 
-        return response()->json(['details' => $ride], $this->successStatus);
+        try {
+
+            $refreid = $collection->getTransactionStatus($transactionId);
+
+            $status = $refreid['status'];
+
+            if (!$status === 'SUCCESSFUL')
+                return response()->json([
+                    'message' => 'pending',
+                    'requestToPayResult' => $refreid
+
+                ], 400);
+
+            $join_ride = $this->join($ride_id, session::get("ride_num_seats"));
+
+            $response = response()->json([
+                'message' => 'complete',
+                'requestToPayResult' => $refreid
+            ], 200);
+
+            return [$join_ride, $response];
+        } catch (RequestException $ex) {
+            return response()->json([
+                'message' => 'Unable to get transaction status',
+                'status' => 'false',
+
+            ], 400);
+        }
     }
 
     public function momoRequestToPay(Request $request, $rideId)
@@ -282,4 +454,6 @@ class RideController extends Controller
             'routes' => $ride_directions,
         ], 200);
     }
+
 }
+
