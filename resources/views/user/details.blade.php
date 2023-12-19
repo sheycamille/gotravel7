@@ -71,7 +71,7 @@
                                           <img src="/assets/images/default-avatar.png" width="100%" height="100%"
                                               style="border-radius:50%;">
                                       @else
-                                          <img src="{{ '/uploads/avatars/' . Auth::user()->avatar }}" width="300px"
+                                          <img src="{{ '/uploads/avatars/' . auth()->user()->avatar }}" width="300px"
                                               height="300px" style="border-radius:50%;">
                                       @endif
                                   </div>
@@ -86,11 +86,69 @@
           </div> --}}
                                   <br>
 
-                                  {{--<a onclick="changePassword()" class="btn btn-danger">Change Password</a>--}}
+                                  {{-- <a onclick="changePassword()" class="btn btn-danger">Change Password</a> --}}
                                   <div class="card">
                                       <div class="card-body">
                                           <!--<h1 class="card-title">Edit Profile</h1> -->
-                                          <form id="update_form" class="form-horizontal form-material"
+                                          <div class="row text-center">
+                                              <div class="col-sm-5">
+                                                  <h6 class="mb-0">Username</h6>
+                                              </div>
+                                              <div class="col-sm-7 text-secondary align-middle">
+                                                <p class="align-middle">{{$user->username}}</p>
+                                                  
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row text-center">
+                                              <div class="col-sm-5">
+                                                  <h6 class="mb-0">First Name</h6>
+                                              </div>
+                                              <div class="col-sm-7 text-secondary">
+                                                <p>{{$user->first_name}}</p>
+                                                
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row text-center">
+                                              <div class="col-sm-5">
+                                                  <h6 class="mb-0">Last Name</h6>
+                                              </div>
+                                              <div class="col-sm-7 text-secondary">
+                                                <p> {{$user->last_name}}</p>
+                                               
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row text-center">
+                                              <div class="col-sm-5">
+                                                  <h6 class="mb-0">Email</h6>
+                                              </div>
+                                              <div class="col-sm-7 text-secondary">
+                                                <p>{{$user->email}}</p>
+                                                
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row text-center">
+                                              <div class="col-sm-5">
+                                                  <h6 class="mb-0">Mobile</h6>
+                                              </div>
+                                              <div class="col-sm-7 text-secondary">
+                                                <p>{{$user->phone_number}}</p>
+                                                
+                                              </div>
+                                          </div>
+                                          <hr>
+                                          <div class="row">
+                                              <div class="col-sm-12">
+                                                <a style="background-color: #4cc417; border: 1px solid #4cc417"
+                                                href="{{ route('edit-profile') }}" class="btn btn-warning">Edit Account
+                                                Information</a>
+                                              </div>
+                                          </div>
+
+                                          {{--<form id="update_form" class="form-horizontal form-material"
                                               action="{{ route('update-profile') }}" method="POST">
                                               @csrf
                                               <div class="form-group mb-4">
@@ -108,14 +166,16 @@
                                               <div class="form-group mb-4">
                                                   <label class="col-md-12 p-0">First Name</label>
                                                   <div class="col-md-12 border-bottom p-0">
-                                                      <input type="text" placeholder="{{ $user->first_name }}"
+                                                      <input type="text" name="first_name"
+                                                          placeholder="{{ $user->first_name }}"
                                                           class="form-control p-0 border-0">
                                                   </div>
                                               </div>
                                               <div class="form-group mb-4">
                                                   <label for="example-email" class="col-md-12 p-0">Last Name</label>
                                                   <div class="col-md-12 border-bottom p-0">
-                                                      <input type="text" placeholder="{{ $user->last_name }}"
+                                                      <input type="text" name="last_name"
+                                                          placeholder="{{ $user->last_name }}"
                                                           class="form-control p-0 border-0" name="lastName"
                                                           id="example-email">
                                                   </div>
@@ -149,12 +209,12 @@
                                                           value="Update Profile" name="update">
                                                   </div>
                                               </div>
-                                          </form>
+                                          </form>--}}
                                       </div>
                                   </div>
-                                  {{--<a style="background-color: #4cc417; border: 1px solid #4cc417"
+                                  {{-- <a style="background-color: #4cc417; border: 1px solid #4cc417"
                                       href="{{ route('edit-profile') }}" class="btn btn-warning">Edit Account
-                                      Information</a>--}}
+                                      Information</a> --}}
                               </div>
                           </div>
                       </div>
