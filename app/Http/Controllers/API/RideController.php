@@ -2,14 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cookie;
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\Route;
@@ -24,6 +16,20 @@ use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 use App\Http\Resources\RideResource;
 use App\Http\Resources\RouteCollectionResource;
 use App\Http\Resources\MyRidesCollectionResource;
+use App\Models\Vehicle;
+use Illuminate\Support\Str;
+
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\RouteResource;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+
+use Illuminate\Support\Facades\Validator;
 
 class RideController extends Controller
 {
@@ -403,6 +409,8 @@ class RideController extends Controller
             'paymentmethods' => $pay_methods,
         ], 200);
     }
+
+
 
 }
 

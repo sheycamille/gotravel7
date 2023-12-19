@@ -118,14 +118,51 @@ class UserController extends Controller
 
         //dd($user);
 
-        /*$request->validate([
+        $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000',
         ]);
 
         $avta = $imageName = time() . '.' . $request->avatar->getClientOriginalName();
 
         // Public Folder
-        $request->avatar->move(public_path('uploads/avatars'), $imageName);*/
+        $request->avatar->move(public_path('uploads/avatars'), $imageName);
+
+        $user->update([
+            'username' => $request->username,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'type' => $request->type,
+            'gender' => $request->gender,
+            'language' => $request->language,
+            'primary_address' => $request->primary_address,
+            'nic' => $request->nic,
+            'avatar' => $avta
+        ]);
+
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->phone_number = $request['phone_number'];
+        $user->type = $request['type'];
+        $user->gender = $request['gender'];
+        $user->language = $request['language'];
+        $user->primary_address = $request['primary_address'];
+
+
+
+
+        // $this->doValidate($data)->validate();
+
+        /* $imageName = '';
+        if ($request->has('avatar')) {
+            $imageN = substr($request->avatar->getClientOriginalName(), 0, strpos($request->avatar->getClientOriginalName(), '.'));
+            $imageN = strtolower(preg_replace('#[ -]+#', '-', $imageN));
+            $imageName = $imageN . '-' . date('Y-m-d-H:m:s') . '.' . $request->avatar->getClientOriginalExtension();
+            request()->avatar->move(public_path('uploads/avatars'), $imageName);
+            $imageName = '/uploads/avatars/' . $imageName;
+            $data['avatar'] = $imageName;
+        }*/
+
+        //$user->save();
 
         //switch the user's language
         if ($request->language == 'french') {

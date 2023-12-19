@@ -18,7 +18,6 @@ class UserController extends Controller
         ], 200);
     }
 
-    
     public function changePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -45,7 +44,6 @@ class UserController extends Controller
             'status' => true
         ], 200);
     }
-
 
     public function update(Request $request)
     {
