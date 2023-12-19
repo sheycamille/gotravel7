@@ -46,7 +46,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('cancel', 'API\BookingController@cancelBooking');
     });
 
-    Route::get('get-PaymentMethod', 'API\PaymentMethodController@getPaymentMethod');
+    Route::get('get-payment-Methods', 'API\RideController@getPaymentMethod');
 });
 
 

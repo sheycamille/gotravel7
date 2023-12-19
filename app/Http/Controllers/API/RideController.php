@@ -25,6 +25,7 @@ use App\Models\Route;
 use App\Models\RidePassenger;
 use App\Models\Momo;
 use GuzzleHttp\Exception\RequestException;
+use App\Models\PaymentMethod;
 
 class RideController extends Controller
 {
@@ -393,6 +394,15 @@ class RideController extends Controller
         return response()->json([
             'routes' => new RouteCollectionResource(Route::where('status', Route::STATUS_ACTIVE)->get()),
             'status' => true
+        ], 200);
+    }
+
+    public function getPaymentMethod()
+    {
+        $pay_methods = PaymentMethod::get();
+
+        return response()->json([
+            'paymentmethods' => $pay_methods,
         ], 200);
     }
 
