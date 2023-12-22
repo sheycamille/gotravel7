@@ -1,8 +1,4 @@
 <?php
-
-use App\Models\Ride;
-use App\Models\RouteDirection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -15,10 +11,14 @@ Route::group(["prefix" => "auth"], function () {
     Route::post('reset-password', 'API\PasswordResetController@changePassword');
 });
 
+Route::get('routes', 'API\RideController@getRoutes');
 
 Route::middleware('auth:api')->group(function () {
+
     Route::group(['prefix' => 'user'], function(){
         Route::get('get-user', 'API\UserController@getUser');
+        Route::post('change-password', 'API\UserController@changePassword');
+
     });
 
     Route::group(['prefix' => 'ride'], function(){

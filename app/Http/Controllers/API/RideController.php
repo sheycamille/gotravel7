@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use App\Http\Resources\RouteResource;
@@ -19,15 +18,13 @@ use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 use App\Models\Ride;
 use App\Models\Images;
 use App\Http\Resources\RideCollectionResource;
+use App\Http\Resources\RouteCollectionResource;
+use App\Http\Resources\MyRidesCollectionResource;
 use App\Models\Booking;
 use App\Models\Route;
 use App\Models\RidePassenger;
 use App\Models\Momo;
 use GuzzleHttp\Exception\RequestException;
-
-use App\Models\Vehicle;
-use Exception;
-use Throwable;
 
 class RideController extends Controller
 {
@@ -138,9 +135,12 @@ class RideController extends Controller
     }
 
     public function myRides(){
-        $rides = Ride::where('driver_id', auth()->user()->id)->get();
+        $rides = $rides = Ride::where('driver_id', auth()->user()->id)
+        ->select('destination', 'departure', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+        ->get();
+    
         return response([
-            'rides' => new RideCollectionResource($rides),
+            'rides' => new MyRidesCollectionResource($rides),
             'status' => true,
         ], 200);
     }
@@ -192,7 +192,6 @@ class RideController extends Controller
 
         $ride = Ride::find($request->rideId);
         $totalCost = $request->numOfSeats * $request->pricePerSeat;
-
 
         try {
 
@@ -354,10 +353,9 @@ class RideController extends Controller
 
     public function getRoutes()
     {
-        $ride_directions =  RouteResource::collection(Route::all());
-
         return response()->json([
-            'routes' => $ride_directions,
+            'routes' => new RouteCollectionResource(Route::where('status', Route::STATUS_ACTIVE)->get()),
+            'status' => true
         ], 200);
     }
 

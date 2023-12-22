@@ -16,6 +16,7 @@ class Ride extends Model
     const RIDE_STATUS_PROGRESS = 'in_progress';
     const RIDE_STATUS_STARTED = 'started';
     const RIDE_STATUS_ENDED = 'ended';
+    const RIDE_STATUS_CANCELLED = 'cancelled';
     const RIDE_TYPE_PERSONS = 'persons';
     const RIDE_TYPE_GOODS = 'goods';
 
@@ -131,7 +132,7 @@ class Ride extends Model
         return $this->departure . ' - ' . $this->destination;
     }
 
-    public function images()
+    public function carImages()
     {
         return $this->hasMany(Images::class, 'owner_id');
     }

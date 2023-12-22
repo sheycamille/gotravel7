@@ -1,9 +1,17 @@
 [
-    {
-        "to": "Limbe",
-        "from": "Buea",
-        "status": "active",
-        "distance": "5km"
-
-    }
+    { "name": "Douala", "status": "active" },
+    { "name": "Yaoundé", "status": "active" },
+    { "name": "Bamenda", "status": "active" },
+    { "name": "Bafoussam", "status": "active" },
+    { "name": "Garoua", "status": "active" },
+    { "name": "Maroua", "status": "active" },
+    { "name": "Ngaoundéré", "status": "active" },
+    { "name": "Kumba", "status": "active" },
+    { "name": "Loum", "status": "active" },
+    { "name": "Bertoua", "status": "active" },
+    { "name": "Edea", "status": "active" },
+    { "name": "Mbouda", "status": "active" },
+    { "name": "Kribi", "status": "active" },
+    { "name": "Limbe", "status": "active" },
+    { "name": "Buea", "status": "active" }
 ]
