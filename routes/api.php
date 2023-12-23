@@ -26,7 +26,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('create', 'API\RideController@create');
         Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
         Route::get('rides-later', 'API\RideController@getRidesLater');
-        Route::post('delete', 'API\RideController@deleteRide');
+        Route::post('delete/{id}', 'API\RideController@deleteRide');
         Route::post('cancel/{id}', 'API\RideController@cancelRide');
         Route::post('book/{id}', 'API\RideController@bookRide');
         Route::get('my-rides', 'API\RideController@myRides');

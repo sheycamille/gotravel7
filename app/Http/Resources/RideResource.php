@@ -26,7 +26,6 @@ class RideResource extends JsonResource
             'pricePerSeat' => $this->pricePerSeat,
             'carModel' => $this->carModel,
             'carNumberPlate' => $this->carNumberPlate,
-            // 'passengers' => $this->passengers,
             'spacesLeft' => $this->spacesLeft(),
             'isAPassenger' => $this->isAPassenger(),
             'carImages' => $this->carImages->map(function ($image) {

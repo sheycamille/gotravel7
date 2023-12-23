@@ -197,7 +197,11 @@ class RideController extends Controller
             return response(['message' => $validator->errors()->first()], 401);
         }
 
-        $rides = Ride::where(['departure' => $request->departure, 'destination' => $request->destination])->get();
+        $rides = Ride::where([
+            'departure' => $request->departure,
+            'destination' => $request->destination,
+        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))->get();
+            
 
         return response([
             'rides' => new RideCollectionResource($rides),
