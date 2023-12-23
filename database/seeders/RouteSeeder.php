@@ -9,12 +9,23 @@ use Illuminate\Database\Seeder;
 
 class RouteSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
 
     public function run(): void
     {
-        Route::factory()->count(10)->create();
+
+        $jsonFilePath = database_path( '/seeders/seeds/route.json');
+        $jsonData = file_get_contents($jsonFilePath);
+        $data = json_decode($jsonData, true);
+
+        if ($data) {
+            foreach ($data as $cat) {
+                Route::create([
+                    "name" => $cat["name"],
+                    "status" => $cat["status"],
+                ]);
+            }
+        }
+
     }
+    
 }

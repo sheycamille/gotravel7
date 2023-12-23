@@ -14,42 +14,50 @@ class UserController extends Controller
 {
     public function getUser()
     {
-        $user = User::where('id', auth()->user()->id)->first();
-
-        if (!$user) return response()->json(['error' => 'user not found'], 400);
-
-        return response()->json([
-            'user' => new UserResource($user),
+        return response([
+            'user' => new UserResource(auth()->user()),
         ], 200);
     }
 
     public function changePassword(Request $request)
     {
-        $user = auth()->user();
 
         $validator = Validator::make($request->all(), [
-            'current_pass' => 'string|required',
-            'newpass' => 'string|required|min:6',
-            'confirm_newpass' => 'string|required|same:newpass'
+            'oldPassword' => 'string|required',
+            'password' => 'string|required|min:6',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()], 401);
-        }
-        $newpass = $request->newpass;
-        $cnewpass = $request->cnewpass;
-
-        if (!$user) return response()->json(['message' => 'User not found'], 400);
-
-        if (!Hash::check($request->current_pass, $user->password)) {
-            return response()->json(['message' => 'Current password does not match'], 401);
+            return response(['message' => $validator->errors()->first()], 401);
         }
 
-        $user->password = Hash::make($newpass);
-        $user->save();
+        if (!auth()->user()) return response(['message' => 'User not found'], 400);
 
-        return response()->json([
+        if (!Hash::check($request->oldPassword, auth()->user()->password)) {
+            return response(['message' => 'Current password does not match'], 401);
+        }
+
+        auth()->user()->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response([
             'message' => 'Password has been reset successfully',
+            'status' => true
         ], 200);
+    }
+
+    public function editProfile(Request $request){
+        
+        $validator = Validator::make($request->all(), [
+            'departure' => 'required|string',
+            'destination' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()->first()], 401);
+        }
+
+
     }
 }

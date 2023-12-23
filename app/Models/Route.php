@@ -9,14 +9,14 @@ class Route extends Model
 {
     use HasFactory;
 
+    const STATUS_ACTIVE = "active";
+    const STATUS_SUSPENDED = "suspended";
+    
+
     protected $fillable = [
-        "to",
-        "from",
+        "name",
         "status",
-        "distance",
-        "created_at",
-        "updated_at",
-        ];
+    ];
 
         
     public function Ride()
