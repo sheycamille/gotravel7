@@ -17,7 +17,8 @@ class MyRidesResource extends JsonResource
             "departure" => Route::where("id", $this->departure)->first()->name,
             "departureDay" => $this->departureDay,
             "departureTime" => $this->departureTime,
-            "pricePerSeat" => $this->pricePerSeat
+            "pricePerSeat" => $this->pricePerSeat,
+            'status' => $this->status
         ];
     }
 }

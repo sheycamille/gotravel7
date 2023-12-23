@@ -136,7 +136,7 @@ class RideController extends Controller
 
     public function myRides(){
         $rides = $rides = Ride::where('driver_id', auth()->user()->id)
-        ->select('destination', 'departure', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+        ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
         ->get();
     
         return response([
@@ -156,8 +156,8 @@ class RideController extends Controller
     public function searchRides(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'departure' => 'required|string',
-            'destination' => 'required|string',
+            'departure' => 'required',
+            'destination' => 'required',
         ]);
 
         if ($validator->fails()) {

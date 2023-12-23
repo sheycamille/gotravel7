@@ -14,18 +14,13 @@ class UserController extends Controller
 {
     public function getUser()
     {
-        $user = User::where('id', auth()->user()->id)->first();
-
-        if (!$user) return response()->json(['error' => 'user not found'], 400);
-
-        return response()->json([
-            'user' => new UserResource($user),
+        return response([
+            'user' => new UserResource(auth()->user()),
         ], 200);
     }
 
     public function changePassword(Request $request)
     {
-        info(auth()->user());
 
         $validator = Validator::make($request->all(), [
             'oldPassword' => 'string|required',
@@ -45,8 +40,6 @@ class UserController extends Controller
         auth()->user()->update([
             'password' => Hash::make($request->password)
         ]);
-
-        auth()->user()->save();
 
         return response([
             'message' => 'Password has been reset successfully',
