@@ -27,10 +27,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
         Route::get('rides-later', 'API\RideController@getRidesLater');
         Route::post('delete', 'API\RideController@deleteRide');
-        Route::get('details/{id}', 'API\RideController@rideDetails');
         Route::post('cancel/{id}', 'API\RideController@cancelRide');
         Route::post('book/{id}', 'API\RideController@bookRide');
         Route::get('my-rides', 'API\RideController@myRides');
+        Route::get('my-rides/detail/{id}', 'API\RideController@getRideDetails');
         Route::get('my-bookings', 'API\RideController@myBookings');
         Route::post('search', 'API\RideController@searchRides');
 

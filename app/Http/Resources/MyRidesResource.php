@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Route;
+use App\Models\Booking;
 
 class MyRidesResource extends JsonResource
 {
@@ -18,7 +19,7 @@ class MyRidesResource extends JsonResource
             "departureDay" => $this->departureDay,
             "departureTime" => $this->departureTime,
             "pricePerSeat" => $this->pricePerSeat,
-            'status' => $this->status
+            'status' => $this->status,
         ];
     }
 }
