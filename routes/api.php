@@ -47,6 +47,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::get('get-payment-Methods', 'API\RideController@getPaymentMethod');
+    Route::put('\users', 'UserController@update');
 });
 
 
