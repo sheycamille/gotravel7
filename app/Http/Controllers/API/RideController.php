@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+<<<<<<< HEAD
 use Exception;
 use Throwable;
 use App\Models\Momo;
@@ -31,6 +32,32 @@ use GuzzleHttp\Exception\RequestException;
 use App\Http\Resources\RideCollectionResource;
 use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
 
+=======
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
+use App\Http\Resources\RouteResource;
+
+use Bmatovu\MtnMomo\Products\Collection;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+
+use App\Models\Ride;
+use App\Models\Images;
+use App\Http\Resources\RideCollectionResource;
+use App\Http\Resources\RouteCollectionResource;
+use App\Http\Resources\MyRidesCollectionResource;
+use App\Models\Booking;
+use App\Models\Route;
+use App\Models\RidePassenger;
+use App\Models\Momo;
+use GuzzleHttp\Exception\RequestException;
+
+>>>>>>> 8623cf172d5ae5b6312353cd8ef05c22ff26dc8a
 class RideController extends Controller
 {
 
@@ -140,9 +167,12 @@ class RideController extends Controller
     }
 
     public function myRides(){
-        $rides = Ride::where('driver_id', auth()->user()->id)->get();
+        $rides = $rides = Ride::where('driver_id', auth()->user()->id)
+        ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+        ->get();
+    
         return response([
-            'rides' => new RideCollectionResource($rides),
+            'rides' => new MyRidesCollectionResource($rides),
             'status' => true,
         ], 200);
     }
@@ -158,8 +188,8 @@ class RideController extends Controller
     public function searchRides(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'departure' => 'required|string',
-            'destination' => 'required|string',
+            'departure' => 'required',
+            'destination' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -194,7 +224,6 @@ class RideController extends Controller
 
         $ride = Ride::find($request->rideId);
         $totalCost = $request->numOfSeats * $request->pricePerSeat;
-
 
         try {
 
@@ -266,98 +295,6 @@ class RideController extends Controller
         }
     }
 
-    public function momoRequestToPay(Request $request, $rideId)
-    {
-        $collection = new Collection();
-        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
-
-        $ride = Ride::find($rideId);
-
-        $name = auth()->user()->username;
-
-        $cost = $ride->cost;
-        $seats = $request->num_of_seats;
-        $momo = $request->phoneNumber;
-
-        session::put("ride_num_seats", $request->input('num_of_seats'));
-
-        //session(["pay_method" => $request->input('pay_method')]);
-
-        $totalCost = $seats * $cost;
-
-
-        try {
-            $referenceId = $collection->requestToPay($transactionId, $momo, $totalCost);
-
-            $journey = Momo::create([
-                'transaction_id' => $referenceId,
-                'user_id' => auth()->user()->id,
-                'ride_id' => $ride,
-                'phone_number' => $momo,
-                'amount' => $totalCost,
-                'status' => 'pending',
-                'status_code' => 200
-            ]);
-
-            return response()->json([
-                'payer' => $request->all(),
-                'message' => 'Request to pay successful!',
-                'status' => true,
-                'journey' => $journey
-            ], 200);
-        } catch (CollectionRequestException $e) {
-            return response()->json([
-                'payer' => $request->all(),
-                'message' => $e->getMessage(),
-                'status' => 'false',
-
-            ], 400);
-        }
-    }
-
-    public function checkTransactionStatus($id)
-    {
-
-        $collection = new Collection();
-
-        $ride_id = Ride::find($id);
-
-        $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
-
-        try {
-
-            $refreid = $collection->getTransactionStatus($transactionId);
-
-            $status = $refreid['status'];
-
-            if (!$status === 'SUCCESSFUL')
-                return response()->json([
-                    'message' => 'pending',
-                    'requestToPayResult' => $refreid
-
-                ], 400);
-
-            $join_ride = $this->join($ride_id, session::get("ride_num_seats"));
-
-            $response = response()->json([
-                'message' => 'complete',
-                'requestToPayResult' => $refreid
-
-            ], 200);
-
-            return [$response, $join_ride];
-            
-            /*if (in_array('SUCCESSFUL', array_values($arr))) {  
-            } else {   
-            }*/
-        } catch (RequestException $ex) {
-            return response()->json([
-                'message' => 'Unable to get transaction status',
-                'status' => 'false',
-
-            ], 400);
-        }
-    }
 
     public function join($ride_id, $seats)
     {
@@ -448,10 +385,9 @@ class RideController extends Controller
 
     public function getRoutes()
     {
-        $ride_directions =  RouteResource::collection(Route::all());
-
         return response()->json([
-            'routes' => $ride_directions,
+            'routes' => new RouteCollectionResource(Route::where('status', Route::STATUS_ACTIVE)->get()),
+            'status' => true
         ], 200);
     }
 

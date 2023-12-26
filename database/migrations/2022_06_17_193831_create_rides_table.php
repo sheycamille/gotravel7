@@ -16,8 +16,8 @@ return new class extends Migration
             $table->integer('availableSeats');
             $table->enum('typeOfContent', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
             $table->enum('status', [ Ride::RIDE_STATUS_PROGRESS, Ride::RIDE_STATUS_STARTED, Ride::RIDE_STATUS_ENDED])->default(Ride::RIDE_STATUS_PROGRESS);
-            $table->string('departure');
-            $table->string('destination');
+            $table->unsignedBigInteger('departure');
+            $table->unsignedBigInteger('destination');
             $table->string('departureDay');
             $table->string('departureTime');
             $table->longText('comments')->nullable();
