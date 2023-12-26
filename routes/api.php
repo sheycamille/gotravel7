@@ -49,7 +49,11 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::get('get-payment-Methods', 'API\RideController@getPaymentMethod');
+<<<<<<< HEAD
     
+=======
+    Route::put('\users', 'UserController@update');
+>>>>>>> db20283 (trying to fix the update api)
 });
 
 

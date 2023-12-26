@@ -45,10 +45,10 @@ class UserController extends Controller
         ], 200);
     }
 
+
     public function update(Request $request)
     {
         $user = auth()->user();
-<<<<<<< HEAD
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -72,49 +72,5 @@ class UserController extends Controller
         ], 200);
     }
 
-=======
-    
-        if (!$user) return response()->json([
-            'message' => 'User not found' ], 400);
-                
-        $validator = Validator::make($request->all(), [
-            'Username' => 'string',
-            'email' => 'string',
-            'phone_number' => 'string',
-            'type' => 'string',
-            'gender' => 'string',
-            'language' => 'string',
-            'primary_address' => 'string',
-            'nic' => 'string',
-            // 'avatar' => 'string|required',
-            
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()], 401);
-        }
-    
-        // redirect()->back()->with('message', 'User not found');
-
-        //$avta = $imageName = time() . '.' . $request->avatar->getClientOriginalName();
-
-        // Public Folder
-        //$request->avatar->move(public_path('uploads/avatars'), $imageName);
-
-        $user->update([
-            'username' => $request->username,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'type' => $request->type,
-            'gender' => $request->gender,
-            'language' => $request->language,
-            'primary_address' => $request->primary_address,
-            'nic' => $request->nic,
-            //'avatar' => $avta
-        ]);
-
-
-
-    }
->>>>>>> 72e55b9 (Trying to fix the editprofileapi)
 }
