@@ -25,6 +25,7 @@ Route::group(['prefix' => 'ride'], function () {
 Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'user'], function(){
         Route::get('get-user', 'API\UserController@getUser');
+        Route::put('edit-profile', 'API\UserController@update');
        
     });
 
@@ -55,7 +56,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::get('get-payment-Methods', 'API\RideController@getPaymentMethod');
-    Route::put('\users', 'UserController@update');
+    
 });
 
 
