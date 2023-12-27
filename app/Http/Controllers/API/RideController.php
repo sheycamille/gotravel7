@@ -2,6 +2,37 @@
 
 namespace App\Http\Controllers\API;
 
+<<<<<<< HEAD
+use Exception;
+use Throwable;
+use App\Models\Momo;
+use App\Models\Ride;
+use App\Models\Route;
+use App\Models\Images;
+use App\Models\Booking;
+use App\Models\Vehicle;
+use Illuminate\Support\Str;
+
+use Illuminate\Http\Request;
+
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\RouteResource;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Bmatovu\MtnMomo\Products\Collection;
+
+use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+
+=======
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +57,7 @@ use App\Models\RidePassenger;
 use App\Models\Momo;
 use GuzzleHttp\Exception\RequestException;
 
+>>>>>>> 8623cf172d5ae5b6312353cd8ef05c22ff26dc8a
 class RideController extends Controller
 {
 
@@ -356,6 +388,15 @@ class RideController extends Controller
         return response()->json([
             'routes' => new RouteCollectionResource(Route::where('status', Route::STATUS_ACTIVE)->get()),
             'status' => true
+        ], 200);
+    }
+
+    public function getPaymentMethod()
+    {
+        $pay_methods = PaymentMethod::get();
+
+        return response()->json([
+            'paymentmethods' => $pay_methods,
         ], 200);
     }
 

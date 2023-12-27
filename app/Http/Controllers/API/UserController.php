@@ -47,6 +47,87 @@ class UserController extends Controller
         ], 200);
     }
 
+<<<<<<< HEAD
+    // public function update(Request $request)
+    // {
+    //     $user = auth()->user();
+    
+    //     if (!$user) return response()->json([
+    //         'message' => 'User not found' ], 400);
+                
+    //     $validator = Validator::make($request->all(), [
+    //         'Username' => 'string',
+    //         'email' => 'string',
+    //         'phone_number' => 'string',
+    //         'type' => 'string',
+    //         'gender' => 'string',
+    //         'language' => 'string',
+    //         'primary_address' => 'string',
+    //         'nic' => 'string',
+            // 'avatar' => 'string|required',
+            
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json(['message' => $validator->errors()], 401);
+        // }
+    
+        // redirect()->back()->with('message', 'User not found');
+
+        //$avta = $imageName = time() . '.' . $request->avatar->getClientOriginalName();
+
+        // Public Folder
+        //$request->avatar->move(public_path('uploads/avatars'), $imageName);
+
+        // $user->update([
+        //     'username' => $request->username,
+        //     'email' => $request->email,
+        //     'phone_number' => $request->phone_number,
+        //     'type' => $request->type,
+        //     'gender' => $request->gender,
+        //     'language' => $request->language,
+        //     'primary_address' => $request->primary_address,
+        //     'nic' => $request->nic,
+        //     //'avatar' => $avta
+        // ]);
+
+
+
+    // 
+    
+
+    public function update(Request $request)
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    // $validatedData = $request->validate([
+    //     'username' => 'required',
+    //     'first_name' => 'required',
+    //     'last_name' => 'required',
+    //     'email' => 'required|email',
+    //     'phone_number' => 'required',
+    // ]);
+
+    // $user->update($validatedData);
+    $user->update([
+            'username' => $request->username,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'type' => $request->type,
+            'gender' => $request->gender,
+            'language' => $request->language,
+            'primary_address' => $request->primary_address,
+            'nic' => $request->nic,
+            //'avatar' => $avta
+        ]);
+
+    return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
+}
+=======
     public function editProfile(Request $request){
         
         $validator = Validator::make($request->all(), [
@@ -60,4 +141,5 @@ class UserController extends Controller
 
 
     }
+>>>>>>> 8623cf172d5ae5b6312353cd8ef05c22ff26dc8a
 }
