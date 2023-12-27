@@ -47,11 +47,6 @@ class UserController extends Controller
     }
 
 
-    public function changeLanguage(){
-
-    }
-
-
     public function update(Request $request)
     {
         $user = auth()->user();
