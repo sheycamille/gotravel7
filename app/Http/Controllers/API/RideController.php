@@ -10,22 +10,20 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
-use App\Http\Resources\RideResource;
-
-use Bmatovu\MtnMomo\Products\Collection;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-
+use App\Models\Momo;
 use App\Models\Ride;
+use App\Models\Route;
 use App\Models\Images;
+use App\Models\Booking;
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+use Bmatovu\MtnMomo\Products\Collection;
+use GuzzleHttp\Exception\RequestException;
 use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+use App\Http\Resources\RideResource;
 use App\Http\Resources\RouteCollectionResource;
 use App\Http\Resources\MyRidesCollectionResource;
-use App\Models\Booking;
-use App\Models\Route;
-use App\Models\RidePassenger;
-use App\Models\Momo;
-use GuzzleHttp\Exception\RequestException;
-use App\Models\PaymentMethod;
 
 class RideController extends Controller
 {
