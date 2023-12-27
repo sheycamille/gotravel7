@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone_number')->nullable();
             $table->string('nic')->nullable();
-            $table->string('primary_address')->nullable();
+            $table->string('address')->nullable();
             $table->string('dob')->nullable();
             $table->string('gender')->nullable();
             $table->string('points')->nullable();
