@@ -18,9 +18,9 @@ class UserController extends Controller
         ], 200);
     }
 
+    
     public function changePassword(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'oldPassword' => 'string|required',
             'password' => 'string|required|min:6',
@@ -72,4 +72,6 @@ class UserController extends Controller
             "status" => true
         ], 200);
     }
+
+
 }
