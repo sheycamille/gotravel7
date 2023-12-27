@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Validator;
 
-
 class RideController extends Controller
 {
 
