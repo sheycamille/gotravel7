@@ -1,9 +1,10 @@
 [
-    {
-        "to": "Limbe",
-        "from": "Buea",
-        "status": "active",
-        "distance": "5km"
+    { "name": "Limbe", "status": "active" },
+    { "name": "Buea", "status": "active" },
+    { "name": "Douala", "status": "active" },
+    { "name": "Yaoundé", "status": "active" },
+    { "name": "Bamenda", "status": "active" },
+    { "name": "Bafoussam", "status": "active" },
+    { "name": "Kumba", "status": "active" }
 
-    }
 ]

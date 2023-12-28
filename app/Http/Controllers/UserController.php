@@ -93,7 +93,7 @@ class UserController extends Controller
 
     public function edit()
     {
-        $user = Auth::user();
+        $user = auth()->user();
         if (!$user) return redirect()->back()->with('message', 'User not found');
 
         return view('user.edit', compact('user'));
@@ -101,8 +101,22 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
+
         if (!$user) return redirect()->back()->with('message', 'User not found');
+
+        $user->update([
+            'username' => $request->username,
+            'fitst_name' => $request->fitst_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone_number' => $request->phone,
+            //'primary_address' => $request->primary_address,
+            //'nic' => $request->nic,
+            //'avatar' => $avta
+        ]);
+
+        //dd($user);
 
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000',
@@ -124,6 +138,15 @@ class UserController extends Controller
             'nic' => $request->nic,
             'avatar' => $avta
         ]);
+
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->phone_number = $request['phone_number'];
+        $user->type = $request['type'];
+        $user->gender = $request['gender'];
+        $user->language = $request['language'];
+        $user->primary_address = $request['primary_address'];
+
 
 
 
@@ -152,7 +175,7 @@ class UserController extends Controller
             Session::save();
         }
 
-        return view('user.details', compact('user'))->with('message', 'Your account information successfully updated')->with('image', $imageName);
+        return redirect()->back()->with('message', 'Your account information successfully updated');
     }
 
     public function rides()

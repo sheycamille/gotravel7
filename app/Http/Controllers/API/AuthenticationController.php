@@ -124,6 +124,7 @@ class AuthenticationController extends Controller
 
     public function emailVerify(Request $request)
     {
+        info($request->all());
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'otp' => 'required'

@@ -16,13 +16,15 @@ class User extends Authenticatable
     const ROLE_ADMIN = 'administrator';
     const ROLE_DRIVER = 'driver';
     const ROLE_PASSENGER = 'passenger';
-    const LANG_EN = 'english';
-    const LANG_FR = 'french';
-    const GENDER_MALE = 'male';
-    const GENDER_FEMALE = 'female';
+    const LANG_EN = 'en';
+    const LANG_FR = 'fr';
+    const GENDER_MALE = 'male'; // 1 for male
+    const GENDER_FEMALE = 'female'; // 2 for female
 
     protected $fillable = [
-        'first_name', 'last_name', 'username', 'name', 'email', 'email_verified_at', 'password', 'phone_number', 'type', 'nic', 'primary_address', 'dob', 'language', 'status', 'points', 'avatar', 'gender', 'otp'
+        'first_name', 'last_name', 'username', 'name', 'email', 
+        'email_verified_at', 'password', 'phone_number', 'type', 'nic', 
+        'address', 'dob', 'language', 'status', 'points', 'avatar', 'gender', 'otp'
     ];
 
     protected $hidden = [
@@ -42,10 +44,6 @@ class User extends Authenticatable
         return $this->name ? $this->name : $this->username;
     }
 
-    /*public static function getUserTypes()
-    {
-        return ['passenger', 'driver', 'administrator'];
-    }*/
     public function isAdmin()
     {
 
@@ -54,9 +52,7 @@ class User extends Authenticatable
 
     public function isUser()
     {
-
         return $this->type === User::ROLE_DRIVER || User::ROLE_PASSENGER;
-        
     }
 
     public static function getUserGenders()

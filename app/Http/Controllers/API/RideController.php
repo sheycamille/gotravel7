@@ -1,33 +1,33 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cookie;
-use App\Http\Resources\RouteResource;
-
-use Bmatovu\MtnMomo\Products\Collection;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-
-use App\Models\Ride;
-use App\Models\Images;
-use App\Http\Resources\RideCollectionResource;
-use App\Models\Booking;
-use App\Models\Route;
-use App\Models\RidePassenger;
 use App\Models\Momo;
+use App\Models\Ride;
+use App\Models\Route;
+use App\Models\Images;
+use App\Models\Booking;
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+use Bmatovu\MtnMomo\Products\Collection;
 use GuzzleHttp\Exception\RequestException;
-
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+use App\Http\Resources\RideResource;
+use App\Http\Resources\RouteCollectionResource;
+use App\Http\Resources\MyRidesCollectionResource;
 use App\Models\Vehicle;
-use Exception;
-use Throwable;
+use Illuminate\Support\Str;
+
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+
+use Illuminate\Support\Facades\Validator;
 
 class RideController extends Controller
 {
@@ -95,7 +95,9 @@ class RideController extends Controller
     {
         $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
                      ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
+                     ->where('status' , Ride::RIDE_STATUS_PROGRESS)
                      ->get();
+
         return response([
             'rides' => new RideCollectionResource($rides),
             'status' => true,
@@ -107,6 +109,7 @@ class RideController extends Controller
     public function getRidesLater()
     {
         $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
+                ->where('status' , Ride::RIDE_STATUS_PROGRESS)
                 ->get();
 
         return response([
@@ -116,33 +119,66 @@ class RideController extends Controller
 
     }
 
-    public function deleteRide(Request $request){
-        $validator = Validator::make($request->all(), [
-            'rideId' => 'required|string',
-        ]);
+    public function deleteRide($id){
 
-        if ($validator->fails()) {
-            return response(['message' => $validator->errors()], 401);
-        }
-
-        $ride = Ride::where('id', $request->rideId)
+        $ride = Ride::where('id', $id)
                     ->where('driver_id', auth()->user()->id)
                     ->first();
-        $ride->delete();
+        if ($ride) {
+            $ride->delete();
+
+            return response([
+                "message" => "Ride deleted successfully",
+                "status" => true
+            ]);
+        }
 
         return response([
-            "message" => "Ride deleted successfully",
+            "message" => "Failed to delete ride",
             "status" => true
-        ]);
+        ], 404);
 
     }
 
-    public function myRides(){
-        $rides = Ride::where('driver_id', auth()->user()->id)->get();
+    public function cancelRide($id){
+
+        $ride = Ride::where('id', $id)
+            ->where('driver_id', auth()->user()->id)
+            ->first();
+
+        if ($ride) {
+            $ride->update([
+                'status' => Ride::RIDE_STATUS_CANCELLED
+            ]);
+            $ride->save();
+            return response([
+                "message" => "Ride cancelled successfully",
+                "status" => true
+            ]);
+        }
+
         return response([
-            'rides' => new RideCollectionResource($rides),
+            "message" => "Failed to cancel ride",
+            "status" => true
+        ], 404);
+    }
+
+    public function myRides(){
+        $rides = $rides = Ride::where('driver_id', auth()->user()->id)
+        ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+        ->get();
+    
+        return response([
+            'rides' => new MyRidesCollectionResource($rides),
             'status' => true,
         ], 200);
+    }
+
+    public function getRideDetails($id){
+        return response([
+            "ride" => new RideResource(Ride::find($id)),
+            "status" => true
+        ]);
     }
 
     public function myBookings(){
@@ -156,15 +192,19 @@ class RideController extends Controller
     public function searchRides(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'departure' => 'required|string',
-            'destination' => 'required|string',
+            'departure' => 'required',
+            'destination' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response(['message' => $validator->errors()->first()], 401);
         }
 
-        $rides = Ride::where(['departure' => $request->departure, 'destination' => $request->destination])->get();
+        $rides = Ride::where([
+            'departure' => $request->departure,
+            'destination' => $request->destination,
+        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))->get();
+            
 
         return response([
             'rides' => new RideCollectionResource($rides),
@@ -192,7 +232,6 @@ class RideController extends Controller
 
         $ride = Ride::find($request->rideId);
         $totalCost = $request->numOfSeats * $request->pricePerSeat;
-
 
         try {
 
@@ -354,12 +393,22 @@ class RideController extends Controller
 
     public function getRoutes()
     {
-        $ride_directions =  RouteResource::collection(Route::all());
-
         return response()->json([
-            'routes' => $ride_directions,
+            'routes' => new RouteCollectionResource(Route::where('status', Route::STATUS_ACTIVE)->get()),
+            'status' => true
         ], 200);
     }
+
+    public function getPaymentMethod()
+    {
+        $pay_methods = PaymentMethod::get();
+
+        return response()->json([
+            'paymentmethods' => $pay_methods,
+        ], 200);
+    }
+
+
 
 }
 
