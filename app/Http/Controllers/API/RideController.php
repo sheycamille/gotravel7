@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
-use Exception;
-use Throwable;
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\Route;
 use App\Models\Images;
 use App\Models\Booking;
-use App\Models\Vehicle;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\PaymentMethod;
 use App\Models\RidePassenger;
 
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\RouteResource;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -102,6 +98,9 @@ class RideController extends Controller
         $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
                      ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
                      ->where('status' , Ride::RIDE_STATUS_PROGRESS)
+                     ->where('availableSeats', '>', 0)
+                     ->orderBy('departureDay', 'asc')
+                     ->orderBy('departureTime', 'asc')
                      ->get();
 
         return response([
@@ -116,6 +115,9 @@ class RideController extends Controller
     {
         $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
                 ->where('status' , Ride::RIDE_STATUS_PROGRESS)
+                ->where('availableSeats', '>', 0)
+                ->orderBy('departureDay', 'asc')
+                ->orderBy('departureTime', 'asc')
                 ->get();
 
         return response([
@@ -127,22 +129,36 @@ class RideController extends Controller
 
     public function deleteRide($id){
 
-        $ride = Ride::where('id', $id)
+        DB::transaction(function () use ($id)  {
+
+            $ride = Ride::where('id', $id)
                     ->where('driver_id', auth()->user()->id)
                     ->first();
-        if ($ride) {
-            $ride->delete();
+        
+            if (isset($ride)) {
 
-            return response([
-                "message" => "Ride deleted successfully",
-                "status" => true
-            ]);
-        }
+                $ride->images()->delete();
+                $ride->bookings()->delete();
+                $ride->delete();
 
+                return response([
+                    "message" => "Ride deleted successfully",
+                    "status" => true
+                ]);
+
+            }else{
+                return response([
+                    "message" => "Ride not found",
+                    "status" => false
+                ], 404);
+            }
+
+        }, 5);
+       
         return response([
-            "message" => "Failed to delete ride",
-            "status" => true
-        ], 404);
+            "message" => "Something went wrong",
+            "status" => false
+        ], 500);
 
     }
 
@@ -188,7 +204,7 @@ class RideController extends Controller
     }
 
     public function myBookings(){
-        $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
+        $bookings = Booking::where('passengerId', auth()->user()->id)->get();
         return response([
             'bookings' => $bookings,
             'status' => true,
@@ -218,7 +234,6 @@ class RideController extends Controller
         ], 200);
     }
 
-    
     public function momoRequestToPay(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -308,7 +323,6 @@ class RideController extends Controller
             ], 400);
         }
     }
-
 
     public function join($ride_id, $seats)
     {

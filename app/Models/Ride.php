@@ -50,17 +50,17 @@ class Ride extends Model
 
     public function passengers()
     {
-        return $this->hasMany('App\Models\RidePassenger');
+        return $this->hasMany('App\Models\Booking', 'rideId');
     }
 
     public function bookings()
     {
-        return $this->hasMany('App\Models\Booking');
+        return $this->hasMany('App\Models\Booking', 'rideId');
     }
 
     public function isAPassenger()
     {
-        return $this->belongsTo('App\Models\Booking')->where('passenger_id', Auth::user()->id)->first();
+        return $this->belongsTo('App\Models\Booking')->where('passengerId', Auth::user()->id)->first();
     }
 
     public function spacesLeft()

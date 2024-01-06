@@ -27,7 +27,7 @@ class RideResource extends JsonResource
             'carModel' => $this->carModel,
             'carNumberPlate' => $this->carNumberPlate,
             'spacesLeft' => $this->spacesLeft(),
-            'isAPassenger' => $this->isAPassenger(),
+            // 'isAPassenger' => $this->isAPassenger(),
             'carImages' => $this->carImages->map(function ($image) {
                 return $image->url ? (strpos($image->url, 'http://') === 0 || strpos($image->url, 'https://') === 0 ? $image->url : url("storage/".$image->url)) : url("assets/images/1498105293-69-droppin-technologies-ltd.jpg");
             }),

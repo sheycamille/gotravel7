@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Booking;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,32 +12,48 @@ use Illuminate\Support\Facades\Validator;
 class BookingController extends Controller
 {
  
-    public function bookRide(Request $request){
+    public function bookYourRide(Request $request){
+
         $validator = Validator::make($request->all(), [
-            'feePaid' => 'nullable|min:1',
-            'paymentMethod' => 'nullable|string',
-            'status' => 'nullable|string',
+            'phoneNumber' => 'required|string',
+            'payMethod' => 'required|string',
+            'numOfSeats' => 'required|string',
             'rideId' => 'required|string',
+            'pricePerSeat' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response(['message' => $validator->errors()], 401);
+            return response(['message' => $validator->errors()->first()], 401);
         }
 
-        Booking::create([
-            "ride_id" => $request->rideId,
-            "passenger_id" => auth()->user()->id,
-        ]);
+        DB::transaction(function () use ($request) {
+            $booking  = Booking::create([
+                "rideId" => $request->rideId,
+                "passengerId" => auth()->user()->id,
+                "feePaid" => $request->pricePerSeat,
+                "paymentMethod" => $request->payMethod,
+                "numberOfSeats" => $request->numOfSeats,
+                "transacrtionId" => $request->transactionId,
+            ]);
+    
+            $booking->ride->update([
+                'availableSeats' => $booking->ride->availableSeats - $request->numOfSeats
+            ]);
+    
+            return response([
+                'message' => "Ride booked successfully",
+                'status' => true,
+            ], 200);  
+        }, 5); 
 
         return response([
-            "message" => "Ride booked successfully",
-            "status" => true
-        ]);
-
+            'message' => "Something went wrong",
+            'status' => false,
+        ], 500);  
     }
 
     public function getBookings(){
-        $bookings = Booking::where('passenger_id', auth()->user()->id)
+        $bookings = Booking::where('passengerId', auth()->user()->id)
                            ->get();
 
         return response([
@@ -54,15 +71,26 @@ class BookingController extends Controller
             return response(['message' => $validator->errors()], 401);
         }
 
-        $booking = Booking::where('ride_id', $request->rideId)
-                          ->where('passenger_id', auth()->user()->id)
-                          ->first();
-        $booking->delete();
+        DB::transaction(function () use ($request) {
+            $booking = Booking::where('rideId', $request->rideId)
+                    ->where('passengerId', auth()->user()->id)
+                    ->first();
+            $booking->ride->update([
+                'availableSeats' => $booking->ride->availableSeats + $booking->numberOfSeats
+            ]);
 
+            $booking->delete();
+
+            return response([
+                "message" => "Booking cancelled successfully",
+                "status" => true
+            ]);
+        }, 5);
+    
         return response([
-            "message" => "Booking cancelled successfully",
-            "status" => true
-        ]);
-
+            "message" => "Something went wrong",
+            "status" => false
+        ], 500);
+    
     }
 }

@@ -11,6 +11,11 @@ Route::group(["prefix" => "auth"], function () {
     Route::post('reset-password', 'API\PasswordResetController@changePassword');
 });
 
+Route::group(['prefix' => 'ride'], function(){
+    Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
+    Route::get('rides-later', 'API\RideController@getRidesLater');
+});
+
 Route::get('routes', 'API\RideController@getRoutes');
 
 Route::middleware('auth:api')->group(function () {
@@ -26,8 +31,6 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'ride'], function(){
 
         Route::post('create', 'API\RideController@create');
-        Route::get('rides-near', 'API\RideController@getRidesNextTwoDays');
-        Route::get('rides-later', 'API\RideController@getRidesLater');
         Route::post('delete/{id}', 'API\RideController@deleteRide');
         Route::post('cancel/{id}', 'API\RideController@cancelRide');
         Route::post('book/{id}', 'API\RideController@bookRide');
@@ -44,7 +47,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::group(['prefix' => 'booking'], function(){
-        Route::post('book', 'API\BookingController@bookRide');
+        Route::post('book', 'API\BookingController@bookYourRide');
         Route::get('get-bookings', 'API\BookingController@getBookings');
         Route::post('cancel', 'API\BookingController@cancelBooking');
     });
