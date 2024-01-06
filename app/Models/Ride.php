@@ -53,6 +53,11 @@ class Ride extends Model
         return $this->hasMany('App\Models\RidePassenger');
     }
 
+    public function bookings()
+    {
+        return $this->hasMany('App\Models\Booking');
+    }
+
     public function isAPassenger()
     {
         return $this->belongsTo('App\Models\Booking')->where('passenger_id', Auth::user()->id)->first();

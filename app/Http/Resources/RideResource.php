@@ -26,12 +26,12 @@ class RideResource extends JsonResource
             'pricePerSeat' => $this->pricePerSeat,
             'carModel' => $this->carModel,
             'carNumberPlate' => $this->carNumberPlate,
-            // 'passengers' => $this->passengers,
             'spacesLeft' => $this->spacesLeft(),
             'isAPassenger' => $this->isAPassenger(),
             'carImages' => $this->carImages->map(function ($image) {
                 return $image->url ? (strpos($image->url, 'http://') === 0 || strpos($image->url, 'https://') === 0 ? $image->url : url("storage/".$image->url)) : url("assets/images/1498105293-69-droppin-technologies-ltd.jpg");
             }),
+            'passengers' => $this->bookings->map(function ($booking) {return [ 'first_name' => $booking->passenger->first_name, 'last_name' => $booking->passenger->last_name,];})->toArray()
         ];
     }
 }

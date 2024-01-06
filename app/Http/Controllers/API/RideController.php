@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-<<<<<<< HEAD
 use Exception;
 use Throwable;
 use App\Models\Momo;
@@ -26,38 +25,16 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Bmatovu\MtnMomo\Products\Collection;
-
-use Illuminate\Support\Facades\Validator;
-use GuzzleHttp\Exception\RequestException;
-use App\Http\Resources\RideCollectionResource;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-
-=======
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cookie;
-use App\Http\Resources\RouteResource;
-
-use Bmatovu\MtnMomo\Products\Collection;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-
-use App\Models\Ride;
-use App\Models\Images;
-use App\Http\Resources\RideCollectionResource;
-use App\Http\Resources\RouteCollectionResource;
 use App\Http\Resources\MyRidesCollectionResource;
-use App\Models\Booking;
-use App\Models\Route;
-use App\Models\RidePassenger;
-use App\Models\Momo;
-use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RouteCollectionResource;
+use App\Http\Resources\RideResource;
 
->>>>>>> 8623cf172d5ae5b6312353cd8ef05c22ff26dc8a
+use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+
+
 class RideController extends Controller
 {
 
@@ -124,7 +101,9 @@ class RideController extends Controller
     {
         $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
                      ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
+                     ->where('status' , Ride::RIDE_STATUS_PROGRESS)
                      ->get();
+
         return response([
             'rides' => new RideCollectionResource($rides),
             'status' => true,
@@ -136,6 +115,7 @@ class RideController extends Controller
     public function getRidesLater()
     {
         $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
+                ->where('status' , Ride::RIDE_STATUS_PROGRESS)
                 ->get();
 
         return response([
@@ -145,25 +125,48 @@ class RideController extends Controller
 
     }
 
-    public function deleteRide(Request $request){
-        $validator = Validator::make($request->all(), [
-            'rideId' => 'required|string',
-        ]);
+    public function deleteRide($id){
 
-        if ($validator->fails()) {
-            return response(['message' => $validator->errors()], 401);
-        }
-
-        $ride = Ride::where('id', $request->rideId)
+        $ride = Ride::where('id', $id)
                     ->where('driver_id', auth()->user()->id)
                     ->first();
-        $ride->delete();
+        if ($ride) {
+            $ride->delete();
+
+            return response([
+                "message" => "Ride deleted successfully",
+                "status" => true
+            ]);
+        }
 
         return response([
-            "message" => "Ride deleted successfully",
+            "message" => "Failed to delete ride",
             "status" => true
-        ]);
+        ], 404);
 
+    }
+
+    public function cancelRide($id){
+
+        $ride = Ride::where('id', $id)
+            ->where('driver_id', auth()->user()->id)
+            ->first();
+
+        if ($ride) {
+            $ride->update([
+                'status' => Ride::RIDE_STATUS_CANCELLED
+            ]);
+            $ride->save();
+            return response([
+                "message" => "Ride cancelled successfully",
+                "status" => true
+            ]);
+        }
+
+        return response([
+            "message" => "Failed to cancel ride",
+            "status" => true
+        ], 404);
     }
 
     public function myRides(){
@@ -175,6 +178,13 @@ class RideController extends Controller
             'rides' => new MyRidesCollectionResource($rides),
             'status' => true,
         ], 200);
+    }
+
+    public function getRideDetails($id){
+        return response([
+            "ride" => new RideResource(Ride::find($id)),
+            "status" => true
+        ]);
     }
 
     public function myBookings(){
@@ -196,7 +206,11 @@ class RideController extends Controller
             return response(['message' => $validator->errors()->first()], 401);
         }
 
-        $rides = Ride::where(['departure' => $request->departure, 'destination' => $request->destination])->get();
+        $rides = Ride::where([
+            'departure' => $request->departure,
+            'destination' => $request->destination,
+        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))->get();
+            
 
         return response([
             'rides' => new RideCollectionResource($rides),
@@ -399,6 +413,8 @@ class RideController extends Controller
             'paymentmethods' => $pay_methods,
         ], 200);
     }
+
+
 
 }
 
