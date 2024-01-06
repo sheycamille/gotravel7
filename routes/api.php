@@ -17,6 +17,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::group(['prefix' => 'user'], function(){
         Route::get('get-user', 'API\UserController@getUser');
+        Route::put('edit-profile', 'API\UserController@update');
+       
         Route::post('change-password', 'API\UserController@changePassword');
         Route::post('edit-profile', 'API\UserController@update');
     });
@@ -46,7 +48,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('get-bookings', 'API\BookingController@getBookings');
         Route::post('cancel', 'API\BookingController@cancelBooking');
     });
-
 
     Route::get('get-payment-Methods', 'API\RideController@getPaymentMethod');
 });

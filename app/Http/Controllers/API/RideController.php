@@ -1,32 +1,39 @@
 <?php
 
 namespace App\Http\Controllers\API;
+
+use Exception;
+use Throwable;
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\Route;
 use App\Models\Images;
 use App\Models\Booking;
-use App\Models\PaymentMethod;
-use App\Models\RidePassenger;
-use Bmatovu\MtnMomo\Products\Collection;
-use GuzzleHttp\Exception\RequestException;
-use App\Http\Resources\RideCollectionResource;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-use App\Http\Resources\RideResource;
-use App\Http\Resources\RouteCollectionResource;
-use App\Http\Resources\MyRidesCollectionResource;
+use App\Models\Vehicle;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
 
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\RouteResource;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Bmatovu\MtnMomo\Products\Collection;
+use App\Http\Resources\MyRidesCollectionResource;
+use App\Http\Resources\RouteCollectionResource;
+use App\Http\Resources\RideResource;
 
 use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+
 
 class RideController extends Controller
 {
