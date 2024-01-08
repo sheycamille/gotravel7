@@ -10,24 +10,22 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
-        
         "rideId",
         "passengerId",
-        "feePaid",
+        "totalCost",
         "paymentMethod",
         "numberOfSeats",
-        "transacrtionId",
-
+        "transactionId",
     ];
 
     public function ride()
     {
-        return $this->belongsTo(Ride::class);
+        return $this->belongsTo(Ride::class, 'rideId');
     }
 
     public function passenger()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'passengerId');
     }
 
     

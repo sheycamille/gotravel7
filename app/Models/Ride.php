@@ -29,7 +29,7 @@ class Ride extends Model
         'departureDay', 
         'comments', 
         'pricePerSeat', 
-        'availableSeats',
+        'numOfSeats',
         'status', 
         'typeOfContent',
         'carModel',
@@ -65,7 +65,7 @@ class Ride extends Model
 
     public function spacesLeft()
     {
-        return $this->availableSeats - $this->passengers()->count();
+        return $this->numOfSeats - $this->bookings()->count();
     }
 
     public function getFullDate()

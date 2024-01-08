@@ -7,15 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
+
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rideId')->constrained('rides')->onDelete('cascade');
             $table->foreignId('passengerId')->constrained('users')->onDelete('cascade');
-            $table->integer('feePaid')->nullable();
+            $table->integer('totalCost')->nullable();
             $table->string('paymentMethod')->nullable();
             $table->string('numberOfSeats')->nullable();
-            $table->string('transacrtionId')->nullable();
+            $table->string('transactionId')->nullable();
             $table->timestamps();
         });
     }
