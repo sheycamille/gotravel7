@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
-use Exception;
-use Throwable;
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\Route;
 use App\Models\Images;
 use App\Models\Booking;
-use App\Models\Vehicle;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\PaymentMethod;
 use App\Models\RidePassenger;
 
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\RouteResource;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -51,7 +47,7 @@ class RideController extends Controller
             'carImages' => 'required|array',
             'carNumberPlate' => 'required|nullable',
             'pricePerSeat' => 'required|min:1',
-            'availableSeats' => 'required|string|min:1',
+            'numOfSeats' => 'required|string|min:1',
             'additionalComment' => 'string'
 
         ]);
@@ -60,93 +56,125 @@ class RideController extends Controller
             return response(['message' => $validator->errors()], 401);
         }
 
-        $ride = Ride::create([
-            "driver_id" => auth()->user()->id,
-            "pickupLocation" => $request->pickupLocation,
-            "availableSeats" => $request->availableSeats,
-            "typeOfContent" => Ride::RIDE_TYPE_PERSONS,
-            "status" => Ride::RIDE_STATUS_PROGRESS,
-            "departure" => $request->departure,
-            "destination" => $request->destination,
-            "departureDay" => $request->departureDay,
-            "departureTime" => $request->departureTime,
-            "comments" => $request->additionalComment,
-            "pricePerSeat" => $request->pricePerSeat,
-            "carModel" => $request->carModel,
-            "carNumberPlate" => $request->carNumberPlate,
-        
-        ]);
+        try {
 
-        if ($request->hasFile('carImages')) {
-            $images = $request->file('carImages');
-            foreach ($images as $image) {
-                $file_name = (string) Str::uuid()->toString() . time() . '.png';
-                $path = Storage::putFileAs('ride_images', $image, $file_name);
-        
-                Images::create([
-                    'owner_id' => $ride->id,
-                    'url' => $path,
+            DB::transaction(function () use ($request) {
+
+                info("starting transaction");
+
+                $ride = Ride::create([
+                    "driver_id" => auth()->user()->id,
+                    "pickupLocation" => $request->pickupLocation,
+                    "numOfSeats" => $request->numOfSeats,
+                    "typeOfContent" => Ride::RIDE_TYPE_PERSONS,
+                    "status" => Ride::RIDE_STATUS_PROGRESS,
+                    "departure" => $request->departure,
+                    "destination" => $request->destination,
+                    "departureDay" => $request->departureDay,
+                    "departureTime" => $request->departureTime,
+                    "comments" => $request->additionalComment,
+                    "pricePerSeat" => $request->pricePerSeat,
+                    "carModel" => $request->carModel,
+                    "carNumberPlate" => $request->carNumberPlate,
                 ]);
-            }
-        }
-        
-        return response([
-            'message' => "Ride created successfully",
-            'status' => true,
-        ], 200);
 
+                info("done creating ride");
+                if ($request->hasFile('carImages')) {
+                    $images = $request->file('carImages');
+                    foreach ($images as $image) {
+                        $file_name = (string) Str::uuid()->toString() . time() . '.png';
+                        $path = Storage::putFileAs('ride_images', $image, $file_name);
+
+                        Images::create([
+                            'owner_id' => $ride->id,
+                            'url' => $path,
+                        ]);
+                    }
+                }
+
+                info("done creating images");
+
+            }, 5);
+
+            return response([
+                'message' => "Ride created successfully",
+                'status' => true,
+            ], 200);
+
+        } catch (\Throwable $e) {
+            info($e);
+            return response([
+                'message' => "Something went wrong",
+                'status' => false,
+            ], 500);
+        }
     }
 
     public function getRidesNextTwoDays()
     {
         $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
-                     ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
-                     ->where('status' , Ride::RIDE_STATUS_PROGRESS)
-                     ->get();
+            ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
+            ->where('status', Ride::RIDE_STATUS_PROGRESS)
+            ->where('numOfSeats', '>', 0)
+            ->orderBy('departureDay', 'asc')
+            ->orderBy('departureTime', 'asc')
+            ->get();
 
         return response([
             'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
-
     }
 
 
     public function getRidesLater()
     {
         $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
-                ->where('status' , Ride::RIDE_STATUS_PROGRESS)
-                ->get();
+            ->where('status', Ride::RIDE_STATUS_PROGRESS)
+            ->where('numOfSeats', '>', 0)
+            ->orderBy('departureDay', 'asc')
+            ->orderBy('departureTime', 'asc')
+            ->get();
 
         return response([
             'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
-
     }
 
-    public function deleteRide($id){
+    public function deleteRide($id)
+    {
 
-        $ride = Ride::where('id', $id)
-                    ->where('driver_id', auth()->user()->id)
-                    ->first();
-        if ($ride) {
-            $ride->delete();
+       try{
 
-            return response([
-                "message" => "Ride deleted successfully",
-                "status" => true
-            ]);
-        }
+        DB::transaction(function () use ($id) {
 
+            $ride = Ride::where('id', $id)
+                ->where('driver_id', auth()->user()->id)
+                ->first();
+
+
+                $ride->images()->delete();
+                $ride->bookings()->delete();
+                $ride->delete();
+
+        }, 5);
+        
         return response([
-            "message" => "Failed to delete ride",
+            "message" => "Ride deleted successfully",
             "status" => true
-        ], 404);
+        ]);
+       } catch (\Throwable $e) {
+        return response([
+            "message" => "Something went wrong",
+            "status" => false
+        ], 500);
+       }
 
     }
 
-    public function cancelRide($id){
+    public function cancelRide($id)
+    {
 
         $ride = Ride::where('id', $id)
             ->where('driver_id', auth()->user()->id)
@@ -169,48 +197,49 @@ class RideController extends Controller
         ], 404);
     }
 
-    public function myRides(){
+    public function myRides()
+    {
         $rides = $rides = Ride::where('driver_id', auth()->user()->id)
-        ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
-        ->get();
-    
+            ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+            ->get();
+
         return response([
             'rides' => new MyRidesCollectionResource($rides),
             'status' => true,
         ], 200);
     }
 
-    public function getRideDetails($id){
+    public function getRideDetails($id)
+    {
         return response([
             "ride" => new RideResource(Ride::find($id)),
             "status" => true
         ]);
     }
 
-    public function myBookings(){
-        $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
+    public function myBookings()
+    {
+        $bookings = Booking::where('passengerId', auth()->user()->id)->get();
         return response([
             'bookings' => $bookings,
             'status' => true,
         ], 200);
     }
 
-    public function searchRides(Request $request){
+    public function searchRides(Request $request)
+    {
 
-        $validator = Validator::make($request->all(), [
-            'departure' => 'required',
-            'destination' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response(['message' => $validator->errors()->first()], 401);
-        }
+        $destination = $request->query('destination');
+        $departure = $request->query('departure');
 
         $rides = Ride::where([
-            'departure' => $request->departure,
-            'destination' => $request->destination,
-        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))->get();
-            
+            'departure' => $departure,
+            'destination' => $destination,
+        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))
+        ->orderBy('departureDay', 'asc')
+        ->orderBy('departureTime', 'asc')
+        ->paginate(10);
+
 
         return response([
             'rides' => new RideCollectionResource($rides),
@@ -218,7 +247,6 @@ class RideController extends Controller
         ], 200);
     }
 
-    
     public function momoRequestToPay(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -232,7 +260,7 @@ class RideController extends Controller
         if ($validator->fails()) {
             return response(['message' => $validator->errors()], 401);
         }
-        
+
         $collection = new Collection();
         $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
 
@@ -259,7 +287,6 @@ class RideController extends Controller
                 'status' => true,
                 'journey' => $journey
             ], 200);
-
         } catch (CollectionRequestException $e) {
             return response()->json([
                 'payer' => $request->all(),
@@ -308,7 +335,6 @@ class RideController extends Controller
             ], 400);
         }
     }
-
 
     public function join($ride_id, $seats)
     {
@@ -413,8 +439,4 @@ class RideController extends Controller
             'paymentmethods' => $pay_methods,
         ], 200);
     }
-
-
-
 }
-

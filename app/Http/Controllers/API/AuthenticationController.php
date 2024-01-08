@@ -44,7 +44,7 @@ class AuthenticationController extends Controller
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Login Successful',
-            'status' => 'true'
+            'status' => true
         ], 200);
 
     }
@@ -109,7 +109,7 @@ class AuthenticationController extends Controller
                 'token' => $token,
                 'user' => new UserResource($user),
                 'message' => 'Registration Successful',
-                'status' => 'true'
+                'status' => true
             ], 200);
         }
     }
@@ -148,7 +148,7 @@ class AuthenticationController extends Controller
             'token' => $token,
             'user' => new UserResource($user),
             'message' => 'Registration Successful',
-            'status' => 'true'
+            'status' => true
         ], 200);
     }
 

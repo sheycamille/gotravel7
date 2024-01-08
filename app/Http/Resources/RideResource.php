@@ -15,7 +15,8 @@ class RideResource extends JsonResource
             'id' => $this->id,
             'driver' => $this->driver(),
             'pickupLocation' => $this->pickupLocation,
-            'availableSeats' => $this->availableSeats,
+            'numOfSeats' => $this->numOfSeats ?? 0,
+            'availableSeats' => $this->spacesLeft() ?? 0,
             'typeOfContent' => $this->typeOfContent,
             'status' => $this->status,
             "destination" => Route::where("id", $this->destination)->first()->name,
@@ -27,7 +28,7 @@ class RideResource extends JsonResource
             'carModel' => $this->carModel,
             'carNumberPlate' => $this->carNumberPlate,
             'spacesLeft' => $this->spacesLeft(),
-            'isAPassenger' => $this->isAPassenger(),
+            // 'isAPassenger' => $this->isAPassenger(),
             'carImages' => $this->carImages->map(function ($image) {
                 return $image->url ? (strpos($image->url, 'http://') === 0 || strpos($image->url, 'https://') === 0 ? $image->url : url("storage/".$image->url)) : url("assets/images/1498105293-69-droppin-technologies-ltd.jpg");
             }),

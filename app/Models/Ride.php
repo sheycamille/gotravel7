@@ -29,7 +29,7 @@ class Ride extends Model
         'departureDay', 
         'comments', 
         'pricePerSeat', 
-        'availableSeats',
+        'numOfSeats',
         'status', 
         'typeOfContent',
         'carModel',
@@ -50,22 +50,22 @@ class Ride extends Model
 
     public function passengers()
     {
-        return $this->hasMany('App\Models\RidePassenger');
+        return $this->hasMany('App\Models\Booking', 'rideId');
     }
 
     public function bookings()
     {
-        return $this->hasMany('App\Models\Booking');
+        return $this->hasMany('App\Models\Booking', 'rideId');
     }
 
     public function isAPassenger()
     {
-        return $this->belongsTo('App\Models\Booking')->where('passenger_id', Auth::user()->id)->first();
+        return $this->belongsTo('App\Models\Booking')->where('passengerId', Auth::user()->id)->first();
     }
 
     public function spacesLeft()
     {
-        return $this->availableSeats - $this->passengers()->count();
+        return $this->numOfSeats - $this->bookings()->count();
     }
 
     public function getFullDate()
