@@ -49,7 +49,7 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'booking'], function(){
         Route::post('book', 'API\BookingController@bookYourRide');
         Route::get('get-bookings', 'API\BookingController@getBookings');
-        Route::post('cancel', 'API\BookingController@cancelBooking');
+        Route::post('cancel/{id}', 'API\BookingController@cancelBooking');
     });
 
     Route::get('get-payment-Methods', 'API\RideController@getPaymentMethod');

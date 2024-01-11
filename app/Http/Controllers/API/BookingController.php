@@ -31,6 +31,15 @@ class BookingController extends Controller
         $transactionId = Str::random(10);
         try{
 
+            $ride = \App\Models\Ride::find($request->rideId);
+
+            if(intval($ride->numOfSeats) < intval($request->numOfSeats)){
+                return response([
+                    'message' => "Sorry, the number of seats you requested is not available",
+                    'status' => false,
+                ], 400); 
+            }
+
             DB::transaction(function () use ($request, $transactionId) {
 
                 $booking  = Booking::create([
@@ -41,13 +50,6 @@ class BookingController extends Controller
                     "numberOfSeats" => $request->numOfSeats,
                     "transactionId" => $transactionId,
                 ]);
-
-                if(intval($booking->ride->numOfSeats) < intval($request->numOfSeats)){
-                    return response([
-                        'message' => "Sorry, the number of seats you requested is not available",
-                        'status' => false,
-                    ], 400); 
-                }
         
                 $booking->ride->update([
                     'numOfSeats' => intval($booking->ride->numOfSeats) - intval($request->numOfSeats)
@@ -79,33 +81,23 @@ class BookingController extends Controller
         ]);
     }
 
-    public function cancelBooking(Request $request){
-        $validator = Validator::make($request->all(), [
-            'rideId' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response(['message' => $validator->errors()], 401);
-        }
-
+    public function cancelBooking(Request $request, $id){
 
         try{
+            DB::transaction(function () use ($request , $id) {
 
-            DB::transaction(function () use ($request) {
-                $booking = Booking::where('rideId', $request->rideId)
-                        ->where('passengerId', auth()->user()->id)
-                        ->first();
+                $booking = Booking::find($id);
                 $booking->ride->update([
                     'numOfSeats' => $booking->ride->numOfSeats + $booking->numberOfSeats
                 ]);
     
                 $booking->delete();
-    
-                return response([
-                    "message" => "Booking cancelled successfully",
-                    "status" => true
-                ], 200);
             }, 5);
+
+            return response([
+                "message" => "Booking cancelled successfully",
+                "status" => true
+            ], 200);
 
         }catch (\Throwable $e) {
             return response([

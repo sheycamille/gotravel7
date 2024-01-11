@@ -238,6 +238,7 @@ class RideController extends Controller
         ])->whereDate('departureDay', '>=', now()->format('d/m/y'))
         ->orderBy('departureDay', 'asc')
         ->orderBy('departureTime', 'asc')
+        ->where('numOfSeats', '>', 0)
         ->paginate(10);
 
 
@@ -245,6 +246,7 @@ class RideController extends Controller
             'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
+        
     }
 
     public function momoRequestToPay(Request $request)
