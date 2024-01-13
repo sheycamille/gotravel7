@@ -60,8 +60,6 @@ class RideController extends Controller
 
             DB::transaction(function () use ($request) {
 
-                info("starting transaction");
-
                 $ride = Ride::create([
                     "driver_id" => auth()->user()->id,
                     "pickupLocation" => $request->pickupLocation,
@@ -78,12 +76,11 @@ class RideController extends Controller
                     "carNumberPlate" => $request->carNumberPlate,
                 ]);
 
-                info("done creating ride");
                 if ($request->hasFile('carImages')) {
                     $images = $request->file('carImages');
                     foreach ($images as $image) {
                         $file_name = (string) Str::uuid()->toString() . time() . '.png';
-                        $path = Storage::putFileAs('ride_images', $image, $file_name);
+                        $path = Storage::putFileAs('public/ride_images', $image, $file_name);
 
                         Images::create([
                             'owner_id' => $ride->id,
@@ -91,8 +88,6 @@ class RideController extends Controller
                         ]);
                     }
                 }
-
-                info("done creating images");
 
             }, 5);
 
@@ -102,7 +97,6 @@ class RideController extends Controller
             ], 200);
 
         } catch (\Throwable $e) {
-            info($e);
             return response([
                 'message' => "Something went wrong",
                 'status' => false,
