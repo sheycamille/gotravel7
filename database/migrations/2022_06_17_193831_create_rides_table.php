@@ -22,9 +22,8 @@ return new class extends Migration
             $table->string('start_day');
             $table->string('start_time');
             $table->longText('comments')->nullable();
+            $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->double('cost')->default(0);
-            $table->string('carModel');
-            $table->string('carNumberPlate');
             $table->timestamps();
             $table->softDeletes();
         });
