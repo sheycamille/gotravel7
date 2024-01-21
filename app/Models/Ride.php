@@ -22,16 +22,16 @@ class Ride extends Model
 
     protected $fillable = [
         'driver_id',
-        'departure',  
-        'pickupLocation', 
-        'destination', 
-        'departureTime', 
-        'departureDay', 
-        'comments', 
-        'pricePerSeat', 
+        'departure',
+        'pickupLocation',
+        'destination',
+        'departureTime',
+        'departureDay',
+        'comments',
+        'pricePerSeat',
         'numOfSeats',
-        'status', 
-        'typeOfContent',
+        'status',
+        'type',
         'carModel',
         'carNumberPlate'
     ];

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('driver_id')->constrained("users")->onDelete("cascade");
             $table->string('pickupLocation');
             $table->unsignedBigInteger('numOfSeats')->default(0);
-            $table->enum('typeOfContent', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
+            $table->enum('type', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
             $table->enum('status', [ Ride::RIDE_STATUS_PROGRESS, Ride::RIDE_STATUS_STARTED, Ride::RIDE_STATUS_ENDED])->default(Ride::RIDE_STATUS_PROGRESS);
             $table->unsignedBigInteger('departure');
             $table->unsignedBigInteger('destination');
@@ -33,5 +33,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('rides');
     }
-    
+
 };

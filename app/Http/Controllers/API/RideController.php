@@ -64,7 +64,7 @@ class RideController extends Controller
                     "driver_id" => auth()->user()->id,
                     "pickupLocation" => $request->pickupLocation,
                     "numOfSeats" => $request->numOfSeats,
-                    "typeOfContent" => Ride::RIDE_TYPE_PERSONS,
+                    "type" => Ride::RIDE_TYPE_PERSONS,
                     "status" => Ride::RIDE_STATUS_PROGRESS,
                     "departure" => $request->departure,
                     "destination" => $request->destination,

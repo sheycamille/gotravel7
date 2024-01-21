@@ -17,7 +17,7 @@ class RideResource extends JsonResource
             'pickupLocation' => $this->pickupLocation,
             'numOfSeats' => $this->numOfSeats ?? 0,
             'availableSeats' => $this->spacesLeft() ?? 0,
-            'typeOfContent' => $this->typeOfContent,
+            'type' => $this->type,
             'status' => $this->status,
             "destination" => Route::where("id", $this->destination)->first()->name,
             "departure" => Route::where("id", $this->departure)->first()->name,
