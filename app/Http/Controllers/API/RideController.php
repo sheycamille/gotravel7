@@ -153,7 +153,7 @@ class RideController extends Controller
                 $ride->delete();
 
         }, 5);
-        
+
         return response([
             "message" => "Ride deleted successfully",
             "status" => true
@@ -240,7 +240,7 @@ class RideController extends Controller
             'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
-        
+
     }
 
     public function momoRequestToPay(Request $request)
