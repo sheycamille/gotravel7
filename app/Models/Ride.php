@@ -44,8 +44,10 @@ class Ride extends Model
 
     public function driver()
     {
-        $user = User::find($this->driver_id);
-        return $user->first_name . ' ' . $user->last_name;
+        //$user = User::find($this->driver_id);
+        //return $user->first_name . ' ' . $user->last_name;
+        return $this->belongsTo('App\Models\User');
+
     }
 
     public function passengers()

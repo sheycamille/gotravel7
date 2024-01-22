@@ -12,16 +12,17 @@ return new class extends Migration
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('driver_id')->constrained("users")->onDelete("cascade");
-            $table->string('pickupLocation');
-            $table->unsignedBigInteger('numOfSeats')->default(0);
+            $table->string('pickup_location');
+            $table->unsignedBigInteger('num_of_seats')->default(0);
+            $table->unsignedBigInteger('num_of_seats_left')->default(0);
             $table->enum('type', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
             $table->enum('status', [ Ride::RIDE_STATUS_PROGRESS, Ride::RIDE_STATUS_STARTED, Ride::RIDE_STATUS_ENDED])->default(Ride::RIDE_STATUS_PROGRESS);
-            $table->unsignedBigInteger('departure');
-            $table->unsignedBigInteger('destination');
-            $table->string('departureDay');
-            $table->string('departureTime');
+            $table->string('departure');
+            $table->string('destination');
+            $table->string('start_day');
+            $table->string('start_time');
             $table->longText('comments')->nullable();
-            $table->double('pricePerSeat')->default(0);
+            $table->double('cost')->default(0);
             $table->string('carModel');
             $table->string('carNumberPlate');
             $table->timestamps();
