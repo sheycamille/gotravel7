@@ -245,7 +245,7 @@
 
                             <div class="modal-body">
                             <div class="form" style="height: inherit;">
-                                <form class="form-horizontal row" action="{{ route('add_vehicle') }}" role="form" method="post">
+                                <form class="form-horizontal row" action="" role="form" method="post">
                                 {{ csrf_field() }}
                                 
                                 <div class="row">
