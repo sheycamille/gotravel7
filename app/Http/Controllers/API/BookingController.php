@@ -72,7 +72,7 @@ class BookingController extends Controller
     }
 
     public function getBookings(){
-        $bookings = Booking::where('passengerId', auth()->user()->id)
+        $bookings = Booking::where('passenger_id', auth()->user()->id)
                            ->paginate(10);
 
         return response([
