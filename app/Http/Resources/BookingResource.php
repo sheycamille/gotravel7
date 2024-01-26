@@ -13,7 +13,7 @@ class BookingResource extends JsonResource
             "id" => $this->id,
             "totalCost" => $this->totalCost,
             "paymentMethod" => $this->paymentMethod,
-            "ride" => new  \App\Http\Resources\RideResource(\App\Models\Ride::where("id", $this->rideId)->first())
+            "ride" => new  \App\Http\Resources\RideResource(\App\Models\Ride::where("id", $this->ride_id)->first())
         ];
     }
 }
