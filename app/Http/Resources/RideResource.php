@@ -13,7 +13,7 @@ class RideResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'driver' => $this->driver(),
+            'driver' => new  \App\Http\Resources\UserResource($this->driver),
             'pickupLocation' => $this->pickup_location,
             'numOfSeats' => $this->num_of_seats ?? 0,
             'availableSeats' => $this->spacesLeft(),

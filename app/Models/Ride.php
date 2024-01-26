@@ -130,7 +130,7 @@ class Ride extends Model
      */
     public function setStartDayAttribute($value)
     {
-        $this->attributes['start_day'] = date_format($value, 'd-m-Y');
+        $this->attributes['start_day'] = $value;
     }
 
 

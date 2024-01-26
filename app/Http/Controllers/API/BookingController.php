@@ -33,7 +33,7 @@ class BookingController extends Controller
 
             $ride = \App\Models\Ride::find($request->rideId);
 
-            if(intval($ride->numOfSeats) < intval($request->numOfSeats)){
+            if(intval($ride->num_of_seats) < intval($request->numOfSeats)){
                 return response([
                     'message' => "Sorry, the number of seats you requested is not available",
                     'status' => false,
@@ -43,8 +43,8 @@ class BookingController extends Controller
             DB::transaction(function () use ($request, $transactionId) {
 
                 $booking  = Booking::create([
-                    "rideId" => $request->rideId,
-                    "passengerId" => auth()->user()->id,
+                    "ride_id" => $request->rideId,
+                    "passenger_id" => auth()->user()->id,
                     "totalCost" => $request->totalCost,
                     "paymentMethod" => $request->paymentMethod,
                     "numberOfSeats" => $request->numOfSeats,
@@ -52,7 +52,7 @@ class BookingController extends Controller
                 ]);
         
                 $booking->ride->update([
-                    'numOfSeats' => intval($booking->ride->numOfSeats) - intval($request->numOfSeats)
+                    'numOfSeats' => intval($booking->ride->num_of_rides) - intval($request->numOfSeats)
                 ]);
         
             }, 5); 
@@ -88,7 +88,7 @@ class BookingController extends Controller
 
                 $booking = Booking::find($id);
                 $booking->ride->update([
-                    'numOfSeats' => $booking->ride->numOfSeats + $booking->numberOfSeats
+                    'numOfSeats' => $booking->ride->num_of_rides + $booking->numberOfSeats
                 ]);
     
                 $booking->delete();

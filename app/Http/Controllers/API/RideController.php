@@ -37,7 +37,7 @@ class RideController extends Controller
     public function create(Request $request)
     {
 
-        info($request->all());
+        
         $validator = Validator::make($request->all(), [
             'pickupLocation' => 'required|string',
             'departure' => 'required|string',
@@ -55,6 +55,7 @@ class RideController extends Controller
         if ($validator->fails()) {
             return response(['message' => $validator->errors()], 401);
         }
+
 
         try {
 
@@ -76,6 +77,8 @@ class RideController extends Controller
                     "car_model" => $request->carModel,
                     "car_number_plate" => $request->carNumberPlate,
                 ]);
+
+                info($ride);
 
                 if ($request->hasFile('carImages')) {
                     $images = $request->file('carImages');
