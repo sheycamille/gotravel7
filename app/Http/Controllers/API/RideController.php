@@ -37,6 +37,7 @@ class RideController extends Controller
     public function create(Request $request)
     {
 
+        
         $validator = Validator::make($request->all(), [
             'pickupLocation' => 'required|string',
             'departure' => 'required|string',
@@ -49,12 +50,12 @@ class RideController extends Controller
             'pricePerSeat' => 'required|min:1',
             'numOfSeats' => 'required|string|min:1',
             'additionalComment' => 'string'
-
         ]);
 
         if ($validator->fails()) {
             return response(['message' => $validator->errors()], 401);
         }
+
 
         try {
 
@@ -62,19 +63,22 @@ class RideController extends Controller
 
                 $ride = Ride::create([
                     "driver_id" => auth()->user()->id,
-                    "pickupLocation" => $request->pickupLocation,
-                    "numOfSeats" => $request->numOfSeats,
+                    "pickup_location" => $request->pickupLocation,
+                    "num_of_seats" => $request->numOfSeats,
+                    "num_of_seats_left" => $request->numOfSeats,
                     "type" => Ride::RIDE_TYPE_PERSONS,
                     "status" => Ride::RIDE_STATUS_PROGRESS,
                     "departure" => $request->departure,
                     "destination" => $request->destination,
-                    "departureDay" => $request->departureDay,
-                    "departureTime" => $request->departureTime,
+                    "start_day" => $request->departureDay,
+                    "start_time" => $request->departureTime,
                     "comments" => $request->additionalComment,
-                    "pricePerSeat" => $request->pricePerSeat,
-                    "carModel" => $request->carModel,
-                    "carNumberPlate" => $request->carNumberPlate,
+                    "cost" => $request->pricePerSeat,
+                    "car_model" => $request->carModel,
+                    "car_number_plate" => $request->carNumberPlate,
                 ]);
+
+                info($ride);
 
                 if ($request->hasFile('carImages')) {
                     $images = $request->file('carImages');
@@ -90,12 +94,12 @@ class RideController extends Controller
                 }
 
             }, 5);
-
+        
             return response([
                 'message' => "Ride created successfully",
                 'status' => true,
             ], 200);
-
+         
         } catch (\Throwable $e) {
             return response([
                 'message' => "Something went wrong",
@@ -106,12 +110,12 @@ class RideController extends Controller
 
     public function getRidesNextTwoDays()
     {
-        $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
-            ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
+        $rides = Ride::whereDate('start_day', '>=', now()->format('d/m/y'))
+            ->whereDate('start_day', '<=', now()->addDays(2)->format('d/m/y'))
             ->where('status', Ride::RIDE_STATUS_PROGRESS)
-            ->where('numOfSeats', '>', 0)
-            ->orderBy('departureDay', 'asc')
-            ->orderBy('departureTime', 'asc')
+            ->where('num_of_seats', '>', 0)
+            ->orderBy('start_day', 'asc')
+            ->orderBy('start_time', 'asc')
             ->get();
 
         return response([
@@ -123,11 +127,11 @@ class RideController extends Controller
 
     public function getRidesLater()
     {
-        $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
+        $rides = Ride::whereDate('start_day', '>', now()->addDays(2)->format('d/m/y'))
             ->where('status', Ride::RIDE_STATUS_PROGRESS)
-            ->where('numOfSeats', '>', 0)
-            ->orderBy('departureDay', 'asc')
-            ->orderBy('departureTime', 'asc')
+            ->where('num_of_seats', '>', 0)
+            ->orderBy('start_day', 'asc')
+            ->orderBy('start_time', 'asc')
             ->get();
 
         return response([
@@ -194,7 +198,7 @@ class RideController extends Controller
     public function myRides()
     {
         $rides = $rides = Ride::where('driver_id', auth()->user()->id)
-            ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+            ->select('destination', 'departure',  'status', 'start_time', 'start_day', 'id', 'cost')
             ->get();
 
         return response([
@@ -213,7 +217,7 @@ class RideController extends Controller
 
     public function myBookings()
     {
-        $bookings = Booking::where('passengerId', auth()->user()->id)->get();
+        $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
         return response([
             'bookings' => $bookings,
             'status' => true,
@@ -229,10 +233,10 @@ class RideController extends Controller
         $rides = Ride::where([
             'departure' => $departure,
             'destination' => $destination,
-        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))
-        ->orderBy('departureDay', 'asc')
-        ->orderBy('departureTime', 'asc')
-        ->where('numOfSeats', '>', 0)
+        ])->whereDate('start_day', '>=', now()->format('d/m/y'))
+        ->orderBy('start_day', 'asc')
+        ->orderBy('start_time', 'asc')
+        ->where('num_of_seats', '>', 0)
         ->paginate(10);
 
 

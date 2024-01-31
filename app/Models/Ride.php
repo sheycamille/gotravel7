@@ -23,17 +23,19 @@ class Ride extends Model
     protected $fillable = [
         'driver_id',
         'departure',
-        'pickupLocation',
+        'pickup_location',
         'destination',
-        'departureTime',
-        'departureDay',
+        'start_time',
+        'start_day',
         'comments',
-        'pricePerSeat',
-        'numOfSeats',
+        'cost',
+        'num_of_seats',
+        'num_of_seats_left',
         'status',
         'type',
-        'carModel',
-        'carNumberPlate'
+        'comments',
+        'car_model',
+        'car_number_plate'
     ];
 
     protected $cast = [
@@ -44,30 +46,27 @@ class Ride extends Model
 
     public function driver()
     {
-        //$user = User::find($this->driver_id);
-        //return $user->first_name . ' ' . $user->last_name;
-        return $this->belongsTo('App\Models\User');
-
+        return $this->belongsTo('App\Models\User', 'driver_id');
     }
 
     public function passengers()
     {
-        return $this->hasMany('App\Models\Booking', 'rideId');
+        return $this->hasMany('App\Models\Booking', 'ride_id');
     }
 
     public function bookings()
     {
-        return $this->hasMany('App\Models\Booking', 'rideId');
+        return $this->hasMany('App\Models\Booking', 'ride_id');
     }
 
     public function isAPassenger()
     {
-        return $this->belongsTo('App\Models\Booking')->where('passengerId', Auth::user()->id)->first();
+        return $this->belongsTo('App\Models\Booking')->where('passenger_id', Auth::user()->id)->first();
     }
 
     public function spacesLeft()
     {
-        return $this->numOfSeats - $this->bookings()->count();
+        return $this->num_of_seats - $this->bookings()->count();
     }
 
     public function getFullDate()
@@ -115,7 +114,7 @@ class Ride extends Model
 
     public function setPickupLocationAttribute($value)
     {
-        $this->attributes['pickupLocation'] = trim(strtolower($value));
+        $this->attributes['pickup_location'] = trim(strtolower($value));
     }
 
     /**
@@ -131,7 +130,7 @@ class Ride extends Model
      */
     public function setStartDayAttribute($value)
     {
-        $this->attributes['departureDay'] = date_format(date_create($value), 'd-m-Y');
+        $this->attributes['start_day'] = $value;
     }
 
 

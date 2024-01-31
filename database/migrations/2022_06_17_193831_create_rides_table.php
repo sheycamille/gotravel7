@@ -7,6 +7,7 @@ use App\Models\Ride;
 
 return new class extends Migration
 {
+
     public function up()
     {
         Schema::create('rides', function (Blueprint $table) {
@@ -21,10 +22,10 @@ return new class extends Migration
             $table->string('destination');
             $table->string('start_day');
             $table->string('start_time');
+            $table->string('car_model')->nullable();
+            $table->string('car_number_plate')->nullable();
             $table->longText('comments')->nullable();
-            $table->double('cost')->default(0);
-            $table->string('carModel');
-            $table->string('carNumberPlate');
+            $table->double('cost');
             $table->timestamps();
             $table->softDeletes();
         });
