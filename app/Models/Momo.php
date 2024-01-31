@@ -17,7 +17,7 @@ class Momo extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'transaction_id', 'processing_number', 'user_id', 'ride_id', 'type', 'phone_number', 'amount', 'status', 'status_code', 'status_desc', 'at',
+        'transaction_id', 'seats', 'processing_number', 'user_id', 'ride_id', 'type', 'phone_number', 'amount', 'status', 'status_code', 'status_desc', 'at',
     ];
 
     /**

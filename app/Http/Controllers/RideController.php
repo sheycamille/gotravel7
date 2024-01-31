@@ -238,7 +238,7 @@ class RideController extends Controller
             'status_code' => 200
         ]);
 
-        return response()->json(['success' => true, 'message' => " Hello, $name. You're about to make a payment of  $totalCost XAF to Travel Z. please be patient while we process the payment. Once you verify the payment, click on: "], 200);
+        return response()->json(['success' => true, 'message' => " Hello, $name. You're about to make a payment of  $totalCost XAF to Travel Z. please check your phone to validate the transaction or dial *126#. Once you verify the payment, click on: "], 200);
 
         //return response()->json(['success' => false, 'message' => 'Something went wrong, try again later.'], 422);
     }

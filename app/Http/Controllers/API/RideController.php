@@ -254,7 +254,7 @@ class RideController extends Controller
             'payMethod' => 'required|string',
             'numOfSeats' => 'required|string',
             'rideId' => 'required|string',
-            'pricePerSeat' => 'required|string',
+            //'pricePerSeat' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -263,18 +263,17 @@ class RideController extends Controller
 
         $collection = new Collection();
         $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
-
         $ride = Ride::find($request->rideId);
-        $totalCost = $request->numOfSeats * $request->pricePerSeat;
+        $totalCost = $request->numOfSeats * $ride->cost;
 
         try {
-
             $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $totalCost);
 
             $journey = Momo::create([
                 'transaction_id' => $referenceId,
                 'user_id' => auth()->user()->id,
                 'ride_id' => $ride,
+                'seats' => $request->numOfSeats,
                 'phone_number' => $request->phoneNumber,
                 'amount' => $totalCost,
                 'status' => 'pending',
@@ -291,7 +290,7 @@ class RideController extends Controller
             return response()->json([
                 'payer' => $request->all(),
                 'message' => $e->getMessage(),
-                'status' => 'false',
+                'status' => false,
 
             ], 400);
         }
@@ -299,34 +298,30 @@ class RideController extends Controller
 
     public function checkTransactionStatus($id)
     {
-
         $collection = new Collection();
-
         $ride_id = Ride::find($id);
-
-        $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
+        $transactionId = Momo::where('user_id', auth()->user()->id)->pluck('transaction_id')->first();
+        $seats = Momo::where('user_id', auth()->user()->id)->pluck('seats')->first();
 
         try {
-
             $refreid = $collection->getTransactionStatus($transactionId);
 
-            $status = $refreid['status'];
+            /*$status = $refreid['status'];
 
             if (!$status === 'SUCCESSFUL')
                 return response()->json([
                     'message' => 'pending',
                     'requestToPayResult' => $refreid
 
-                ], 400);
+                ], 400);*/
 
-            $join_ride = $this->join($ride_id, session::get("ride_num_seats"));
-
-            $response = response()->json([
-                'message' => 'complete',
+            //$join_ride = $this->join($ride_id, $seats);
+            return response()->json([
+                //'message' => 'complete',
                 'requestToPayResult' => $refreid
             ], 200);
 
-            return [$join_ride, $response];
+            //return [$join_ride, $response];
         } catch (RequestException $ex) {
             return response()->json([
                 'message' => 'Unable to get transaction status',
