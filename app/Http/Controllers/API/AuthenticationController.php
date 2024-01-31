@@ -76,6 +76,7 @@ class AuthenticationController extends Controller
         ]);
 
         $code = random_int(100000, 999999);
+
         if(isset($request->email) && $request->email != '') {
             User::where('email', $user->email)->update(['otp' => $code]);
             Mail::to($user->email)->send(new VerifyEmail($code, $request->first_name));
@@ -89,7 +90,15 @@ class AuthenticationController extends Controller
             ], 500);
         }
 
-        if($request->verifiedWith == 'email'){
+        $token =  $user->createToken('Gokamz')->accessToken;
+            return response([
+                'token' => $token,
+                'user' => new UserResource($user),
+                'message' => 'Registration Successful',
+                'status' => true
+            ], 200);
+
+        /*if($request->verifiedWith == 'email'){
             if(isset($request->email) && $request->email != '') {
                 User::where('email', $user->email)->update(['otp' => $code]);
                 Mail::to($user->email)->send(new VerifyEmail($code, $request->first_name));
@@ -111,7 +120,7 @@ class AuthenticationController extends Controller
                 'message' => 'Registration Successful',
                 'status' => true
             ], 200);
-        }
+        }*/
     }
 
     public function logout (Request $request) {
