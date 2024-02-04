@@ -54,6 +54,8 @@ class BookingController extends Controller
                 $booking->ride->update([
                     'numOfSeats' => intval($booking->ride->num_of_rides) - intval($request->numOfSeats)
                 ]);
+                
+                $booking->ride->save();
         
             }, 5); 
 

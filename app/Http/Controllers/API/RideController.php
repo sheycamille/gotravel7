@@ -78,13 +78,11 @@ class RideController extends Controller
                     "car_number_plate" => $request->carNumberPlate,
                 ]);
 
-                info($ride);
-
                 if ($request->hasFile('carImages')) {
                     $images = $request->file('carImages');
                     foreach ($images as $image) {
                         $file_name = (string) Str::uuid()->toString() . time() . '.png';
-                        $path = Storage::putFileAs('public/ride_images', $image, $file_name);
+                        $path = Storage::putFileAs('ride_images', $image, $file_name);
 
                         Images::create([
                             'owner_id' => $ride->id,
