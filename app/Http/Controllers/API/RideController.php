@@ -252,7 +252,6 @@ class RideController extends Controller
             'payMethod' => 'required|string',
             'numOfSeats' => 'required|string',
             'rideId' => 'required|string',
-            //'pricePerSeat' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -260,12 +259,12 @@ class RideController extends Controller
         }
 
         $collection = new Collection();
-        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
+        $transactionId = '6581845a-ae25-447c-b7d9-7edf4b7814fb';
         $ride = Ride::find($request->rideId);
-        $totalCost = $request->numOfSeats * $ride->cost;
+        $totalCost = $request->numOfSeats * $ride->totalCost;
 
         try {
-            $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $totalCost);
+            $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $request->totalCost);
 
             $journey = Momo::create([
                 'transaction_id' => $referenceId,
