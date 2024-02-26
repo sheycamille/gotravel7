@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             'phone_number'=> '673572533',
             'password' => Hash::make('password'),
             'address' => 'SouthWest,buea',
-            'status' => '0',
+            'status' => '1',
             'type' => 'administrator',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
