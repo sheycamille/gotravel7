@@ -39,7 +39,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('my-bookings', 'API\RideController@myBookings');
         Route::get('search', 'API\RideController@searchRides');
 
-        Route::post('request-to-pay/{id}', 'API\RideController@momoRequestToPay');
+        Route::post('request-to-pay', 'API\RideController@momoRequestToPay');
         Route::get('check-transaction-status/{id}', 'API\RideController@checkTransactionStatus');
 
         // Route::post('search/{type?}', 'API\RideController@search');

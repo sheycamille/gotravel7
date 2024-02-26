@@ -16,12 +16,14 @@ class BookingController extends Controller
     public function bookYourRide(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'phoneNumber' => 'required|string',
+            'phoneNumber' => 'required|string|max:9|min:9',
             'paymentMethod' => 'required|string',
-            'numOfSeats' => 'required|string',
+            'numOfSeats' => 'required|integer|min:1',
             'rideId' => 'required',
-            'totalCost' => 'required',
+            'totalCost' => 'required|numeric|min:100',
         ]);
+
+        // {phoneNumber: 23578235682736, paymentMethod: MTN, numOfSeats: 1, rideId: 1, totalCost: 1000.0}
 
         if ($validator->fails()) {
             return response(['message' => $validator->errors()->first()], 401);
@@ -29,17 +31,24 @@ class BookingController extends Controller
 
         // dummy transaction id since we are not using any payment gateway
         $transactionId = Str::random(10);
+        $ride = \App\Models\Ride::find($request->rideId);
+        
+        if(intval($ride->num_of_seats) < intval($request->numOfSeats)){
+            return response([
+                'message' => "Sorry, the number of seats you requested is not available",
+                'status' => false,
+            ], 400); 
+        }
+
+        if(auth()->user()->id == $ride->user->id){
+            return response([
+                'message' => "You can't book your own ride",
+                'status' => false,
+            ], 400); 
+        }
+
         try{
-
-            $ride = \App\Models\Ride::find($request->rideId);
-
-            if(intval($ride->num_of_seats) < intval($request->numOfSeats)){
-                return response([
-                    'message' => "Sorry, the number of seats you requested is not available",
-                    'status' => false,
-                ], 400); 
-            }
-
+            
             DB::transaction(function () use ($request, $transactionId) {
 
                 $booking  = Booking::create([
@@ -54,6 +63,8 @@ class BookingController extends Controller
                 $booking->ride->update([
                     'numOfSeats' => intval($booking->ride->num_of_rides) - intval($request->numOfSeats)
                 ]);
+                
+                $booking->ride->save();
         
             }, 5); 
 

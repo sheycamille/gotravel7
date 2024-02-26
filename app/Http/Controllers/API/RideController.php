@@ -79,13 +79,11 @@ class RideController extends Controller
                     "car_number_plate" => $request->carNumberPlate,
                 ]);
 
-                info($ride);
-
                 if ($request->hasFile('carImages')) {
                     $images = $request->file('carImages');
                     foreach ($images as $image) {
                         $file_name = (string) Str::uuid()->toString() . time() . '.png';
-                        $path = Storage::putFileAs('public/ride_images', $image, $file_name);
+                        $path = Storage::putFileAs('ride_images', $image, $file_name);
 
                         Images::create([
                             'owner_id' => $ride->id,
@@ -247,10 +245,10 @@ class RideController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'phoneNumber' => 'required|string',
-            'payMethod' => 'required|string',
-            'numOfSeats' => 'required|string',
-            'rideId' => 'required|string',
-            //'pricePerSeat' => 'required|string',
+            // 'payMethod' => 'required|string',
+            // 'numOfSeats' => 'required|string',
+            // 'rideId' => 'required|string',
+            'totalCost' => 'required|string'
         ]);
 
         if ($validator->fails()) {

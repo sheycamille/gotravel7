@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
-
 use App\Models\User;
 use App\Mail\API\VerifyEmail;
 use App\Http\Resources\UserResource;
@@ -77,28 +75,7 @@ class AuthenticationController extends Controller
 
         $code = random_int(100000, 999999);
 
-        if(isset($request->email) && $request->email != '') {
-            User::where('email', $user->email)->update(['otp' => $code]);
-            Mail::to($user->email)->send(new VerifyEmail($code, $request->first_name));
-            return response([
-                "message" => "Email verification sent",
-                "status" => true,
-            ], 200);
-        } else {
-            return response([
-                'message' => 'Something happened, try again'
-            ], 500);
-        }
-
-        $token =  $user->createToken('Gokamz')->accessToken;
-            return response([
-                'token' => $token,
-                'user' => new UserResource($user),
-                'message' => 'Registration Successful',
-                'status' => true
-            ], 200);
-
-        /*if($request->verifiedWith == 'email'){
+        if($request->verifiedWith == 'email'){
             if(isset($request->email) && $request->email != '') {
                 User::where('email', $user->email)->update(['otp' => $code]);
                 Mail::to($user->email)->send(new VerifyEmail($code, $request->first_name));
@@ -120,7 +97,7 @@ class AuthenticationController extends Controller
                 'message' => 'Registration Successful',
                 'status' => true
             ], 200);
-        }*/
+        }
     }
 
     public function logout (Request $request) {
