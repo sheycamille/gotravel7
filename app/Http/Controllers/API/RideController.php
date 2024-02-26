@@ -249,9 +249,10 @@ class RideController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'phoneNumber' => 'required|string',
-            'payMethod' => 'required|string',
-            'numOfSeats' => 'required|string',
-            'rideId' => 'required|string',
+            // 'payMethod' => 'required|string',
+            // 'numOfSeats' => 'required|string',
+            // 'rideId' => 'required|string',
+            'totalCost' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -260,8 +261,8 @@ class RideController extends Controller
 
         $collection = new Collection();
         $transactionId = '6581845a-ae25-447c-b7d9-7edf4b7814fb';
-        $ride = Ride::find($request->rideId);
-        $totalCost = $request->numOfSeats * $ride->totalCost;
+        // $ride = Ride::find($request->rideId);
+        // $totalCost = $request->numOfSeats * $ride->cost;
 
         try {
             $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $request->totalCost);
@@ -269,10 +270,11 @@ class RideController extends Controller
             $journey = Momo::create([
                 'transaction_id' => $referenceId,
                 'user_id' => auth()->user()->id,
-                'ride_id' => $ride,
+                // 'ride_id' => $ride,
+                'ride_id' => 1,
                 'seats' => $request->numOfSeats,
                 'phone_number' => $request->phoneNumber,
-                'amount' => $totalCost,
+                'amount' =>  $request->totalCost,
                 'status' => 'pending',
                 'status_code' => 200
             ]);
