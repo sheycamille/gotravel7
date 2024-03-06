@@ -102,6 +102,7 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $user = auth()->user();
+        
 
         if (!$user) return redirect()->back()->with('message', 'User not found');
 
