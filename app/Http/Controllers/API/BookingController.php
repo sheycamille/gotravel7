@@ -15,11 +15,9 @@ class BookingController extends Controller
  
     public function bookYourRide(Request $request){
 
-        info($request->all());
-
         $validator = Validator::make($request->all(), [
-            // 'phoneNumber' => 'required|string|max:9|min:9',
-            // 'paymentMethod' => 'required|string',
+            'phoneNumber' => 'required|string|max:9|min:9',
+            'paymentMethod' => 'required|string',
             'numOfSeats' => 'required|integer|min:1',
             'rideId' => 'required',
             'totalCost' => 'required|numeric|min:100',
@@ -34,8 +32,6 @@ class BookingController extends Controller
         // dummy transaction id since we are not using any payment gateway
         $transactionId = Str::random(10);
         $ride = \App\Models\Ride::find($request->rideId);
-
-        info($ride);
         
         if(intval($ride->num_of_seats) < intval($request->numOfSeats)){
             return response([
@@ -44,7 +40,7 @@ class BookingController extends Controller
             ], 400); 
         }
 
-        if(auth()->user()->id == $ride->driver->id){
+        if(auth()->user()->id == $ride->user->id){
             return response([
                 'message' => "You can't book your own ride",
                 'status' => false,
@@ -59,9 +55,9 @@ class BookingController extends Controller
                     "ride_id" => $request->rideId,
                     "passenger_id" => auth()->user()->id,
                     "totalCost" => $request->totalCost,
-                    "paymentMethod" => "Not provided",
+                    "paymentMethod" => $request->paymentMethod,
                     "numberOfSeats" => $request->numOfSeats,
-                    "transactionId" => "Not Provided",
+                    "transactionId" => $transactionId,
                 ]);
         
                 $booking->ride->update([
