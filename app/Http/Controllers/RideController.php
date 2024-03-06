@@ -90,15 +90,15 @@ class RideController extends Controller
             'destination' => 'required|string',
             'start_day' => 'required|string',
             'start_time' => 'required|string',
-            //'car_img' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            //'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'car_img' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'car_img.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'number_plate' => 'required|string',
             'cost' => 'required|min:1',
             'noOfSeats' => 'min:1',
             'comments' => 'string',
         ]);
 
-        /*$images = [];
+        $images = [];
 
         if ($request->hasfile('car_img')) {
             foreach ($request->car_img as $img) {
@@ -106,7 +106,7 @@ class RideController extends Controller
                 $img->move(public_path('uploads/images'), $imageName);
                 $images[] = $imageName;
             }
-        }*/
+        }
 
         //$fileName = time() . '.' . $request->car_img->();
         //$fileName = $request->car_img->getClientOriginalName();
@@ -123,10 +123,9 @@ class RideController extends Controller
             'cost' => $request->input('cost'),
             'driver_id' => auth()->user()->id,
             "num_of_seats" => $request->input('noOfSeats'),
-            //'carImages' => json_encode($images),
+            'carImages' => json_encode($images),
             'carNumberPlate' => $request->input('number_plate'),
             'comments' => $request->comments,
-            'created_at' => Carbon::now()
         );
 
         // $this->doValidate($data)->validate();
@@ -238,7 +237,7 @@ class RideController extends Controller
             'status_code' => 200
         ]);
 
-        return response()->json(['success' => true, 'message' => " Hello, $name. You're about to make a payment of  $totalCost XAF to Travel Z. please check your phone to validate the transaction or dial *126#. Once you verify the payment, click on: "], 200);
+        return response()->json(['success' => true, 'message' => " Hello, $name. You're about to make a payment of  $totalCost XAF to Travel Z. please be patient while we process the payment. Once you verify the payment, click on: "], 200);
 
         //return response()->json(['success' => false, 'message' => 'Something went wrong, try again later.'], 422);
     }

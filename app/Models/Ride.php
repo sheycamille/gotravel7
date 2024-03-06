@@ -22,20 +22,18 @@ class Ride extends Model
 
     protected $fillable = [
         'driver_id',
-        'departure',
-        'pickup_location',
-        'destination',
-        'start_time',
-        'start_day',
-        'comments',
-        'cost',
-        'num_of_seats',
-        'num_of_seats_left',
-        'status',
-        'type',
-        'comments',
-        'car_model',
-        'car_number_plate'
+        'departure',  
+        'pickupLocation', 
+        'destination', 
+        'departureTime', 
+        'departureDay', 
+        'comments', 
+        'pricePerSeat', 
+        'availableSeats',
+        'status', 
+        'typeOfContent',
+        'carModel',
+        'carNumberPlate'
     ];
 
     protected $cast = [
@@ -46,17 +44,18 @@ class Ride extends Model
 
     public function driver()
     {
-        return $this->belongsTo('App\Models\User', 'driver_id');
+        $user = User::find($this->driver_id);
+        return $user->first_name . ' ' . $user->last_name;
     }
 
     public function passengers()
     {
-        return $this->hasMany('App\Models\Booking', 'ride_id');
+        return $this->hasMany('App\Models\RidePassenger');
     }
 
     public function bookings()
     {
-        return $this->hasMany('App\Models\Booking', 'ride_id');
+        return $this->hasMany('App\Models\Booking');
     }
 
     public function isAPassenger()
@@ -66,7 +65,7 @@ class Ride extends Model
 
     public function spacesLeft()
     {
-        return $this->num_of_seats - $this->bookings()->count();
+        return $this->availableSeats - $this->passengers()->count();
     }
 
     public function getFullDate()
@@ -114,7 +113,7 @@ class Ride extends Model
 
     public function setPickupLocationAttribute($value)
     {
-        $this->attributes['pickup_location'] = trim(strtolower($value));
+        $this->attributes['pickupLocation'] = trim(strtolower($value));
     }
 
     /**
@@ -130,7 +129,7 @@ class Ride extends Model
      */
     public function setStartDayAttribute($value)
     {
-        $this->attributes['start_day'] = $value;
+        $this->attributes['departureDay'] = date_format(date_create($value), 'd-m-Y');
     }
 
 

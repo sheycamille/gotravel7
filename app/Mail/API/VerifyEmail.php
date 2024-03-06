@@ -21,7 +21,7 @@ class VerifyEmail extends Mailable
     public function __construct($verification_code, $name)
     {
         $this->verification_code = $verification_code;
-        $this->name = $name ;
+        $this->name = $name;
     }
 
     /**

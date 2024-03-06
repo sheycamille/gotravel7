@@ -1,43 +1,39 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
 use App\Models\Momo;
 use App\Models\Ride;
 use App\Models\Route;
 use App\Models\Images;
 use App\Models\Booking;
+use App\Models\PaymentMethod;
+use App\Models\RidePassenger;
+use Bmatovu\MtnMomo\Products\Collection;
+use GuzzleHttp\Exception\RequestException;
+use App\Http\Resources\RideCollectionResource;
+use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
+use App\Http\Resources\RideResource;
+use App\Http\Resources\RouteCollectionResource;
+use App\Http\Resources\MyRidesCollectionResource;
+use App\Models\Vehicle;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\DB;
-
-use App\Models\PaymentMethod;
-use App\Models\RidePassenger;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use Bmatovu\MtnMomo\Products\Collection;
-use App\Http\Resources\MyRidesCollectionResource;
-use App\Http\Resources\RouteCollectionResource;
-use App\Http\Resources\RideResource;
 
 use Illuminate\Support\Facades\Validator;
-use GuzzleHttp\Exception\RequestException;
-use App\Http\Resources\RideCollectionResource;
-use App\Models\Transaction;
-use Bmatovu\MtnMomo\Exceptions\CollectionRequestException;
-use Carbon\Carbon;
 
 class RideController extends Controller
 {
 
     public function create(Request $request)
     {
-
 
         $validator = Validator::make($request->all(), [
             'pickupLocation' => 'required|string',
@@ -49,125 +45,102 @@ class RideController extends Controller
             'carImages' => 'required|array',
             'carNumberPlate' => 'required|nullable',
             'pricePerSeat' => 'required|min:1',
-            'numOfSeats' => 'required|string|min:1',
+            'availableSeats' => 'required|string|min:1',
             'additionalComment' => 'string'
+
         ]);
 
         if ($validator->fails()) {
             return response(['message' => $validator->errors()], 401);
         }
 
+        $ride = Ride::create([
+            "driver_id" => auth()->user()->id,
+            "pickupLocation" => $request->pickupLocation,
+            "availableSeats" => $request->availableSeats,
+            "typeOfContent" => Ride::RIDE_TYPE_PERSONS,
+            "status" => Ride::RIDE_STATUS_PROGRESS,
+            "departure" => $request->departure,
+            "destination" => $request->destination,
+            "departureDay" => $request->departureDay,
+            "departureTime" => $request->departureTime,
+            "comments" => $request->additionalComment,
+            "pricePerSeat" => $request->pricePerSeat,
+            "carModel" => $request->carModel,
+            "carNumberPlate" => $request->carNumberPlate,
+        
+        ]);
 
-        try {
-
-            DB::transaction(function () use ($request) {
-
-                $ride = Ride::create([
-                    "driver_id" => auth()->user()->id,
-                    "pickup_location" => $request->pickupLocation,
-                    "num_of_seats" => $request->numOfSeats,
-                    "num_of_seats_left" => $request->numOfSeats,
-                    "type" => Ride::RIDE_TYPE_PERSONS,
-                    "status" => Ride::RIDE_STATUS_PROGRESS,
-                    "departure" => $request->departure,
-                    "destination" => $request->destination,
-                    "start_day" => $request->departureDay,
-                    "start_time" => $request->departureTime,
-                    "comments" => $request->additionalComment,
-                    "cost" => $request->pricePerSeat,
-                    "car_model" => $request->carModel,
-                    "car_number_plate" => $request->carNumberPlate,
+        if ($request->hasFile('carImages')) {
+            $images = $request->file('carImages');
+            foreach ($images as $image) {
+                $file_name = (string) Str::uuid()->toString() . time() . '.png';
+                $path = Storage::putFileAs('ride_images', $image, $file_name);
+        
+                Images::create([
+                    'owner_id' => $ride->id,
+                    'url' => $path,
                 ]);
-
-                if ($request->hasFile('carImages')) {
-                    $images = $request->file('carImages');
-                    foreach ($images as $image) {
-                        $file_name = (string) Str::uuid()->toString() . time() . '.png';
-                        $path = Storage::putFileAs('ride_images', $image, $file_name);
-
-                        Images::create([
-                            'owner_id' => $ride->id,
-                            'url' => $path,
-                        ]);
-                    }
-                }
-            }, 5);
-
-            return response([
-                'message' => "Ride created successfully",
-                'status' => true,
-            ], 200);
-        } catch (\Throwable $e) {
-            return response([
-                'message' => "Something went wrong",
-                'status' => false,
-            ], 500);
+            }
         }
+        
+        return response([
+            'message' => "Ride created successfully",
+            'status' => true,
+        ], 200);
+
     }
 
     public function getRidesNextTwoDays()
     {
-        $rides = Ride::whereDate('start_day', '>=', now()->format('d/m/y'))
-            ->whereDate('start_day', '<=', now()->addDays(2)->format('d/m/y'))
-            ->where('status', Ride::RIDE_STATUS_PROGRESS)
-            ->where('num_of_seats', '>', 0)
-            ->orderBy('start_day', 'asc')
-            ->orderBy('start_time', 'asc')
-            ->get();
+        $rides = Ride::whereDate('departureDay', '>=', now()->format('d/m/y'))
+                     ->whereDate('departureDay', '<=', now()->addDays(2)->format('d/m/y'))
+                     ->where('status' , Ride::RIDE_STATUS_PROGRESS)
+                     ->get();
 
         return response([
             'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
+
     }
 
 
     public function getRidesLater()
     {
-        $rides = Ride::whereDate('start_day', '>', now()->addDays(2)->format('d/m/y'))
-            ->where('status', Ride::RIDE_STATUS_PROGRESS)
-            ->where('num_of_seats', '>', 0)
-            ->orderBy('start_day', 'asc')
-            ->orderBy('start_time', 'asc')
-            ->get();
+        $rides = Ride::whereDate('departureDay', '>', now()->addDays(2)->format('d/m/y'))
+                ->where('status' , Ride::RIDE_STATUS_PROGRESS)
+                ->get();
 
         return response([
             'rides' => new RideCollectionResource($rides),
             'status' => true,
         ], 200);
+
     }
 
-    public function deleteRide($id)
-    {
+    public function deleteRide($id){
 
-        try {
-
-            DB::transaction(function () use ($id) {
-
-                $ride = Ride::where('id', $id)
+        $ride = Ride::where('id', $id)
                     ->where('driver_id', auth()->user()->id)
                     ->first();
-
-
-                $ride->images()->delete();
-                $ride->bookings()->delete();
-                $ride->delete();
-            }, 5);
+        if ($ride) {
+            $ride->delete();
 
             return response([
                 "message" => "Ride deleted successfully",
                 "status" => true
             ]);
-        } catch (\Throwable $e) {
-            return response([
-                "message" => "Something went wrong",
-                "status" => false
-            ], 500);
         }
+
+        return response([
+            "message" => "Failed to delete ride",
+            "status" => true
+        ], 404);
+
     }
 
-    public function cancelRide($id)
-    {
+    public function cancelRide($id){
 
         $ride = Ride::where('id', $id)
             ->where('driver_id', auth()->user()->id)
@@ -190,50 +163,48 @@ class RideController extends Controller
         ], 404);
     }
 
-    public function myRides()
-    {
+    public function myRides(){
         $rides = $rides = Ride::where('driver_id', auth()->user()->id)
-            ->select('destination', 'departure',  'status', 'start_time', 'start_day', 'id', 'cost')
-            ->get();
-
+        ->select('destination', 'departure',  'status', 'departureTime', 'departureDay', 'id', 'pricePerSeat')
+        ->get();
+    
         return response([
             'rides' => new MyRidesCollectionResource($rides),
             'status' => true,
         ], 200);
     }
 
-    public function getRideDetails($id)
-    {
+    public function getRideDetails($id){
         return response([
             "ride" => new RideResource(Ride::find($id)),
             "status" => true
         ]);
     }
 
-    /*public function myBookings()
-    {
+    public function myBookings(){
         $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
         return response([
             'bookings' => $bookings,
             'status' => true,
         ], 200);
-    }*/
+    }
 
-    public function searchRides(Request $request)
-    {
+    public function searchRides(Request $request){
 
-        $destination = $request->query('destination');
-        $departure = $request->query('departure');
+        $validator = Validator::make($request->all(), [
+            'departure' => 'required',
+            'destination' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()->first()], 401);
+        }
 
         $rides = Ride::where([
-            'departure' => $departure,
-            'destination' => $destination,
-        ])->whereDate('start_day', '>=', now()->format('d/m/y'))
-            ->orderBy('start_day', 'asc')
-            ->orderBy('start_time', 'asc')
-            ->where('num_of_seats', '>', 0)
-            ->paginate(10);
-
+            'departure' => $request->departure,
+            'destination' => $request->destination,
+        ])->whereDate('departureDay', '>=', now()->format('d/m/y'))->get();
+            
 
         return response([
             'rides' => new RideCollectionResource($rides),
@@ -241,42 +212,39 @@ class RideController extends Controller
         ], 200);
     }
 
+    
     public function momoRequestToPay(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'phoneNumber' => 'required|string',
-            // 'payMethod' => 'required|string',
-            // 'numOfSeats' => 'required|string',
-            // 'rideId' => 'required|string',
-            'totalCost' => 'required|string'
+            'payMethod' => 'required|string',
+            'numOfSeats' => 'required|string',
+            'rideId' => 'required|string',
+            'pricePerSeat' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response(['message' => $validator->errors()], 401);
         }
-
+        
         $collection = new Collection();
-        $external_transactionId = Str::uuid()->toString();
-        $ride = Ride::find($request->rideId);
-        $totalCost = $request->numOfSeats * $ride->cost;
+        $transactionId = '6581845a-ae25-447c-b7d9-7edf3b7814fb';
 
-        $journey = Transaction::create([
-            //'transaction_id' => $referenceId,
-            //'gateway_transaction_id' => $external_transactionId,
-            'user_id' => auth()->user()->id,
-            'ride_id' => $ride,
-            'seats' => $request->numOfSeats,
-            'phone_number' => $request->phoneNumber,
-            'amount' => $totalCost,
-            'created_at' => Carbon::now(),
-        ]);
+        $ride = Ride::find($request->rideId);
+        $totalCost = $request->numOfSeats * $request->pricePerSeat;
 
         try {
-            $referenceId = $collection->requestToPay($external_transactionId, $request->phoneNumber, $totalCost);
 
-            Transaction::where('phone_number', $request->phoneNumber)->update([
+            $referenceId = $collection->requestToPay($transactionId, $request->phoneNumber, $totalCost);
+
+            $journey = Momo::create([
                 'transaction_id' => $referenceId,
-                'gateway_transaction_id' => $external_transactionId,
+                'user_id' => auth()->user()->id,
+                'ride_id' => $ride,
+                'phone_number' => $request->phoneNumber,
+                'amount' => $totalCost,
+                'status' => 'pending',
+                'status_code' => 200
             ]);
 
             return response()->json([
@@ -285,11 +253,12 @@ class RideController extends Controller
                 'status' => true,
                 'journey' => $journey
             ], 200);
+
         } catch (CollectionRequestException $e) {
             return response()->json([
                 'payer' => $request->all(),
                 'message' => $e->getMessage(),
-                'status' => false,
+                'status' => 'false',
 
             ], 400);
         }
@@ -297,30 +266,34 @@ class RideController extends Controller
 
     public function checkTransactionStatus($id)
     {
+
         $collection = new Collection();
+
         $ride_id = Ride::find($id);
-        $transactionId = Transaction::where('user_id', auth()->user()->id)->pluck('transaction_id')->first();
-        $seats = Transaction::where('user_id', auth()->user()->id)->pluck('seats')->first();
+
+        $transactionId = Momo::where('user_id', Auth::user()->id)->pluck('transaction_id')->first();
 
         try {
+
             $refreid = $collection->getTransactionStatus($transactionId);
 
-            /*$status = $refreid['status'];
+            $status = $refreid['status'];
 
             if (!$status === 'SUCCESSFUL')
                 return response()->json([
                     'message' => 'pending',
                     'requestToPayResult' => $refreid
 
-                ], 400);*/
+                ], 400);
 
-            //$join_ride = $this->join($ride_id, $seats);
-            return response()->json([
-                //'message' => 'complete',
+            $join_ride = $this->join($ride_id, session::get("ride_num_seats"));
+
+            $response = response()->json([
+                'message' => 'complete',
                 'requestToPayResult' => $refreid
             ], 200);
 
-            //return [$join_ride, $response];
+            return [$join_ride, $response];
         } catch (RequestException $ex) {
             return response()->json([
                 'message' => 'Unable to get transaction status',
@@ -329,6 +302,7 @@ class RideController extends Controller
             ], 400);
         }
     }
+
 
     public function join($ride_id, $seats)
     {
@@ -433,4 +407,8 @@ class RideController extends Controller
             'paymentmethods' => $pay_methods,
         ], 200);
     }
+
+
+
 }
+

@@ -7,25 +7,23 @@ use App\Models\Ride;
 
 return new class extends Migration
 {
-
     public function up()
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('driver_id')->constrained("users")->onDelete("cascade");
-            $table->string('pickup_location');
-            $table->unsignedBigInteger('num_of_seats')->default(0);
-            $table->unsignedBigInteger('num_of_seats_left')->default(0);
-            $table->enum('type', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
+            $table->string('pickupLocation');
+            $table->integer('availableSeats');
+            $table->enum('typeOfContent', [ Ride::RIDE_TYPE_PERSONS, Ride::RIDE_TYPE_GOODS])->default(Ride::RIDE_TYPE_PERSONS);
             $table->enum('status', [ Ride::RIDE_STATUS_PROGRESS, Ride::RIDE_STATUS_STARTED, Ride::RIDE_STATUS_ENDED])->default(Ride::RIDE_STATUS_PROGRESS);
-            $table->string('departure');
-            $table->string('destination');
-            $table->string('start_day');
-            $table->string('start_time');
-            $table->string('car_model')->nullable();
-            $table->string('car_number_plate')->nullable();
+            $table->unsignedBigInteger('departure');
+            $table->unsignedBigInteger('destination');
+            $table->string('departureDay');
+            $table->string('departureTime');
             $table->longText('comments')->nullable();
-            $table->double('cost');
+            $table->double('pricePerSeat');
+            $table->string('carModel');
+            $table->string('carNumberPlate');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,5 +33,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('rides');
     }
-
+    
 };

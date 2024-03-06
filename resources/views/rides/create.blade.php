@@ -218,7 +218,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group{{ $errors->has('number_plate') ? ' has-error' : '' }}">
                                         <label for="number_plate">Vehicle Number Plate</label>
                                         <div class="controls">
@@ -233,7 +233,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{--<div class="col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group{{ $errors->has('car_img') ? ' has-error' : '' }}">
                                         <label for="car_img">Vehicle Images</label>
                                         <div class="controls">
@@ -246,7 +246,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>--}}
+                                </div>
                             </div>
 
                             <div class="form-group{{ $errors->has('comments') ? ' has-error' : '' }}">

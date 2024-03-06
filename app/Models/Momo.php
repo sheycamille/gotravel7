@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Transaction extends Model
+class Momo extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +17,7 @@ class Transaction extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id', 'ride_id', 'amount', 'method', 'date_paid', 'type', 'status', 'points',
+        'transaction_id', 'processing_number', 'user_id', 'ride_id', 'type', 'phone_number', 'amount', 'status', 'status_code', 'status_desc', 'at',
     ];
 
     /**
