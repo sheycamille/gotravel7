@@ -23,8 +23,6 @@ class BookingController extends Controller
             'totalCost' => 'required|numeric|min:100',
         ]);
 
-        // {phoneNumber: 23578235682736, paymentMethod: MTN, numOfSeats: 1, rideId: 1, totalCost: 1000.0}
-
         if ($validator->fails()) {
             return response(['message' => $validator->errors()->first()], 401);
         }
@@ -40,12 +38,12 @@ class BookingController extends Controller
             ], 400); 
         }
 
-        if(auth()->user()->id == $ride->user->id){
-            return response([
-                'message' => "You can't book your own ride",
-                'status' => false,
-            ], 400); 
-        }
+        // if(auth()->user()->id == $ride->driver->id){
+        //     return response([
+        //         'message' => "You can't book your own ride",
+        //         'status' => false,
+        //     ], 400); 
+        // }
 
         try{
             
@@ -61,7 +59,7 @@ class BookingController extends Controller
                 ]);
         
                 $booking->ride->update([
-                    'numOfSeats' => intval($booking->ride->num_of_rides) - intval($request->numOfSeats)
+                    'num_of_seats_left' => intval($booking->ride->num_of_seats_left) - intval($request->numOfSeats)
                 ]);
                 
                 $booking->ride->save();
@@ -99,7 +97,7 @@ class BookingController extends Controller
 
                 $booking = Booking::find($id);
                 $booking->ride->update([
-                    'numOfSeats' => $booking->ride->num_of_rides + $booking->numberOfSeats
+                    'num_of_seats_left' => $booking->ride->num_of_seats_left + $booking->numberOfSeats
                 ]);
     
                 $booking->delete();
