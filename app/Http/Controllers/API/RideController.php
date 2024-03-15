@@ -110,7 +110,7 @@ class RideController extends Controller
         $rides = Ride::whereDate('start_day', '>=', now()->format('d/m/y'))
             ->whereDate('start_day', '<=', now()->addDays(2)->format('d/m/y'))
             ->where('status', Ride::RIDE_STATUS_PROGRESS)
-            ->where('num_of_seats', '>', 0)
+            ->where('num_of_seats_left', '>', 0)
             ->orderBy('start_day', 'asc')
             ->orderBy('start_time', 'asc')
             ->get();
@@ -126,7 +126,7 @@ class RideController extends Controller
     {
         $rides = Ride::whereDate('start_day', '>', now()->addDays(2)->format('d/m/y'))
             ->where('status', Ride::RIDE_STATUS_PROGRESS)
-            ->where('num_of_seats', '>', 0)
+            ->where('num_of_seats_left', '>', 0)
             ->orderBy('start_day', 'asc')
             ->orderBy('start_time', 'asc')
             ->get();
@@ -210,14 +210,6 @@ class RideController extends Controller
         ]);
     }
 
-    /*public function myBookings()
-    {
-        $bookings = Booking::where('passenger_id', auth()->user()->id)->get();
-        return response([
-            'bookings' => $bookings,
-            'status' => true,
-        ], 200);
-    }*/
 
     public function searchRides(Request $request)
     {
